@@ -1,0 +1,23 @@
+# Python-generated files
+__pycache__/
+*.py[oc]
+build/
+dist/
+wheels/
+*.egg-info
+.ruff_cache/
+.pytest_cache
+
+# Virtual environments
+.venv
+
+# Critical ignores
+.env
+.env.test
+.env.dev
+.env.secrets
+
+# Custom ignores
+.claude
+docs/.Notes
+docs/C4-Documentation-Old

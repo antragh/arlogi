@@ -1,0 +1,5 @@
+MD003: false  # heading-style
+MD013: false
+MD024: false  # /no-duplicate-heading: Multiple headings with the same content
+MD025: false  # Multiple top-level headings in the same documentmarkdownlint
+MD029: false
