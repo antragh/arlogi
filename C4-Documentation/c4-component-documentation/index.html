@@ -1,0 +1,2696 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+      
+      
+      
+        <link rel="prev" href="../c4-component-core-logging/">
+      
+      
+        <link rel="next" href="../c4-component-test-suite/">
+      
+      
+        
+      
+      
+      <link rel="icon" href="../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.1">
+    
+    
+      
+        <title>Component - Documentation - arlogi docs</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/main.484c7ddc.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/_mkdocstrings.css">
+    
+      <link rel="stylesheet" href="../../extra.css">
+    
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    <body dir="ltr">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#c4-component-level-documentation-system" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../.." title="arlogi docs" class="md-header__button md-logo" aria-label="arlogi docs" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            arlogi docs
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Component - Documentation
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../.." title="arlogi docs" class="md-nav__button md-logo" aria-label="arlogi docs" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    arlogi docs
+  </label>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../.." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Home
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../USER_GUIDE/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    User Guide
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../DEVELOPER_GUIDE/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Developer Guide
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../API_REFERENCE/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    API Reference
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../CALLER_ATTRIBUTION_EXAMPLES/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Caller Attribution Examples
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../CONFIGURATION_GUIDE/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Configuration Guide
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../ARCHITECTURE/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Architecture
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_8" >
+        
+          
+          <label class="md-nav__link" for="__nav_8" id="__nav_8_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Reference
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_8_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_8">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Reference
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/arlogi/config/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Config
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/arlogi/factory/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Factory
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/arlogi/handler_factory/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Handler factory
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/arlogi/handlers/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Handlers
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/arlogi/levels/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Levels
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/arlogi/types/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Types
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_9" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_9" id="__nav_9_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    C4 Documentation
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_9_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_9">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    C4 Documentation
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Overview
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../c4-context/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Context
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../c4-container/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Container
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../c4-component/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Component
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../c4-component-core-logging/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Component Detail
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Component - Documentation
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Component - Documentation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#overview" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Overview
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#purpose" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Purpose
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#software-features" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Software Features
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Software Features">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#api-documentation-generation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        API Documentation Generation
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#documentation-build-system" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Documentation Build System
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#developer-tools" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Developer Tools
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#deployment-automation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Deployment Automation
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#documentation-features" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Documentation Features
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#code-elements" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Code Elements
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#interfaces" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Interfaces
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Interfaces">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#command-line-interface-cli" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Command Line Interface (CLI)
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Command Line Interface (CLI)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#documentation-generation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Documentation Generation
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#documentation-deployment" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Documentation Deployment
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#web-interface" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Web Interface
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Web Interface">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#documentation-site" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Documentation Site
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#local-development-server" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Local Development Server
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#configuration-interface" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Configuration Interface
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Configuration Interface">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#mkdocs-configuration-file" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        MkDocs Configuration File
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#dependencies" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Dependencies
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Dependencies">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#components-documented" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Components Documented
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#external-systems" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        External Systems
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#infrastructure-dependencies" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Infrastructure Dependencies
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#data-dependencies" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Data Dependencies
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#component-diagram" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Component Diagram
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#component-interactions" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Component Interactions
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Component Interactions">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#documentation-generation-flow" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Documentation Generation Flow
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#documentation-build-flow" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Documentation Build Flow
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#documentation-deployment-flow" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Documentation Deployment Flow
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#user-access-flow" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        User Access Flow
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#technology-stack" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Technology Stack
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Technology Stack">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#documentation-generation_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Documentation Generation
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#development-tools" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Development Tools
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#deployment" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Deployment
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#documentation-features_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Documentation Features
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#deployment-considerations" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Deployment Considerations
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Deployment Considerations">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#local-development" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Local Development
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#production-deployment" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Production Deployment
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#build-artifacts" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Build Artifacts
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#maintenance" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Maintenance
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#integration-points" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Integration Points
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Integration Points">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#with-core-library" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        With Core Library
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#with-development-workflow" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        With Development Workflow
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#with-external-services" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        With External Services
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#quality-assurance" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Quality Assurance
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Quality Assurance">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#documentation-testing" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Documentation Testing
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#automated-validation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Automated Validation
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#continuous-improvement" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Continuous Improvement
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../c4-component-test-suite/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Component - Test Suite
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../c4-code-src-arlogi/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Code - Source
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../c4-code-tests/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Code - Tests
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../c4-code-tests-example/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Code - Tests Example
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../c4-code-docs-reference/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Code - Docs Reference
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../c4-code-docs-scripts/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Code - Docs Scripts
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../c4-code-subdir/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Code - Subdir
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#overview" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Overview
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#purpose" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Purpose
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#software-features" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Software Features
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Software Features">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#api-documentation-generation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        API Documentation Generation
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#documentation-build-system" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Documentation Build System
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#developer-tools" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Developer Tools
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#deployment-automation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Deployment Automation
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#documentation-features" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Documentation Features
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#code-elements" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Code Elements
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#interfaces" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Interfaces
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Interfaces">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#command-line-interface-cli" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Command Line Interface (CLI)
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Command Line Interface (CLI)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#documentation-generation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Documentation Generation
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#documentation-deployment" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Documentation Deployment
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#web-interface" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Web Interface
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Web Interface">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#documentation-site" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Documentation Site
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#local-development-server" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Local Development Server
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#configuration-interface" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Configuration Interface
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Configuration Interface">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#mkdocs-configuration-file" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        MkDocs Configuration File
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#dependencies" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Dependencies
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Dependencies">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#components-documented" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Components Documented
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#external-systems" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        External Systems
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#infrastructure-dependencies" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Infrastructure Dependencies
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#data-dependencies" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Data Dependencies
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#component-diagram" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Component Diagram
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#component-interactions" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Component Interactions
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Component Interactions">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#documentation-generation-flow" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Documentation Generation Flow
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#documentation-build-flow" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Documentation Build Flow
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#documentation-deployment-flow" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Documentation Deployment Flow
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#user-access-flow" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        User Access Flow
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#technology-stack" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Technology Stack
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Technology Stack">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#documentation-generation_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Documentation Generation
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#development-tools" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Development Tools
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#deployment" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Deployment
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#documentation-features_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Documentation Features
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#deployment-considerations" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Deployment Considerations
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Deployment Considerations">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#local-development" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Local Development
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#production-deployment" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Production Deployment
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#build-artifacts" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Build Artifacts
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#maintenance" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Maintenance
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#integration-points" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Integration Points
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Integration Points">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#with-core-library" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        With Core Library
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#with-development-workflow" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        With Development Workflow
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#with-external-services" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        With External Services
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#quality-assurance" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Quality Assurance
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Quality Assurance">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#documentation-testing" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Documentation Testing
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#automated-validation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Automated Validation
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#continuous-improvement" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Continuous Improvement
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+
+<h1 id="c4-component-level-documentation-system">C4 Component Level: Documentation System</h1>
+<h2 id="overview">Overview</h2>
+<ul>
+<li><strong>Name</strong>: Documentation System</li>
+<li><strong>Description</strong>: Automated documentation generation, build, and deployment system for the arlogi logging library</li>
+<li><strong>Type</strong>: Documentation Infrastructure</li>
+<li><strong>Technology</strong>: MkDocs, Material Theme, MkDocstrings, Markdown, Python, Bash</li>
+</ul>
+<h2 id="purpose">Purpose</h2>
+<p>The Documentation System component is responsible for generating, building, and publishing comprehensive technical documentation for the arlogi logging library. It automates the extraction of API documentation from Python source code, provides a modern web-based documentation interface, and includes deployment capabilities for publishing documentation to remote servers.</p>
+<p>This component serves as the bridge between the library's source code and its users, ensuring that API documentation stays synchronized with code changes and provides an intuitive, searchable interface for developers exploring the library's capabilities.</p>
+<p>The system supports multiple documentation types:
+- <strong>API Reference Documentation</strong>: Auto-generated from Python docstrings and type hints
+- <strong>User Guides</strong>: Conceptual documentation for library users
+- <strong>Developer Guides</strong>: Technical documentation for contributors
+- <strong>Configuration Guides</strong>: Setup and customization documentation
+- <strong>Architecture Documentation</strong>: C4 architectural diagrams and design documents</p>
+<h2 id="software-features">Software Features</h2>
+<h3 id="api-documentation-generation">API Documentation Generation</h3>
+<ul>
+<li><strong>Automatic extraction</strong>: Generates API reference documentation from Python source code using MkDocstrings</li>
+<li><strong>Type hints preservation</strong>: Maintains type information and function signatures in documentation</li>
+<li><strong>Class and function indexing</strong>: Automatically identifies and documents all public classes and functions</li>
+<li><strong>Module-level documentation</strong>: Creates dedicated pages for each Python module in the library</li>
+<li><strong>Cross-referencing</strong>: Supports links between related API elements</li>
+</ul>
+<h3 id="documentation-build-system">Documentation Build System</h3>
+<ul>
+<li><strong>Static site generation</strong>: Uses MkDocs to build fast, static HTML documentation sites</li>
+<li><strong>Theme integration</strong>: Leverages Material theme for modern, responsive design</li>
+<li><strong>Search functionality</strong>: Built-in search plugin for full-text documentation search</li>
+<li><strong>Syntax highlighting</strong>: PyMdownX extensions for code highlighting and Mermaid diagram support</li>
+<li><strong>Navigation management</strong>: Automatic generation of hierarchical navigation structures</li>
+</ul>
+<h3 id="developer-tools">Developer Tools</h3>
+<ul>
+<li><strong>Reference page generator</strong>: Python script (<code>gen_ref_pages.py</code>) for automated API documentation creation</li>
+<li><strong>YAML navigation builder</strong>: Generates MkDocs-compatible navigation configuration</li>
+<li><strong>Source code analysis</strong>: Regex-based extraction of classes and functions from Python files</li>
+<li><strong>Markdown generation</strong>: Creates MkDocs-autodoc compatible markdown files</li>
+</ul>
+<h3 id="deployment-automation">Deployment Automation</h3>
+<ul>
+<li><strong>Remote publishing</strong>: Bash script (<code>build_pub.sh</code>) for deploying documentation to remote servers</li>
+<li><strong>Secure transfer</strong>: Uses SSH/rsync for secure file synchronization</li>
+<li><strong>Incremental updates</strong>: Efficiently syncs only changed files to remote server</li>
+<li><strong>Key-based authentication</strong>: Supports SSH key authentication for secure deployments</li>
+</ul>
+<h3 id="documentation-features">Documentation Features</h3>
+<ul>
+<li><strong>Code copy functionality</strong>: GitHub-style code copying for code examples</li>
+<li><strong>Mobile responsive</strong>: Material theme provides mobile-optimized viewing experience</li>
+<li><strong>Print-friendly</strong>: Documentation pages are formatted for printing</li>
+<li><strong>Version-aware</strong>: Structure supports documentation versioning</li>
+<li><strong>Mermaid diagram support</strong>: Renders architecture diagrams directly in documentation</li>
+</ul>
+<h2 id="code-elements">Code Elements</h2>
+<p>This component contains the following code-level elements:</p>
+<ul>
+<li><strong><a href="../c4-code-docs-reference/">c4-code-docs-reference.md</a></strong> - API Reference Documentation</li>
+<li>Documents the auto-generated API reference system</li>
+<li>Covers MkDocstrings integration and configuration</li>
+<li>Describes module documentation structure and navigation</li>
+<li>
+<p>Details reference documentation for all arlogi modules (config, factory, handlers, levels, types)</p>
+</li>
+<li>
+<p><strong><a href="../c4-code-docs-scripts/">c4-code-docs-scripts.md</a></strong> - Documentation Build Scripts</p>
+</li>
+<li>Documents Python scripts for automated documentation generation</li>
+<li>Covers Bash scripts for deployment automation</li>
+<li>Describes functions for extracting classes and functions from source code</li>
+<li>Details workflow for building and publishing documentation</li>
+</ul>
+<h2 id="interfaces">Interfaces</h2>
+<h3 id="command-line-interface-cli">Command Line Interface (CLI)</h3>
+<h4 id="documentation-generation">Documentation Generation</h4>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="c1"># Generate API reference pages from source code</span>
+</span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>python<span class="w"> </span>docs/scripts/gen_ref_pages.py
+</span><span id="__span-0-3"><a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a>
+</span><span id="__span-0-4"><a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a><span class="c1"># Build the complete documentation site</span>
+</span><span id="__span-0-5"><a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a>mkdocs<span class="w"> </span>build
+</span><span id="__span-0-6"><a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a>
+</span><span id="__span-0-7"><a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a><span class="c1"># Serve documentation locally for development</span>
+</span><span id="__span-0-8"><a id="__codelineno-0-8" name="__codelineno-0-8" href="#__codelineno-0-8"></a>mkdocs<span class="w"> </span>serve
+</span></code></pre></div>
+<h4 id="documentation-deployment">Documentation Deployment</h4>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="c1"># Deploy built documentation to remote server</span>
+</span><span id="__span-1-2"><a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a>docs/scripts/build_pub.sh
+</span></code></pre></div>
+<p><strong>Parameters</strong>:
+- None required for generation (uses default paths)
+- Deployment uses pre-configured SSH settings</p>
+<p><strong>Returns</strong>:
+- Generation: Creates markdown files in <code>docs/reference/</code> and prints YAML navigation
+- Build: Creates static HTML site in <code>site/</code> directory
+- Deployment: Syncs files to remote server and provides status messages</p>
+<h3 id="web-interface">Web Interface</h3>
+<h4 id="documentation-site">Documentation Site</h4>
+<ul>
+<li><strong>Protocol</strong>: HTTP/HTTPS</li>
+<li><strong>Access</strong>: <code>http://[server]/arlogi</code> (when deployed)</li>
+<li><strong>Features</strong>:</li>
+<li>Browse API reference by module</li>
+<li>Search across all documentation</li>
+<li>Navigate using hierarchical menu</li>
+<li>View Mermaid architecture diagrams</li>
+<li>Copy code examples with one click</li>
+</ul>
+<h4 id="local-development-server">Local Development Server</h4>
+<ul>
+<li><strong>Protocol</strong>: HTTP</li>
+<li><strong>Access</strong>: <code>http://localhost:8000</code> (default MkDocs serve port)</li>
+<li><strong>Live Reload</strong>: Automatically refreshes on documentation changes</li>
+<li><strong>Purpose</strong>: Preview documentation changes before deployment</li>
+</ul>
+<h3 id="configuration-interface">Configuration Interface</h3>
+<h4 id="mkdocs-configuration-file">MkDocs Configuration File</h4>
+<ul>
+<li><strong>File</strong>: <code>mkdocs.yml</code></li>
+<li><strong>Format</strong>: YAML</li>
+<li><strong>Purpose</strong>: Defines documentation structure, theme, plugins, and navigation</li>
+<li><strong>Key Settings</strong>:</li>
+<li>Site name and description</li>
+<li>Theme configuration (Material theme)</li>
+<li>Plugin settings (MkDocstrings, search)</li>
+<li>Navigation structure</li>
+<li>Markdown extensions</li>
+</ul>
+<h2 id="dependencies">Dependencies</h2>
+<h3 id="components-documented">Components Documented</h3>
+<ul>
+<li><strong>Core Logging Library</strong> (<code>arlogi</code>): All Python modules in <code>src/arlogi/</code> are documented</li>
+<li><code>arlogi.config</code> - Configuration management</li>
+<li><code>arlogi.factory</code> - Logger factory implementations</li>
+<li><code>arlogi.handler_factory</code> - Handler creation utilities</li>
+<li><code>arlogi.handlers</code> - Handler classes</li>
+<li><code>arlogi.levels</code> - Logging levels definitions</li>
+<li><code>arlogi.types</code> - Type definitions and protocols</li>
+</ul>
+<h3 id="external-systems">External Systems</h3>
+<ul>
+<li><strong>MkDocs</strong>: Static site generator for building documentation</li>
+<li>Provides core documentation framework</li>
+<li>Handles markdown processing and site generation</li>
+<li>
+<p>Manages plugins and themes</p>
+</li>
+<li>
+<p><strong>Material Theme for MkDocs</strong>: Modern documentation theme</p>
+</li>
+<li>Provides responsive design</li>
+<li>Implements search functionality</li>
+<li>Offers navigation components</li>
+<li>
+<p>Supports code copying and syntax highlighting</p>
+</li>
+<li>
+<p><strong>MkDocstrings</strong>: Automatic API documentation generation</p>
+</li>
+<li>Extracts docstrings from Python code</li>
+<li>Generates markdown documentation</li>
+<li>Handles cross-references and type hints</li>
+<li>
+<p>Integrates with MkDocs build process</p>
+</li>
+<li>
+<p><strong>PyMdownX Extensions</strong>: Markdown processing extensions</p>
+</li>
+<li>Syntax highlighting for code blocks</li>
+<li>Mermaid diagram rendering</li>
+<li>Advanced markdown features</li>
+</ul>
+<h3 id="infrastructure-dependencies">Infrastructure Dependencies</h3>
+<ul>
+<li><strong>SSH Server</strong>: Remote documentation hosting (192.168.168.5)</li>
+<li>Deployment target for published documentation</li>
+<li>Web server hosting (nginx)</li>
+<li>
+<p>Document root: <code>/opt/c/nginx/html/arlogi</code></p>
+</li>
+<li>
+<p><strong>Development Tools</strong>:</p>
+</li>
+<li>Python 3.x for script execution</li>
+<li>Bash shell for deployment automation</li>
+<li>rsync for file synchronization</li>
+</ul>
+<h3 id="data-dependencies">Data Dependencies</h3>
+<ul>
+<li><strong>Source Code</strong>: Python files in <code>src/arlogi/</code> directory</li>
+<li><strong>Docstrings</strong>: Documentation embedded in source code</li>
+<li><strong>Type Hints</strong>: Type annotations used for API documentation</li>
+<li><strong>Configuration Files</strong>: <code>mkdocs.yml</code>, <code>docs/extra.css</code></li>
+</ul>
+<h2 id="component-diagram">Component Diagram</h2>
+<pre class="mermaid"><code>C4Component
+    title Component Diagram for Documentation System
+
+    Container_Boundary(doc_system, "Documentation System") {
+        Component(gen_ref, "Reference Page Generator", "Python Script", "Generates API reference markdown from source code")
+        Component(mkdocs, "MkDocs Builder", "Static Site Generator", "Builds documentation site from markdown")
+        Component(ref_docs, "API Reference Docs", "Markdown Files", "Auto-generated API documentation")
+        Component(user_docs, "User Documentation", "Markdown Files", "Manual user guides and tutorials")
+        Component(dev_scripts, "Deployment Scripts", "Bash/Python", "Automates documentation deployment")
+    }
+
+    ComponentDb(site, "Built Documentation Site", "Static HTML/CSS/JS", "Deployable documentation website")
+
+    Component_Ext(core_lib, "Core Logging Library", "Python Package", "arlogi library being documented")
+
+    System_Ext(remote_server, "Remote Web Server", "nginx web server")
+    System_Ext(developers, "Developers", "Documentation consumers")
+
+    Rel(core_lib, gen_ref, "Provides source code and docstrings")
+    Rel(gen_ref, ref_docs, "Generates")
+    Rel(user_docs, mkdocs, "Input")
+    Rel(ref_docs, mkdocs, "Input")
+    Rel(mkdocs, site, "Builds")
+    Rel(site, dev_scripts, "Deployment")
+    Rel(dev_scripts, remote_server, "Publishes via SSH/rsync")
+    Rel(remote_server, developers, "Serves documentation")
+
+    UpdateRelStyle(gen_ref, ref_docs, "", "#ff6666", "solid", "2px")
+    UpdateRelStyle(mkdocs, site, "", "#ff6666", "solid", "2px")</code></pre>
+<h2 id="component-interactions">Component Interactions</h2>
+<h3 id="documentation-generation-flow">Documentation Generation Flow</h3>
+<ol>
+<li><strong>Source Code Analysis</strong>: <code>gen_ref_pages.py</code> scans Python source files in <code>src/arlogi/</code></li>
+<li><strong>API Extraction</strong>: Uses regex to identify classes, functions, and their docstrings</li>
+<li><strong>Markdown Generation</strong>: Creates MkDocs-compatible markdown files for each module</li>
+<li><strong>Navigation Creation</strong>: Generates YAML navigation structure for MkDocs configuration</li>
+</ol>
+<h3 id="documentation-build-flow">Documentation Build Flow</h3>
+<ol>
+<li><strong>Input Collection</strong>: MkDocs reads markdown files from <code>docs/</code> directory</li>
+<li><strong>Processing</strong>: Applies theme, plugins, and markdown extensions</li>
+<li><strong>API Documentation</strong>: MkDocstrings generates API reference from inline references</li>
+<li><strong>Site Generation</strong>: Creates static HTML site in <code>site/</code> directory</li>
+<li><strong>Asset Optimization</strong>: Bundles CSS, JavaScript, and images</li>
+</ol>
+<h3 id="documentation-deployment-flow">Documentation Deployment Flow</h3>
+<ol>
+<li><strong>Pre-flight Check</strong>: <code>build_pub.sh</code> verifies SSH connectivity</li>
+<li><strong>File Synchronization</strong>: Uses rsync to efficiently transfer changed files</li>
+<li><strong>Remote Publishing</strong>: Copies files to nginx web server document root</li>
+<li><strong>Verification</strong>: Confirms successful deployment</li>
+</ol>
+<h3 id="user-access-flow">User Access Flow</h3>
+<ol>
+<li><strong>Browse</strong>: Users access documentation via web browser</li>
+<li><strong>Navigation</strong>: Hierarchical menu for exploring documentation</li>
+<li><strong>Search</strong>: Full-text search for finding specific information</li>
+<li><strong>Reference</strong>: View API documentation with type hints and examples</li>
+<li><strong>Copy</strong>: One-click code copying for code examples</li>
+</ol>
+<h2 id="technology-stack">Technology Stack</h2>
+<h3 id="documentation-generation_1">Documentation Generation</h3>
+<ul>
+<li><strong>MkDocs</strong> (v1.5+): Static site generator</li>
+<li><strong>Material Theme</strong>: Modern documentation theme</li>
+<li><strong>MkDocstrings</strong> (v1.0+): Automatic API documentation</li>
+<li><strong>Python</strong> (3.10+): Script execution and code analysis</li>
+<li><strong>Markdown</strong>: Documentation authoring format</li>
+</ul>
+<h3 id="development-tools">Development Tools</h3>
+<ul>
+<li><strong>PyMdown Extensions</strong>: Advanced Markdown features</li>
+<li><strong>Python Standard Library</strong>: <code>re</code>, <code>sys</code>, <code>pathlib</code> for code analysis</li>
+<li><strong>Bash</strong>: Shell scripting for deployment automation</li>
+</ul>
+<h3 id="deployment">Deployment</h3>
+<ul>
+<li><strong>OpenSSH</strong>: Secure remote access</li>
+<li><strong>rsync</strong>: Efficient file synchronization</li>
+<li><strong>nginx</strong>: Web server for hosting documentation</li>
+</ul>
+<h3 id="documentation-features_1">Documentation Features</h3>
+<ul>
+<li><strong>Mermaid.js</strong>: Diagram rendering</li>
+<li><strong>Highlight.js</strong>: Code syntax highlighting</li>
+<li><strong>JavaScript</strong>: Interactive features (search, navigation, code copying)</li>
+</ul>
+<h2 id="deployment-considerations">Deployment Considerations</h2>
+<h3 id="local-development">Local Development</h3>
+<ul>
+<li>Scripts assume execution from repository root directory</li>
+<li>Requires Python 3.x and Bash environment</li>
+<li>MkDocs must be installed in development environment</li>
+<li>Generated files committed to version control for consistency</li>
+</ul>
+<h3 id="production-deployment">Production Deployment</h3>
+<ul>
+<li>Remote server configuration hardcoded in <code>build_pub.sh</code></li>
+<li>SSH key authentication required for automated deployment</li>
+<li>Target directory must exist and have proper permissions</li>
+<li>nginx configuration must point to documentation root</li>
+</ul>
+<h3 id="build-artifacts">Build Artifacts</h3>
+<ul>
+<li><code>site/</code> directory contains complete static site</li>
+<li>Can be deployed to any static web hosting service</li>
+<li>Supports deployment to GitHub Pages, Netlify, or custom servers</li>
+<li>No server-side processing required</li>
+</ul>
+<h3 id="maintenance">Maintenance</h3>
+<ul>
+<li>Documentation should be regenerated when API changes are made</li>
+<li>MkDocs configuration updates require rebuild</li>
+<li>Navigation structure must be manually maintained in <code>mkdocs.yml</code></li>
+<li>Theme customization requires CSS modifications in <code>docs/extra.css</code></li>
+</ul>
+<h2 id="integration-points">Integration Points</h2>
+<h3 id="with-core-library">With Core Library</h3>
+<ul>
+<li><strong>Docstrings</strong>: Source code must have comprehensive docstrings</li>
+<li><strong>Type Hints</strong>: Type annotations improve documentation quality</li>
+<li><strong>Module Structure</strong>: Documentation follows Python module organization</li>
+<li><strong>Examples</strong>: Code examples in docstrings appear in API reference</li>
+</ul>
+<h3 id="with-development-workflow">With Development Workflow</h3>
+<ul>
+<li><strong>CI/CD Integration</strong>: Scripts can be integrated into automated pipelines</li>
+<li><strong>Pre-commit Hooks</strong>: Can generate documentation on code changes</li>
+<li><strong>Version Control</strong>: Generated documentation can be versioned with code</li>
+<li><strong>Code Review</strong>: Documentation updates can be reviewed alongside code</li>
+</ul>
+<h3 id="with-external-services">With External Services</h3>
+<ul>
+<li><strong>Web Hosting</strong>: Can deploy to various static hosting platforms</li>
+<li><strong>CDN</strong>: Built assets can be distributed via CDN</li>
+<li><strong>Analytics</strong>: Can integrate web analytics for usage tracking</li>
+<li><strong>Search</strong>: Can integrate with external search services (Algolia, etc.)</li>
+</ul>
+<h2 id="quality-assurance">Quality Assurance</h2>
+<h3 id="documentation-testing">Documentation Testing</h3>
+<ul>
+<li><strong>Link Checking</strong>: Verify all internal and external links resolve</li>
+<li><strong>Build Verification</strong>: Ensure documentation builds without errors</li>
+<li><strong>Content Review</strong>: Technical accuracy of API documentation</li>
+<li><strong>Accessibility</strong>: Verify documentation meets accessibility standards</li>
+<li><strong>Browser Compatibility</strong>: Test across different browsers and devices</li>
+</ul>
+<h3 id="automated-validation">Automated Validation</h3>
+<ul>
+<li><strong>MkDocs Build</strong>: Catches markdown syntax errors</li>
+<li><strong>MkDocstrings Validation</strong>: Validates docstring format and references</li>
+<li><strong>Script Testing</strong>: Verify generation scripts produce expected output</li>
+<li><strong>Deployment Testing</strong>: Confirm successful remote deployment</li>
+</ul>
+<h3 id="continuous-improvement">Continuous Improvement</h3>
+<ul>
+<li><strong>User Feedback</strong>: Collect feedback on documentation clarity</li>
+<li><strong>Usage Analytics</strong>: Track most-accessed documentation pages</li>
+<li><strong>Search Queries</strong>: Analyze search terms to identify content gaps</li>
+<li><strong>Error Reporting</strong>: Monitor documentation-related error reports</li>
+</ul>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["content.code.copy"], "search": "../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../../assets/javascripts/bundle.79ae519e.min.js"></script>
+      
+    
+  </body>
+</html>

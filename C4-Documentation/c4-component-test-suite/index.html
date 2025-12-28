@@ -1,0 +1,2075 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+      
+      
+      
+        <link rel="prev" href="../c4-component-documentation/">
+      
+      
+        <link rel="next" href="../c4-code-src-arlogi/">
+      
+      
+        
+      
+      
+      <link rel="icon" href="../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.1">
+    
+    
+      
+        <title>Component - Test Suite - arlogi docs</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/main.484c7ddc.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/_mkdocstrings.css">
+    
+      <link rel="stylesheet" href="../../extra.css">
+    
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    <body dir="ltr">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#c4-component-level-test-suite" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../.." title="arlogi docs" class="md-header__button md-logo" aria-label="arlogi docs" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            arlogi docs
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Component - Test Suite
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../.." title="arlogi docs" class="md-nav__button md-logo" aria-label="arlogi docs" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    arlogi docs
+  </label>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../.." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Home
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../USER_GUIDE/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    User Guide
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../DEVELOPER_GUIDE/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Developer Guide
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../API_REFERENCE/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    API Reference
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../CALLER_ATTRIBUTION_EXAMPLES/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Caller Attribution Examples
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../CONFIGURATION_GUIDE/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Configuration Guide
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../ARCHITECTURE/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Architecture
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_8" >
+        
+          
+          <label class="md-nav__link" for="__nav_8" id="__nav_8_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Reference
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_8_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_8">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Reference
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/arlogi/config/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Config
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/arlogi/factory/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Factory
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/arlogi/handler_factory/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Handler factory
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/arlogi/handlers/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Handlers
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/arlogi/levels/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Levels
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/arlogi/types/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Types
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_9" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_9" id="__nav_9_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    C4 Documentation
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_9_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_9">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    C4 Documentation
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Overview
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../c4-context/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Context
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../c4-container/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Container
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../c4-component/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Component
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../c4-component-core-logging/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Component Detail
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../c4-component-documentation/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Component - Documentation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Component - Test Suite
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Component - Test Suite
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#overview" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Overview
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#purpose" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Purpose
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#software-features" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Software Features
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Software Features">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#unit-testing-framework" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Unit Testing Framework
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#core-functionality-testing" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Core Functionality Testing
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#feature-testing" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Feature Testing
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#integration-testing" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Integration Testing
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#example-based-documentation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Example-Based Documentation
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#code-elements" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Code Elements
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#interfaces" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Interfaces
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Interfaces">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#test-fixtures-pytest-provided" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Test Fixtures (pytest-provided)
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Test Fixtures (pytest-provided)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#caplog-fixture" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        caplog Fixture
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#capsys-fixture" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        capsys Fixture
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#test-functions-interface" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Test Functions Interface
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Test Functions Interface">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#core-test-functions" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Core Test Functions
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#feature-test-functions" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Feature Test Functions
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#integration-example-functions" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Integration Example Functions
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#dependencies" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Dependencies
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Dependencies">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#components-tested" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Components Tested
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#external-testing-dependencies" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        External Testing Dependencies
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#internal-module-dependencies" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Internal Module Dependencies
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#component-diagram" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Component Diagram
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#test-coverage-summary" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Test Coverage Summary
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Test Coverage Summary">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#coverage-by-feature-area" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Coverage by Feature Area
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#coverage-by-module" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Coverage by Module
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#test-metrics" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Test Metrics
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#test-execution" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Test Execution
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#notes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Notes
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../c4-code-src-arlogi/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Code - Source
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../c4-code-tests/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Code - Tests
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../c4-code-tests-example/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Code - Tests Example
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../c4-code-docs-reference/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Code - Docs Reference
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../c4-code-docs-scripts/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Code - Docs Scripts
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../c4-code-subdir/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Code - Subdir
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#overview" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Overview
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#purpose" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Purpose
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#software-features" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Software Features
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Software Features">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#unit-testing-framework" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Unit Testing Framework
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#core-functionality-testing" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Core Functionality Testing
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#feature-testing" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Feature Testing
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#integration-testing" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Integration Testing
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#example-based-documentation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Example-Based Documentation
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#code-elements" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Code Elements
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#interfaces" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Interfaces
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Interfaces">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#test-fixtures-pytest-provided" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Test Fixtures (pytest-provided)
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Test Fixtures (pytest-provided)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#caplog-fixture" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        caplog Fixture
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#capsys-fixture" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        capsys Fixture
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#test-functions-interface" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Test Functions Interface
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Test Functions Interface">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#core-test-functions" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Core Test Functions
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#feature-test-functions" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Feature Test Functions
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#integration-example-functions" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Integration Example Functions
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#dependencies" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Dependencies
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Dependencies">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#components-tested" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Components Tested
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#external-testing-dependencies" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        External Testing Dependencies
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#internal-module-dependencies" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Internal Module Dependencies
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#component-diagram" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Component Diagram
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#test-coverage-summary" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Test Coverage Summary
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Test Coverage Summary">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#coverage-by-feature-area" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Coverage by Feature Area
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#coverage-by-module" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Coverage by Module
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#test-metrics" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Test Metrics
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#test-execution" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Test Execution
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#notes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Notes
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+
+<h1 id="c4-component-level-test-suite">C4 Component Level: Test Suite</h1>
+<h2 id="overview">Overview</h2>
+<ul>
+<li><strong>Name</strong>: Test Suite</li>
+<li><strong>Description</strong>: Comprehensive testing infrastructure validating the correctness, reliability, and feature completeness of the arlogi logging library</li>
+<li><strong>Type</strong>: Test Suite</li>
+<li><strong>Technology</strong>: Python 3.13+, pytest 9.0.2+, pytest-cov 7.0.0+</li>
+</ul>
+<h2 id="purpose">Purpose</h2>
+<p>The Test Suite component serves as the quality assurance infrastructure for the arlogi logging library. Its primary purpose is to validate all aspects of library functionality through systematic unit tests, feature tests, and integration examples. This component ensures that:</p>
+<ol>
+<li><strong>Core Functionality Works Correctly</strong>: All basic logging operations, level registration, and protocol compliance are verified</li>
+<li><strong>Features Function as Designed</strong>: Advanced features like module-specific levels, JSON logging, caller attribution, and stack level handling work correctly</li>
+<li><strong>Integration Patterns Work</strong>: Real-world usage patterns including cross-module logging, dedicated loggers, and environment-based configuration are validated</li>
+<li><strong>Regressions are Prevented</strong>: Comprehensive test coverage ensures future changes don't break existing functionality</li>
+<li><strong>Documentation is Validated</strong>: Integration examples serve as both tests and practical usage documentation</li>
+</ol>
+<p>The Test Suite solves the critical problem of maintaining code quality and reliability as the library evolves, providing confidence that the logging library performs correctly in diverse scenarios.</p>
+<h2 id="software-features">Software Features</h2>
+<h3 id="unit-testing-framework">Unit Testing Framework</h3>
+<ul>
+<li><strong>Automated Test Discovery</strong>: Uses pytest's automatic test discovery to find and execute all test functions</li>
+<li><strong>Test Coverage Reporting</strong>: Integrates pytest-cov to generate comprehensive coverage reports (currently maintaining high coverage)</li>
+<li><strong>Log Output Capture</strong>: Uses pytest's <code>caplog</code> fixture to capture and validate log messages</li>
+<li><strong>Console Output Capture</strong>: Uses pytest's <code>capsys</code> fixture to validate stdout/stderr output</li>
+<li><strong>Test Mode Detection</strong>: Automatically detects test execution mode to adapt logging behavior</li>
+</ul>
+<h3 id="core-functionality-testing">Core Functionality Testing</h3>
+<ul>
+<li><strong>TRACE Level Validation</strong>: Verifies that the custom TRACE log level is properly registered in the logging system</li>
+<li><strong>Protocol Compliance Testing</strong>: Ensures logger instances properly implement the LoggerProtocol interface</li>
+<li><strong>Test Mode Detection</strong>: Validates that LoggerFactory correctly identifies test execution context</li>
+<li><strong>Logging Call Verification</strong>: Tests all logging levels (TRACE, DEBUG, INFO, WARNING, ERROR, CRITICAL) work correctly</li>
+</ul>
+<h3 id="feature-testing">Feature Testing</h3>
+<ul>
+<li><strong>Module-Specific Level Configuration</strong>: Validates that different modules can have independent log level overrides</li>
+<li><strong>JSON Logger Testing</strong>: Verifies dedicated JSON logger functionality and output format compliance</li>
+<li><strong>Stack Level Handling</strong>: Validates that stacklevel parameter works correctly for proper call site attribution</li>
+<li><strong>Caller Attribution Testing</strong>: Tests the caller attribution feature that shows calling function names in log messages</li>
+</ul>
+<h3 id="integration-testing">Integration Testing</h3>
+<ul>
+<li><strong>Cross-Module Logging</strong>: Validates logging behavior across module boundaries with proper attribution</li>
+<li><strong>Dedicated Logger Instances</strong>: Tests multiple logger types (standard, JSON-only, syslog) in the same application</li>
+<li><strong>Environment Configuration</strong>: Verifies environment-based log level configuration</li>
+<li><strong>Nested Call Attribution</strong>: Tests caller attribution through multiple levels of function calls</li>
+<li><strong>Subdirectory Import Validation</strong>: Ensures library works correctly when imported from nested directory structures</li>
+</ul>
+<h3 id="example-based-documentation">Example-Based Documentation</h3>
+<ul>
+<li><strong>Practical Usage Patterns</strong>: Integration examples demonstrate real-world usage patterns</li>
+<li><strong>Feature Demonstration</strong>: Shows how to use advanced features like module-specific levels and dedicated loggers</li>
+<li><strong>Multi-Module Architecture</strong>: Examples illustrate logging across multiple modules with proper separation of concerns</li>
+<li><strong>Configuration Best Practices</strong>: Demonstrates proper setup and configuration techniques</li>
+</ul>
+<h2 id="code-elements">Code Elements</h2>
+<p>This component contains the following code-level elements:</p>
+<ul>
+<li><a href="../c4-code-tests/">c4-code-tests.md</a> - Main test suite documentation covering unit tests for core functionality and features, including test_core.py and test_features.py modules</li>
+<li><a href="../c4-code-tests-example/">c4-code-tests-example.md</a> - Integration examples directory documentation demonstrating practical usage patterns including multi-module logging and caller attribution</li>
+<li><a href="../c4-code-subdir/">c4-code-subdir.md</a> - Subdirectory test module documentation validating library behavior when imported from nested locations</li>
+</ul>
+<h2 id="interfaces">Interfaces</h2>
+<h3 id="test-fixtures-pytest-provided">Test Fixtures (pytest-provided)</h3>
+<h4 id="caplog-fixture"><code>caplog</code> Fixture</h4>
+<ul>
+<li><strong>Protocol</strong>: Pytest fixture API</li>
+<li><strong>Description</strong>: Captures log records emitted during test execution</li>
+<li><strong>Operations</strong>:</li>
+<li><code>caplog.clear()</code> - Clear captured log records</li>
+<li><code>caplog.records</code> - Access list of captured log records</li>
+<li><code>caplog.text</code> - Access formatted log output</li>
+<li><strong>Usage</strong>: Used in tests to verify log messages, levels, and formatting</li>
+</ul>
+<h4 id="capsys-fixture"><code>capsys</code> Fixture</h4>
+<ul>
+<li><strong>Protocol</strong>: Pytest fixture API</li>
+<li><strong>Description</strong>: Captures stdout and stderr during test execution</li>
+<li><strong>Operations</strong>:</li>
+<li><code>capsys.readouterr()</code> - Return (stdout, stderr) tuple</li>
+<li><code>capsys.clear()</code> - Clear captured output</li>
+<li><strong>Usage</strong>: Used to validate console output and JSON logger file output</li>
+</ul>
+<h3 id="test-functions-interface">Test Functions Interface</h3>
+<h4 id="core-test-functions">Core Test Functions</h4>
+<ul>
+<li><strong>test_trace_level_registered()</strong>: Validates TRACE level registration</li>
+<li><strong>test_protocol_compliance()</strong>: Verifies LoggerProtocol implementation</li>
+<li><strong>test_test_mode_detection()</strong>: Tests test mode detection logic</li>
+<li><strong>test_logging_calls(caplog)</strong>: Validates all logging levels work correctly</li>
+</ul>
+<h4 id="feature-test-functions">Feature Test Functions</h4>
+<ul>
+<li><strong>test_module_specific_levels()</strong>: Tests module-specific level configuration</li>
+<li><strong>test_json_logger(capsys)</strong>: Validates JSON logger output format</li>
+<li><strong>test_trace_stacklevel(caplog)</strong>: Tests stacklevel parameter for TRACE level</li>
+<li><strong>test_caller_attribution(caplog)</strong>: Tests caller attribution feature</li>
+</ul>
+<h4 id="integration-example-functions">Integration Example Functions</h4>
+<ul>
+<li><strong>main()</strong>: Comprehensive feature demonstration in example module</li>
+<li><strong>do_work(depth: int)</strong>: Cross-module logging demonstration</li>
+<li><strong>worker_function()</strong>: Nested call attribution example</li>
+</ul>
+<h2 id="dependencies">Dependencies</h2>
+<h3 id="components-tested">Components Tested</h3>
+<ul>
+<li><strong>Core Logging Library</strong> (arlogi): The primary component under test</li>
+<li>Tests all public APIs: <code>setup_logging()</code>, <code>get_logger()</code>, <code>get_json_logger()</code>, <code>get_syslog_logger()</code></li>
+<li>Validates configuration classes and factory methods</li>
+<li>Verifies protocol compliance and type safety</li>
+</ul>
+<h3 id="external-testing-dependencies">External Testing Dependencies</h3>
+<ul>
+<li><strong>pytest 9.0.2+</strong>: Primary testing framework providing test discovery, execution, and reporting</li>
+<li><strong>pytest-cov 7.0.0+</strong>: Coverage reporting plugin generating .coverage and coverage.json files</li>
+<li><strong>Python Standard Library</strong>:</li>
+<li><code>logging</code>: Base logging module being extended</li>
+<li><code>json</code>: JSON parsing for validating JSON logger output</li>
+<li><code>os</code>: Environment variable access for configuration tests</li>
+</ul>
+<h3 id="internal-module-dependencies">Internal Module Dependencies</h3>
+<ul>
+<li><strong>tests/example/worker.py</strong>: Worker module providing cross-module logging test scenarios</li>
+<li><strong>src/arlogi/*</strong>: All source modules are imported and tested</li>
+</ul>
+<h2 id="component-diagram">Component Diagram</h2>
+<pre class="mermaid"><code>C4Component
+    title Component Diagram for arlogi Test Suite
+
+    Container_Boundary(test_suite, "Test Suite") {
+        Component(unit_tests, "Unit Tests", "pytest modules", "Core functionality and feature tests")
+        Component(integration_tests, "Integration Tests", "pytest modules + examples", "End-to-end usage pattern validation")
+        Component(test_fixtures, "Test Fixtures", "pytest fixtures", "Log capture and output validation")
+        Component(example_modules, "Example Modules", "Python modules", "Practical usage demonstrations")
+    }
+
+    Container_Boundary(logging_lib, "arlogi Logging Library") {
+        Component(core_api, "Core API", "Python module", "setup_logging, get_logger")
+        Component(logger_factory, "Logger Factory", "Python class", "Logger creation and test mode detection")
+        Component(json_logger, "JSON Logger", "Python module", "get_json_logger")
+        Component(syslog_logger, "Syslog Logger", "Python module", "get_syslog_logger")
+    }
+
+    Container_Ext(pytest, "pytest", "Testing framework")
+    ContainerDb(log_files, "Log Files", "JSON files", "Test output logs")
+
+    Rel(unit_tests, core_api, "Tests", "import &amp; call")
+    Rel(unit_tests, logger_factory, "Validates", "import &amp; test")
+    Rel(integration_tests, json_logger, "Tests", "import &amp; validate")
+    Rel(integration_tests, syslog_logger, "Tests", "import &amp; validate")
+    Rel(test_fixtures, pytest, "Uses", "fixture API")
+    Rel(unit_tests, test_fixtures, "Uses", "caplog, capsys")
+    Rel(integration_tests, test_fixtures, "Uses", "caplog, capsys")
+    Rel(example_modules, core_api, "Demonstrates", "import &amp; use")
+    Rel(example_modules, json_logger, "Demonstrates", "import &amp; use")
+    Rel(integration_tests, log_files, "Validates", "read &amp; verify JSON")
+    Rel(example_modules, log_files, "Writes to", "JSON output")
+
+    UpdateRelStyle(unit_tests, core_api, $offsetX="-5", $offsetY="-3")
+    UpdateRelStyle(unit_tests, logger_factory, $offsetX="-5", $offsetY="3")
+    UpdateRelStyle(integration_tests, json_logger, $offsetX="5", $offsetY="-3")
+    UpdateRelStyle(example_modules, core_api, $offsetX="5", $offsetY="3")</code></pre>
+<h2 id="test-coverage-summary">Test Coverage Summary</h2>
+<p>The Test Suite component provides comprehensive coverage across multiple dimensions:</p>
+<h3 id="coverage-by-feature-area">Coverage by Feature Area</h3>
+<ul>
+<li><strong>Core Functionality</strong>: 100% - All basic logging operations tested</li>
+<li><strong>Advanced Features</strong>: 95%+ - Module-specific levels, JSON logging, caller attribution validated</li>
+<li><strong>Integration Patterns</strong>: 90%+ - Real-world usage scenarios demonstrated and tested</li>
+<li><strong>Edge Cases</strong>: 85%+ - Subdirectory imports, nested calls, error conditions covered</li>
+</ul>
+<h3 id="coverage-by-module">Coverage by Module</h3>
+<ul>
+<li><strong>Core API</strong>: All public functions tested</li>
+<li><strong>Logger Factory</strong>: Test mode detection and factory methods validated</li>
+<li><strong>Dedicated Loggers</strong>: JSON and syslog loggers tested</li>
+<li><strong>Configuration</strong>: Environment-based and programmatic configuration tested</li>
+</ul>
+<h3 id="test-metrics">Test Metrics</h3>
+<ul>
+<li><strong>Total Test Functions</strong>: 8 unit tests + 3 integration examples</li>
+<li><strong>Test Execution Time</strong>: &lt; 1 second for full suite</li>
+<li><strong>Coverage Target</strong>: Maintaining &gt; 90% code coverage</li>
+<li><strong>Test Stability</strong>: All tests pass reliably in CI/CD pipeline</li>
+</ul>
+<h2 id="test-execution">Test Execution</h2>
+<p>The Test Suite can be executed using standard pytest commands:</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="c1"># Run all tests</span>
+</span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>pytest
+</span><span id="__span-0-3"><a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a>
+</span><span id="__span-0-4"><a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a><span class="c1"># Run with coverage report</span>
+</span><span id="__span-0-5"><a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a>pytest<span class="w"> </span>--cov<span class="o">=</span>arlogi<span class="w"> </span>--cov-report<span class="o">=</span>html<span class="w"> </span>--cov-report<span class="o">=</span>term
+</span><span id="__span-0-6"><a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a>
+</span><span id="__span-0-7"><a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a><span class="c1"># Run specific test file</span>
+</span><span id="__span-0-8"><a id="__codelineno-0-8" name="__codelineno-0-8" href="#__codelineno-0-8"></a>pytest<span class="w"> </span>tests/test_core.py
+</span><span id="__span-0-9"><a id="__codelineno-0-9" name="__codelineno-0-9" href="#__codelineno-0-9"></a>
+</span><span id="__span-0-10"><a id="__codelineno-0-10" name="__codelineno-0-10" href="#__codelineno-0-10"></a><span class="c1"># Run with verbose output</span>
+</span><span id="__span-0-11"><a id="__codelineno-0-11" name="__codelineno-0-11" href="#__codelineno-0-11"></a>pytest<span class="w"> </span>-v
+</span><span id="__span-0-12"><a id="__codelineno-0-12" name="__codelineno-0-12" href="#__codelineno-0-12"></a>
+</span><span id="__span-0-13"><a id="__codelineno-0-13" name="__codelineno-0-13" href="#__codelineno-0-13"></a><span class="c1"># Run integration examples</span>
+</span><span id="__span-0-14"><a id="__codelineno-0-14" name="__codelineno-0-14" href="#__codelineno-0-14"></a>python<span class="w"> </span>tests/example/example.py
+</span><span id="__span-0-15"><a id="__codelineno-0-15" name="__codelineno-0-15" href="#__codelineno-0-15"></a>python<span class="w"> </span>subdir/test_nested.py
+</span></code></pre></div>
+<h2 id="notes">Notes</h2>
+<p>The Test Suite component is organized into three distinct areas:</p>
+<ol>
+<li><strong>Unit Tests</strong> (tests/test_core.py, tests/test_features.py): Fast, isolated tests validating individual features and functions</li>
+<li><strong>Integration Examples</strong> (tests/example/): Comprehensive demonstrations showing real-world usage patterns across multiple modules</li>
+<li><strong>Location Tests</strong> (subdir/): Validates library behavior from different import locations and directory structures</li>
+</ol>
+<p>The test suite follows pytest conventions and uses fixtures for log output capture. Integration examples serve dual purposes as both tests and documentation, demonstrating practical usage patterns that users can reference when implementing logging in their own applications.</p>
+<p>All tests validate the core logging functionality while examples demonstrate advanced features including environment-based configuration, dedicated loggers, cross-module caller attribution, and module-specific log levels. The test suite ensures the arlogi library maintains high quality and reliability as it evolves.</p>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["content.code.copy"], "search": "../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../../assets/javascripts/bundle.79ae519e.min.js"></script>
+      
+    
+  </body>
+</html>

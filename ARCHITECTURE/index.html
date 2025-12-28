@@ -1,0 +1,2744 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+      
+      
+      
+        <link rel="prev" href="../CONFIGURATION_GUIDE/">
+      
+      
+        <link rel="next" href="../reference/arlogi/config/">
+      
+      
+        
+      
+      
+      <link rel="icon" href="../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.1">
+    
+    
+      
+        <title>Architecture - arlogi docs</title>
+      
+    
+    
+      <link rel="stylesheet" href="../assets/stylesheets/main.484c7ddc.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../assets/_mkdocstrings.css">
+    
+      <link rel="stylesheet" href="../extra.css">
+    
+    <script>__md_scope=new URL("..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    <body dir="ltr">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#arlogi-architecture-documentation" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href=".." title="arlogi docs" class="md-header__button md-logo" aria-label="arlogi docs" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            arlogi docs
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Architecture
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href=".." title="arlogi docs" class="md-nav__button md-logo" aria-label="arlogi docs" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    arlogi docs
+  </label>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href=".." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Home
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../USER_GUIDE/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    User Guide
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../DEVELOPER_GUIDE/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Developer Guide
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../API_REFERENCE/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    API Reference
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../CALLER_ATTRIBUTION_EXAMPLES/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Caller Attribution Examples
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../CONFIGURATION_GUIDE/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Configuration Guide
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Architecture
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Architecture
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#table-of-contents" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Table of Contents
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#system-overview" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        System Overview
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="System Overview">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#technology-stack" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Technology Stack
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#architecture-diagrams" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Architecture Diagrams
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Architecture Diagrams">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#c4-context-diagram" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        C4 Context Diagram
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#c4-container-diagram" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        C4 Container Diagram
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#component-dependency-diagram" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Component Dependency Diagram
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#sequence-diagram-logging-flow" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Sequence Diagram: Logging Flow
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#class-diagram" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Class Diagram
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#design-patterns" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Design Patterns
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Design Patterns">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#factory-pattern" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Factory Pattern
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#builder-pattern" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Builder Pattern
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#protocol-pattern" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Protocol Pattern
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#strategy-pattern" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Strategy Pattern
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#component-reference" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Component Reference
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Component Reference">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#core-modules" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Core Modules
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#file-structure" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        File Structure
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#data-flow" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Data Flow
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Data Flow">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#initialization-flow" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Initialization Flow
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#logging-call-flow" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Logging Call Flow
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#extensibility" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Extensibility
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Extensibility">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#adding-custom-handlers" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Adding Custom Handlers
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#adding-custom-log-levels" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Adding Custom Log Levels
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#custom-configuration-sources" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Custom Configuration Sources
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#performance-considerations" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Performance Considerations
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Performance Considerations">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#caller-attribution-overhead" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Caller Attribution Overhead
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#memory-usage" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Memory Usage
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#error-handling-strategy" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Error Handling Strategy
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Error Handling Strategy">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#graceful-degradation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Graceful Degradation
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#error-boundaries" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Error Boundaries
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#testing-strategy" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Testing Strategy
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Testing Strategy">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#test-mode-detection" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Test Mode Detection
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#version-compatibility" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Version Compatibility
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#future-enhancements" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Future Enhancements
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Future Enhancements">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#planned-features" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Planned Features
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#extension-points" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Extension Points
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#references" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        References
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_8" >
+        
+          
+          <label class="md-nav__link" for="__nav_8" id="__nav_8_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Reference
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_8_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_8">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Reference
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../reference/arlogi/config/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Config
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../reference/arlogi/factory/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Factory
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../reference/arlogi/handler_factory/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Handler factory
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../reference/arlogi/handlers/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Handlers
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../reference/arlogi/levels/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Levels
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../reference/arlogi/types/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Types
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_9" >
+        
+          
+          <label class="md-nav__link" for="__nav_9" id="__nav_9_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    C4 Documentation
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_9_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_9">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    C4 Documentation
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../C4-Documentation/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Overview
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../C4-Documentation/c4-context/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Context
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../C4-Documentation/c4-container/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Container
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../C4-Documentation/c4-component/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Component
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../C4-Documentation/c4-component-core-logging/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Component Detail
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../C4-Documentation/c4-component-documentation/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Component - Documentation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../C4-Documentation/c4-component-test-suite/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Component - Test Suite
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../C4-Documentation/c4-code-src-arlogi/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Code - Source
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../C4-Documentation/c4-code-tests/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Code - Tests
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../C4-Documentation/c4-code-tests-example/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Code - Tests Example
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../C4-Documentation/c4-code-docs-reference/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Code - Docs Reference
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../C4-Documentation/c4-code-docs-scripts/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Code - Docs Scripts
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../C4-Documentation/c4-code-subdir/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Code - Subdir
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#table-of-contents" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Table of Contents
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#system-overview" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        System Overview
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="System Overview">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#technology-stack" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Technology Stack
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#architecture-diagrams" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Architecture Diagrams
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Architecture Diagrams">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#c4-context-diagram" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        C4 Context Diagram
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#c4-container-diagram" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        C4 Container Diagram
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#component-dependency-diagram" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Component Dependency Diagram
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#sequence-diagram-logging-flow" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Sequence Diagram: Logging Flow
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#class-diagram" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Class Diagram
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#design-patterns" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Design Patterns
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Design Patterns">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#factory-pattern" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Factory Pattern
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#builder-pattern" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Builder Pattern
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#protocol-pattern" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Protocol Pattern
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#strategy-pattern" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Strategy Pattern
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#component-reference" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Component Reference
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Component Reference">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#core-modules" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Core Modules
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#file-structure" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        File Structure
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#data-flow" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Data Flow
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Data Flow">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#initialization-flow" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Initialization Flow
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#logging-call-flow" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Logging Call Flow
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#extensibility" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Extensibility
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Extensibility">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#adding-custom-handlers" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Adding Custom Handlers
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#adding-custom-log-levels" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Adding Custom Log Levels
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#custom-configuration-sources" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Custom Configuration Sources
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#performance-considerations" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Performance Considerations
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Performance Considerations">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#caller-attribution-overhead" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Caller Attribution Overhead
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#memory-usage" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Memory Usage
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#error-handling-strategy" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Error Handling Strategy
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Error Handling Strategy">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#graceful-degradation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Graceful Degradation
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#error-boundaries" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Error Boundaries
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#testing-strategy" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Testing Strategy
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Testing Strategy">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#test-mode-detection" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Test Mode Detection
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#version-compatibility" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Version Compatibility
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#future-enhancements" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Future Enhancements
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Future Enhancements">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#planned-features" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Planned Features
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#extension-points" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Extension Points
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#references" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        References
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+
+<h1 id="arlogi-architecture-documentation">Arlogi Architecture Documentation</h1>
+<p>This document describes the architecture, design patterns, and internal structure of the arlogi logging library.</p>
+<hr />
+<h2 id="table-of-contents">Table of Contents</h2>
+<ul>
+<li><a href="#system-overview">System Overview</a></li>
+<li><a href="#architecture-diagrams">Architecture Diagrams</a></li>
+<li><a href="#design-patterns">Design Patterns</a></li>
+<li><a href="#component-reference">Component Reference</a></li>
+<li><a href="#data-flow">Data Flow</a></li>
+<li><a href="#extensibility">Extensibility</a></li>
+</ul>
+<hr />
+<h2 id="system-overview">System Overview</h2>
+<p>Arlogi is a Python logging library built on top of the standard <code>logging</code> module. It provides:</p>
+<ul>
+<li><strong>Custom TRACE level</strong> (below DEBUG) for ultra-detailed logging</li>
+<li><strong>Caller attribution</strong> via stack frame inspection</li>
+<li><strong>Multiple output handlers</strong>: Rich console, JSON files, Syslog</li>
+<li><strong>Type-safe configuration</strong> via dataclasses</li>
+<li><strong>Factory pattern</strong> for handler creation</li>
+</ul>
+<h3 id="technology-stack">Technology Stack</h3>
+<table>
+<thead>
+<tr>
+<th>Component</th>
+<th>Technology</th>
+<th>Purpose</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Core Logging</td>
+<td><code>logging</code> module</td>
+<td>Python standard library foundation</td>
+</tr>
+<tr>
+<td>Console Output</td>
+<td><code>rich</code></td>
+<td>Premium colored terminal output</td>
+</tr>
+<tr>
+<td>Type Safety</td>
+<td><code>typing.Protocol</code></td>
+<td>Runtime-checkable type hints</td>
+</tr>
+<tr>
+<td>Configuration</td>
+<td><code>dataclasses</code></td>
+<td>Immutable configuration objects</td>
+</tr>
+<tr>
+<td>Structured Logs</td>
+<td><code>json</code></td>
+<td>Machine-readable log output</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="architecture-diagrams">Architecture Diagrams</h2>
+<h3 id="c4-context-diagram">C4 Context Diagram</h3>
+<pre class="mermaid"><code>graph TB
+    subgraph "Your Application"
+        App[Application Code]
+    end
+
+    subgraph "arlogi"
+        API[Public API&lt;br/&gt;setup_logging, get_logger]
+        Logger[LoggerFactory&lt;br/&gt;TraceLogger]
+        Handlers[Handlers&lt;br/&gt;Console, JSON, Syslog]
+    end
+
+    subgraph "External Systems"
+        Console[Terminal]
+        Files[Log Files]
+        Syslog[Syslog Server]
+    end
+
+    App --&gt; API
+    API --&gt; Logger
+    Logger --&gt; Handlers
+    Handlers --&gt; Console
+    Handlers --&gt; Files
+    Handlers --&gt; Syslog</code></pre>
+<h3 id="c4-container-diagram">C4 Container Diagram</h3>
+<pre class="mermaid"><code>graph TB
+    subgraph "arlogi Library"
+        subgraph "Public API Layer"
+            Init[__init__.py&lt;br/&gt;Public Exports]
+            Factory[factory.py&lt;br/&gt;LoggerFactory]
+        end
+
+        subgraph "Configuration Layer"
+            Config[config.py&lt;br/&gt;LoggingConfig]
+            HF[handler_factory.py&lt;br/&gt;HandlerFactory]
+        end
+
+        subgraph "Core Layer"
+            Levels[levels.py&lt;br/&gt;TRACE Registration]
+            Types[types.py&lt;br/&gt;LoggerProtocol]
+            TraceLog[TraceLogger&lt;br/&gt;Caller Attribution]
+        end
+
+        subgraph "Handlers Layer"
+            Console[ColoredConsoleHandler&lt;br/&gt;Rich Output]
+            JSON[JSONHandler&lt;br/&gt;Structured Logs]
+            SyslogHandler[ArlogiSyslogHandler&lt;br/&gt;Syslog Output]
+        end
+    end
+
+    Init --&gt; Factory
+    Factory --&gt; Config
+    Factory --&gt; HF
+    Factory --&gt; TraceLog
+    HF --&gt; Console
+    HF --&gt; JSON
+    HF --&gt; SyslogHandler
+    TraceLog --&gt; Types
+    TraceLog --&gt; Levels</code></pre>
+<h3 id="component-dependency-diagram">Component Dependency Diagram</h3>
+<pre class="mermaid"><code>graph LR
+    subgraph "Public Module"
+        Init[__init__.py]
+    end
+
+    subgraph "Core Modules"
+        Factory[factory.py]
+        Config[config.py]
+        HandlerFac[handler_factory.py]
+        Handlers[handlers.py]
+        Levels[levels.py]
+        Types[types.py]
+    end
+
+    Init --&gt; Factory
+    Init --&gt; Config
+    Init --&gt; HandlerFac
+    Init --&gt; Levels
+    Init --&gt; Types
+
+    Factory --&gt; Config
+    Factory --&gt; HandlerFac
+    Factory --&gt; Handlers
+    Factory --&gt; Levels
+
+    HandlerFac --&gt; Handlers</code></pre>
+<h3 id="sequence-diagram-logging-flow">Sequence Diagram: Logging Flow</h3>
+<pre class="mermaid"><code>sequenceDiagram
+    participant App as Application
+    participant Logger as TraceLogger
+    participant Process as _process_params
+    participant Handler as ColoredConsoleHandler
+    participant Rich as RichHandler
+    participant Console as Terminal
+
+    App-&gt;&gt;Logger: logger.info("msg", from_=1)
+    Logger-&gt;&gt;Process: _process_params(msg, kwargs)
+    Process-&gt;&gt;Process: Extract from_ parameter
+    Process-&gt;&gt;Process: Inspect stack frames
+    Process-&gt;&gt;Process: Add attribution suffix
+    Process--&gt;&gt;Logger: (msg, kwargs)
+    Logger-&gt;&gt;Handler: emit(record)
+    Handler-&gt;&gt;Handler: render(record, message)
+    Handler-&gt;&gt;Handler: Calculate relative path
+    Handler-&gt;&gt;Rich: _log_render(...)
+    Rich-&gt;&gt;Console: Print formatted output</code></pre>
+<h3 id="class-diagram">Class Diagram</h3>
+<pre class="mermaid"><code>classDiagram
+    class LoggingConfig {
+        &lt;&lt;frozen dataclass&gt;&gt;
+        +int|str level
+        +dict module_levels
+        +str json_file_name
+        +bool json_file_only
+        +bool use_syslog
+        +str|tuple syslog_address
+        +bool show_time
+        +bool show_level
+        +bool show_path
+        +resolved_level() int
+        +show_console() bool
+        +has_json_output() bool
+        +from_kwargs(**kwargs) LoggingConfig
+        +to_dict() dict
+    }
+
+    class HandlerFactory {
+        &lt;&lt;factory&gt;&gt;
+        +create_console(config) ColoredConsoleHandler
+        +create_json_stream() JSONHandler
+        +create_json_file(config) JSONFileHandler
+        +create_json_handler(config) Handler
+        +create_syslog(config) ArlogiSyslogHandler
+        +create_handlers(config) List~Handler~
+    }
+
+    class LoggerFactory {
+        &lt;&lt;factory&gt;&gt;
+        _initialized: bool
+        _global_logger: TraceLogger|None
+        +setup(**kwargs) None
+        +get_logger(name, level) LoggerProtocol
+        +get_json_logger(name, file) LoggerProtocol
+        +get_syslog_logger(name, addr) LoggerProtocol
+        +is_test_mode() bool
+        -_apply_configuration(config) None
+        -_initialize_trace_level() None
+        -_configure_root_logger(config) None
+        -_clear_and_add_handlers(config) None
+        -_configure_module_levels(config) None
+    }
+
+    class TraceLogger {
+        extends Logger
+        +_get_caller_info(depth) tuple
+        +_process_params(msg, kwargs) tuple
+        +trace(msg, *args, **kwargs) None
+        +debug(msg, *args, **kwargs) None
+        +info(msg, *args, **kwargs) None
+        +warning(msg, *args, **kwargs) None
+        +error(msg, *args, **kwargs) None
+        +critical(msg, *args, **kwargs) None
+        +exception(msg, *args, **kwargs) None
+        +log(level, msg, *args, **kwargs) None
+    }
+
+    class LoggerProtocol {
+        &lt;&lt;protocol&gt;&gt;
+        +trace(msg, *args, **kwargs) None
+        +debug(msg, *args, **kwargs) None
+        +info(msg, *args, **kwargs) None
+        +warning(msg, *args, **kwargs) None
+        +error(msg, *args, **kwargs) None
+        +critical(msg, *args, **kwargs) None
+        +exception(msg, *args, **kwargs) None
+        +log(level, msg, *args, **kwargs) None
+        +setLevel(level) None
+        +isEnabledFor(level) bool
+        +getEffectiveLevel() int
+        +name: str
+    }
+
+    class ColoredConsoleHandler {
+        extends RichHandler
+        -level_styles: dict
+        -project_root: str
+        +_find_project_root() str
+        +render(record, traceback, message) Any
+        +get_level_text(record) Any
+        +render_message(record, message) Any
+    }
+
+    class JSONHandler {
+        extends StreamHandler
+    }
+
+    class JSONFileHandler {
+        extends FileHandler
+    }
+
+    class ArlogiSyslogHandler {
+        extends SysLogHandler
+    }
+
+    LoggingConfig ..&gt; HandlerFactory : uses
+    LoggingConfig ..&gt; LoggerFactory : uses
+    LoggerFactory ..&gt; HandlerFactory : uses
+    LoggerFactory ..&gt; TraceLogger : creates
+    TraceLogger ..|&gt; LoggerProtocol : implements
+    HandlerFactory ..&gt; ColoredConsoleHandler : creates
+    HandlerFactory ..&gt; JSONHandler : creates
+    HandlerFactory ..&gt; JSONFileHandler : creates
+    HandlerFactory ..&gt; ArlogiSyslogHandler : creates</code></pre>
+<hr />
+<h2 id="design-patterns">Design Patterns</h2>
+<h3 id="factory-pattern">Factory Pattern</h3>
+<p><strong>HandlerFactory</strong> encapsulates handler creation logic:</p>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="c1"># Instead of direct instantiation</span>
+</span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a><span class="n">handler</span> <span class="o">=</span> <span class="n">ColoredConsoleHandler</span><span class="p">(</span><span class="n">show_time</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</span><span id="__span-0-3"><a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a>
+</span><span id="__span-0-4"><a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a><span class="c1"># Use factory for consistency and testability</span>
+</span><span id="__span-0-5"><a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a><span class="n">handler</span> <span class="o">=</span> <span class="n">HandlerFactory</span><span class="o">.</span><span class="n">create_console</span><span class="p">(</span><span class="n">config</span><span class="p">)</span>
+</span></code></pre></div>
+<p><strong>Benefits:</strong></p>
+<ul>
+<li>Single responsibility per factory method</li>
+<li>Easy to add new handler types</li>
+<li>Simplified testing with mock factories</li>
+</ul>
+<h3 id="builder-pattern">Builder Pattern</h3>
+<p><strong>LoggingConfig.from_kwargs()</strong> provides flexible configuration:</p>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="c1"># Build configuration incrementally</span>
+</span><span id="__span-1-2"><a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a><span class="n">config</span> <span class="o">=</span> <span class="n">LoggingConfig</span><span class="o">.</span><span class="n">from_kwargs</span><span class="p">(</span>
+</span><span id="__span-1-3"><a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a>    <span class="n">level</span><span class="o">=</span><span class="s2">&quot;INFO&quot;</span><span class="p">,</span>
+</span><span id="__span-1-4"><a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a>    <span class="n">module_levels</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;app.db&quot;</span><span class="p">:</span> <span class="s2">&quot;DEBUG&quot;</span><span class="p">}</span>
+</span><span id="__span-1-5"><a id="__codelineno-1-5" name="__codelineno-1-5" href="#__codelineno-1-5"></a><span class="p">)</span>
+</span></code></pre></div>
+<h3 id="protocol-pattern">Protocol Pattern</h3>
+<p><strong>LoggerProtocol</strong> defines the logger interface:</p>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-2-1"><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a><span class="nd">@runtime_checkable</span>
+</span><span id="__span-2-2"><a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a><span class="k">class</span><span class="w"> </span><span class="nc">LoggerProtocol</span><span class="p">(</span><span class="n">Protocol</span><span class="p">):</span>
+</span><span id="__span-2-3"><a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a>    <span class="k">def</span><span class="w"> </span><span class="nf">info</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">msg</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span> <span class="o">...</span>
+</span></code></pre></div>
+<p><strong>Benefits:</strong></p>
+<ul>
+<li>Type safety without inheritance</li>
+<li>Runtime checking with <code>isinstance()</code></li>
+<li>Structural subtyping support</li>
+</ul>
+<h3 id="strategy-pattern">Strategy Pattern</h3>
+<p>Different handlers implement different output strategies:</p>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-3-1"><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a><span class="c1"># Console strategy</span>
+</span><span id="__span-3-2"><a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a><span class="n">console</span> <span class="o">=</span> <span class="n">ColoredConsoleHandler</span><span class="p">()</span>
+</span><span id="__span-3-3"><a id="__codelineno-3-3" name="__codelineno-3-3" href="#__codelineno-3-3"></a>
+</span><span id="__span-3-4"><a id="__codelineno-3-4" name="__codelineno-3-4" href="#__codelineno-3-4"></a><span class="c1"># JSON strategy</span>
+</span><span id="__span-3-5"><a id="__codelineno-3-5" name="__codelineno-3-5" href="#__codelineno-3-5"></a><span class="n">json_handler</span> <span class="o">=</span> <span class="n">JSONHandler</span><span class="p">()</span>
+</span><span id="__span-3-6"><a id="__codelineno-3-6" name="__codelineno-3-6" href="#__codelineno-3-6"></a>
+</span><span id="__span-3-7"><a id="__codelineno-3-7" name="__codelineno-3-7" href="#__codelineno-3-7"></a><span class="c1"># Syslog strategy</span>
+</span><span id="__span-3-8"><a id="__codelineno-3-8" name="__codelineno-3-8" href="#__codelineno-3-8"></a><span class="n">syslog</span> <span class="o">=</span> <span class="n">ArlogiSyslogHandler</span><span class="p">()</span>
+</span></code></pre></div>
+<hr />
+<h2 id="component-reference">Component Reference</h2>
+<h3 id="core-modules">Core Modules</h3>
+<table>
+<thead>
+<tr>
+<th>Module</th>
+<th>Responsibility</th>
+<th>Lines of Code</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>factory.py</code></td>
+<td>Logger creation and configuration</td>
+<td>~450</td>
+</tr>
+<tr>
+<td><code>handlers.py</code></td>
+<td>Output handler implementations</td>
+<td>~340</td>
+</tr>
+<tr>
+<td><code>config.py</code></td>
+<td>Configuration dataclass</td>
+<td>~195</td>
+</tr>
+<tr>
+<td><code>handler_factory.py</code></td>
+<td>Handler factory</td>
+<td>~170</td>
+</tr>
+<tr>
+<td><code>levels.py</code></td>
+<td>TRACE level registration</td>
+<td>~20</td>
+</tr>
+<tr>
+<td><code>types.py</code></td>
+<td>Logger protocol definition</td>
+<td>~25</td>
+</tr>
+</tbody>
+</table>
+<h3 id="file-structure">File Structure</h3>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-4-1"><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a>src/arlogi/
+</span><span id="__span-4-2"><a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a>├── __init__.py              # Public API exports
+</span><span id="__span-4-3"><a id="__codelineno-4-3" name="__codelineno-4-3" href="#__codelineno-4-3"></a>├── config.py                # LoggingConfig dataclass
+</span><span id="__span-4-4"><a id="__codelineno-4-4" name="__codelineno-4-4" href="#__codelineno-4-4"></a>├── factory.py               # LoggerFactory, TraceLogger
+</span><span id="__span-4-5"><a id="__codelineno-4-5" name="__codelineno-4-5" href="#__codelineno-4-5"></a>├── handler_factory.py       # HandlerFactory
+</span><span id="__span-4-6"><a id="__codelineno-4-6" name="__codelineno-4-6" href="#__codelineno-4-6"></a>├── handlers.py              # All handler classes
+</span><span id="__span-4-7"><a id="__codelineno-4-7" name="__codelineno-4-7" href="#__codelineno-4-7"></a>├── levels.py                # TRACE level registration
+</span><span id="__span-4-8"><a id="__codelineno-4-8" name="__codelineno-4-8" href="#__codelineno-4-8"></a>└── types.py                 # LoggerProtocol
+</span></code></pre></div>
+<hr />
+<h2 id="data-flow">Data Flow</h2>
+<h3 id="initialization-flow">Initialization Flow</h3>
+<p>The system supports two initialization paths: the standard helper and the modern direct configuration.</p>
+<pre class="mermaid"><code>graph TD
+    subgraph "Standard Helper"
+        A[setup_logging] --&gt; B["LoggingConfig.from_kwargs"]
+    end
+
+    subgraph "Modern Direct path"
+        Direct[LoggingConfig init]
+    end
+
+    B --&gt; C[LoggerFactory.setup]
+    Direct --&gt; D["LoggerFactory._apply_configuration"]
+    C --&gt; D
+
+    D --&gt; E[_initialize_trace_level]
+    D --&gt; F[_configure_root_logger]
+    D --&gt; G[is_test_mode?]
+    G --&gt;|No| H[_clear_and_add_handlers]
+    G --&gt;|Yes| I[Skip - use pytest handlers]
+    H --&gt; J[HandlerFactory.create_handlers]
+    J --&gt; K[Add handlers to root]
+    D --&gt; L[_configure_module_levels]</code></pre>
+<h3 id="logging-call-flow">Logging Call Flow</h3>
+<pre class="mermaid"><code>graph TD
+    A[logger.info] --&gt; B[_process_params]
+    B --&gt; C{from_ set?}
+    C --&gt;|Yes| D[_get_caller_info]
+    C --&gt;|No| E[Skip attribution]
+    D --&gt; F[Build attribution string]
+    F --&gt; G[Append to message]
+    E --&gt; G
+    G --&gt; H["super().info"]
+    H --&gt; I[Logging.Logger.info]
+    I --&gt; J[Handler.emit]
+    J --&gt; K{Handler Type}
+    K --&gt;|Console| L[ColoredConsoleHandler]
+    K --&gt;|JSON| M[JSONHandler]
+    K --&gt;|Syslog| N[ArlogiSyslogHandler]</code></pre>
+<hr />
+<h2 id="extensibility">Extensibility</h2>
+<h3 id="adding-custom-handlers">Adding Custom Handlers</h3>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-5-1"><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a><span class="kn">from</span><span class="w"> </span><span class="nn">arlogi</span><span class="w"> </span><span class="kn">import</span> <span class="n">HandlerFactory</span><span class="p">,</span> <span class="n">LoggingConfig</span>
+</span><span id="__span-5-2"><a id="__codelineno-5-2" name="__codelineno-5-2" href="#__codelineno-5-2"></a><span class="kn">from</span><span class="w"> </span><span class="nn">arlogi.handlers</span><span class="w"> </span><span class="kn">import</span> <span class="n">ColoredConsoleHandler</span>
+</span><span id="__span-5-3"><a id="__codelineno-5-3" name="__codelineno-5-3" href="#__codelineno-5-3"></a>
+</span><span id="__span-5-4"><a id="__codelineno-5-4" name="__codelineno-5-4" href="#__codelineno-5-4"></a><span class="k">class</span><span class="w"> </span><span class="nc">CustomConsoleHandler</span><span class="p">(</span><span class="n">ColoredConsoleHandler</span><span class="p">):</span>
+</span><span id="__span-5-5"><a id="__codelineno-5-5" name="__codelineno-5-5" href="#__codelineno-5-5"></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;Custom handler with additional formatting.&quot;&quot;&quot;</span>
+</span><span id="__span-5-6"><a id="__codelineno-5-6" name="__codelineno-5-6" href="#__codelineno-5-6"></a>
+</span><span id="__span-5-7"><a id="__codelineno-5-7" name="__codelineno-5-7" href="#__codelineno-5-7"></a>    <span class="k">def</span><span class="w"> </span><span class="nf">emit</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">record</span><span class="p">):</span>
+</span><span id="__span-5-8"><a id="__codelineno-5-8" name="__codelineno-5-8" href="#__codelineno-5-8"></a>        <span class="c1"># Custom pre-processing</span>
+</span><span id="__span-5-9"><a id="__codelineno-5-9" name="__codelineno-5-9" href="#__codelineno-5-9"></a>        <span class="n">record</span><span class="o">.</span><span class="n">custom_field</span> <span class="o">=</span> <span class="s2">&quot;custom_value&quot;</span>
+</span><span id="__span-5-10"><a id="__codelineno-5-10" name="__codelineno-5-10" href="#__codelineno-5-10"></a>        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">emit</span><span class="p">(</span><span class="n">record</span><span class="p">)</span>
+</span><span id="__span-5-11"><a id="__codelineno-5-11" name="__codelineno-5-11" href="#__codelineno-5-11"></a>
+</span><span id="__span-5-12"><a id="__codelineno-5-12" name="__codelineno-5-12" href="#__codelineno-5-12"></a><span class="c1"># Extend HandlerFactory</span>
+</span><span id="__span-5-13"><a id="__codelineno-5-13" name="__codelineno-5-13" href="#__codelineno-5-13"></a><span class="k">class</span><span class="w"> </span><span class="nc">ExtendedHandlerFactory</span><span class="p">(</span><span class="n">HandlerFactory</span><span class="p">):</span>
+</span><span id="__span-5-14"><a id="__codelineno-5-14" name="__codelineno-5-14" href="#__codelineno-5-14"></a>    <span class="nd">@staticmethod</span>
+</span><span id="__span-5-15"><a id="__codelineno-5-15" name="__codelineno-5-15" href="#__codelineno-5-15"></a>    <span class="k">def</span><span class="w"> </span><span class="nf">create_custom</span><span class="p">(</span><span class="n">config</span><span class="p">):</span>
+</span><span id="__span-5-16"><a id="__codelineno-5-16" name="__codelineno-5-16" href="#__codelineno-5-16"></a>        <span class="k">return</span> <span class="n">CustomConsoleHandler</span><span class="p">(</span>
+</span><span id="__span-5-17"><a id="__codelineno-5-17" name="__codelineno-5-17" href="#__codelineno-5-17"></a>            <span class="n">show_time</span><span class="o">=</span><span class="n">config</span><span class="o">.</span><span class="n">show_time</span><span class="p">,</span>
+</span><span id="__span-5-18"><a id="__codelineno-5-18" name="__codelineno-5-18" href="#__codelineno-5-18"></a>            <span class="n">show_level</span><span class="o">=</span><span class="n">config</span><span class="o">.</span><span class="n">show_level</span>
+</span><span id="__span-5-19"><a id="__codelineno-5-19" name="__codelineno-5-19" href="#__codelineno-5-19"></a>        <span class="p">)</span>
+</span></code></pre></div>
+<h3 id="adding-custom-log-levels">Adding Custom Log Levels</h3>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-6-1"><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a><span class="kn">import</span><span class="w"> </span><span class="nn">logging</span>
+</span><span id="__span-6-2"><a id="__codelineno-6-2" name="__codelineno-6-2" href="#__codelineno-6-2"></a><span class="kn">from</span><span class="w"> </span><span class="nn">arlogi.levels</span><span class="w"> </span><span class="kn">import</span> <span class="n">TRACE_LEVEL_NUM</span>
+</span><span id="__span-6-3"><a id="__codelineno-6-3" name="__codelineno-6-3" href="#__codelineno-6-3"></a>
+</span><span id="__span-6-4"><a id="__codelineno-6-4" name="__codelineno-6-4" href="#__codelineno-6-4"></a><span class="c1"># Define a new level</span>
+</span><span id="__span-6-5"><a id="__codelineno-6-5" name="__codelineno-6-5" href="#__codelineno-6-5"></a><span class="n">VERBOSE</span> <span class="o">=</span> <span class="mi">8</span>  <span class="c1"># Between TRACE (5) and DEBUG (10)</span>
+</span><span id="__span-6-6"><a id="__codelineno-6-6" name="__codelineno-6-6" href="#__codelineno-6-6"></a>
+</span><span id="__span-6-7"><a id="__codelineno-6-7" name="__codelineno-6-7" href="#__codelineno-6-7"></a><span class="c1"># Register it</span>
+</span><span id="__span-6-8"><a id="__codelineno-6-8" name="__codelineno-6-8" href="#__codelineno-6-8"></a><span class="n">logging</span><span class="o">.</span><span class="n">addLevelName</span><span class="p">(</span><span class="n">VERBOSE</span><span class="p">,</span> <span class="s2">&quot;VERBOSE&quot;</span><span class="p">)</span>
+</span><span id="__span-6-9"><a id="__codelineno-6-9" name="__codelineno-6-9" href="#__codelineno-6-9"></a><span class="nb">setattr</span><span class="p">(</span><span class="n">logging</span><span class="p">,</span> <span class="s2">&quot;VERBOSE&quot;</span><span class="p">,</span> <span class="n">VERBOSE</span><span class="p">)</span>
+</span><span id="__span-6-10"><a id="__codelineno-6-10" name="__codelineno-6-10" href="#__codelineno-6-10"></a>
+</span><span id="__span-6-11"><a id="__codelineno-6-11" name="__codelineno-6-11" href="#__codelineno-6-11"></a><span class="c1"># Use it</span>
+</span><span id="__span-6-12"><a id="__codelineno-6-12" name="__codelineno-6-12" href="#__codelineno-6-12"></a><span class="n">logger</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">VERBOSE</span><span class="p">,</span> <span class="s2">&quot;Verbose message&quot;</span><span class="p">)</span>
+</span></code></pre></div>
+<h3 id="custom-configuration-sources">Custom Configuration Sources</h3>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-7-1"><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a><span class="kn">from</span><span class="w"> </span><span class="nn">arlogi</span><span class="w"> </span><span class="kn">import</span> <span class="n">LoggingConfig</span>
+</span><span id="__span-7-2"><a id="__codelineno-7-2" name="__codelineno-7-2" href="#__codelineno-7-2"></a><span class="kn">import</span><span class="w"> </span><span class="nn">yaml</span>
+</span><span id="__span-7-3"><a id="__codelineno-7-3" name="__codelineno-7-3" href="#__codelineno-7-3"></a>
+</span><span id="__span-7-4"><a id="__codelineno-7-4" name="__codelineno-7-4" href="#__codelineno-7-4"></a><span class="k">def</span><span class="w"> </span><span class="nf">config_from_yaml</span><span class="p">(</span><span class="n">file_path</span><span class="p">):</span>
+</span><span id="__span-7-5"><a id="__codelineno-7-5" name="__codelineno-7-5" href="#__codelineno-7-5"></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;Load LoggingConfig from YAML file.&quot;&quot;&quot;</span>
+</span><span id="__span-7-6"><a id="__codelineno-7-6" name="__codelineno-7-6" href="#__codelineno-7-6"></a>    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">file_path</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+</span><span id="__span-7-7"><a id="__codelineno-7-7" name="__codelineno-7-7" href="#__codelineno-7-7"></a>        <span class="n">data</span> <span class="o">=</span> <span class="n">yaml</span><span class="o">.</span><span class="n">safe_load</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
+</span><span id="__span-7-8"><a id="__codelineno-7-8" name="__codelineno-7-8" href="#__codelineno-7-8"></a>    <span class="k">return</span> <span class="n">LoggingConfig</span><span class="p">(</span><span class="o">**</span><span class="n">data</span><span class="p">)</span>
+</span><span id="__span-7-9"><a id="__codelineno-7-9" name="__codelineno-7-9" href="#__codelineno-7-9"></a>
+</span><span id="__span-7-10"><a id="__codelineno-7-10" name="__codelineno-7-10" href="#__codelineno-7-10"></a><span class="c1"># Use it</span>
+</span><span id="__span-7-11"><a id="__codelineno-7-11" name="__codelineno-7-11" href="#__codelineno-7-11"></a><span class="n">config</span> <span class="o">=</span> <span class="n">config_from_yaml</span><span class="p">(</span><span class="s2">&quot;logging_config.yaml&quot;</span><span class="p">)</span>
+</span></code></pre></div>
+<hr />
+<h2 id="performance-considerations">Performance Considerations</h2>
+<h3 id="caller-attribution-overhead">Caller Attribution Overhead</h3>
+<table>
+<thead>
+<tr>
+<th>Operation</th>
+<th>Time</th>
+<th>Notes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Standard log call</td>
+<td>~0.5μs</td>
+<td>No attribution</td>
+</tr>
+<tr>
+<td>Log with <code>from_=</code></td>
+<td>~1.5μs</td>
+<td>Stack frame inspection</td>
+</tr>
+<tr>
+<td>Deep stack (depth=5)</td>
+<td>~3μs</td>
+<td>Multiple frame walks</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Optimization Tip:</strong> Use <code>from_</code> only in development/debug builds.</p>
+<h3 id="memory-usage">Memory Usage</h3>
+<table>
+<thead>
+<tr>
+<th>Component</th>
+<th>Memory</th>
+<th>Notes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>LoggingConfig</td>
+<td>~200 bytes</td>
+<td>Immutable, shared</td>
+</tr>
+<tr>
+<td>TraceLogger</td>
+<td>~1KB</td>
+<td>Per logger instance</td>
+</tr>
+<tr>
+<td>Handler instances</td>
+<td>~500 bytes each</td>
+<td>Varies by handler type</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="error-handling-strategy">Error Handling Strategy</h2>
+<h3 id="graceful-degradation">Graceful Degradation</h3>
+<pre class="mermaid"><code>graph TD
+    A[Logging Call] --&gt; B{Handler Available?}
+    B --&gt;|Yes| C[Emit to Handler]
+    B --&gt;|No| D[Fallback to Stderr]
+    C --&gt; E{Emit Success?}
+    E --&gt;|Yes| F[Continue]
+    E --&gt;|No| D
+    D --&gt; F</code></pre>
+<h3 id="error-boundaries">Error Boundaries</h3>
+<table>
+<thead>
+<tr>
+<th>Component</th>
+<th>Error Handling</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>LoggingConfig</td>
+<td>Validates on init, raises ValueError</td>
+</tr>
+<tr>
+<td>HandlerFactory</td>
+<td>Raises ValueError for invalid config</td>
+</tr>
+<tr>
+<td>LoggerFactory</td>
+<td>Silently falls back on handler errors</td>
+</tr>
+<tr>
+<td>ColoredConsoleHandler</td>
+<td>Falls back to basic formatting</td>
+</tr>
+<tr>
+<td>ArlogiSyslogHandler</td>
+<td>Falls back to UDP, then silent</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="testing-strategy">Testing Strategy</h2>
+<h3 id="test-mode-detection">Test Mode Detection</h3>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-8-1"><a id="__codelineno-8-1" name="__codelineno-8-1" href="#__codelineno-8-1"></a><span class="k">def</span><span class="w"> </span><span class="nf">is_test_mode</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+</span><span id="__span-8-2"><a id="__codelineno-8-2" name="__codelineno-8-2" href="#__codelineno-8-2"></a>    <span class="k">return</span> <span class="p">(</span>
+</span><span id="__span-8-3"><a id="__codelineno-8-3" name="__codelineno-8-3" href="#__codelineno-8-3"></a>        <span class="s2">&quot;pytest&quot;</span> <span class="ow">in</span> <span class="n">sys</span><span class="o">.</span><span class="n">modules</span>
+</span><span id="__span-8-4"><a id="__codelineno-8-4" name="__codelineno-8-4" href="#__codelineno-8-4"></a>        <span class="ow">or</span> <span class="s2">&quot;unittest&quot;</span> <span class="ow">in</span> <span class="n">sys</span><span class="o">.</span><span class="n">modules</span>
+</span><span id="__span-8-5"><a id="__codelineno-8-5" name="__codelineno-8-5" href="#__codelineno-8-5"></a>        <span class="ow">or</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;PYTEST_CURRENT_TEST&quot;</span><span class="p">)</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
+</span><span id="__span-8-6"><a id="__codelineno-8-6" name="__codelineno-8-6" href="#__codelineno-8-6"></a>    <span class="p">)</span>
+</span></code></pre></div>
+<p>In test mode:</p>
+<ul>
+<li>Default level is DEBUG (not INFO)</li>
+<li>Handlers are NOT added to root (prevents double logging)</li>
+<li>Works seamlessly with <code>caplog</code> fixture</li>
+</ul>
+<hr />
+<h2 id="version-compatibility">Version Compatibility</h2>
+<table>
+<thead>
+<tr>
+<th>Python</th>
+<th>arlogi</th>
+<th>Status</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>3.13+</td>
+<td>0.512+</td>
+<td>Supported</td>
+</tr>
+<tr>
+<td>3.12</td>
+<td>0.512+</td>
+<td>Supported (with uv)</td>
+</tr>
+<tr>
+<td>3.11</td>
+<td>0.512+</td>
+<td>Supported (with uv)</td>
+</tr>
+<tr>
+<td>&lt;3.11</td>
+<td>-</td>
+<td>Not supported</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="future-enhancements">Future Enhancements</h2>
+<h3 id="planned-features">Planned Features</h3>
+<ol>
+<li><strong>Async Handlers</strong> - AsyncIO-compatible log handlers</li>
+<li><strong>Log Rotation</strong> - Built-in rotation for JSON files</li>
+<li><strong>Filter Support</strong> - Per-handler log filtering</li>
+<li><strong>Context Injection</strong> - Automatic request/context IDs</li>
+<li><strong>Metrics Integration</strong> - OpenTelemetry integration</li>
+</ol>
+<h3 id="extension-points">Extension Points</h3>
+<ul>
+<li>Custom formatters via <code>Formatter</code> subclassing</li>
+<li>Custom filters via <code>Filter</code> subclassing</li>
+<li>Custom handlers via <code>Handler</code> subclassing</li>
+<li>Configuration plugins via <code>LoggingConfig</code> inheritance</li>
+</ul>
+<hr />
+<h2 id="references">References</h2>
+<ul>
+<li><a href="https://docs.python.org/3/library/logging.html">Python Logging Documentation</a></li>
+<li><a href="https://rich.readthedocs.io/">Rich Library</a></li>
+<li><a href="https://c4model.com/">C4 Model</a></li>
+<li><a href="https://en.wikipedia.org/wiki/SOLID">SOLID Principles</a></li>
+</ul>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "..", "features": ["content.code.copy"], "search": "../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../assets/javascripts/bundle.79ae519e.min.js"></script>
+      
+    
+  </body>
+</html>
