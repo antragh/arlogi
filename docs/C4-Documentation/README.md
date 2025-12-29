@@ -1,112 +1,177 @@
-# C4 Architecture Documentation - `arlogi` Logging Library
+# C4 Architecture Documentation
 
-This directory contains comprehensive C4 architecture documentation for the `arlogi` logging library, following the official C4 model (Context, Container, Component, Code).
+This directory contains comprehensive C4 architecture documentation for the **arlogi** Python logging library, following the [C4 model](https://c4model.com/) created by Simon Brown.
+
+## About the C4 Model
+
+The C4 model is a simple way to model software architecture at four levels of detail:
+
+1. **Context** - High-level view of the system, its users, and external systems
+2. **Container** - Applications, data stores, micro-services, etc.
+3. **Component** - Logical components within containers
+4. **Code** - Detailed code-level documentation
+
+For more information, visit: <https://c4model.com/>
 
 ## Documentation Structure
 
-### Context Level - System Overview
+```text
+C4-Documentation/
+├── README.md                          # This file
+├── c4-context.md                      # System context (Level 1)
+├── c4-container.md                    # Container-level documentation (Level 2)
+├── c4-component.md                    # Master component index (Level 3)
+├── c4-component-core-logging.md       # Core Logging Library component
+├── c4-component-test-suite.md         # Test Suite component
+├── c4-component-documentation.md      # Documentation System component
+├── c4-code-src-arlogi.md              # Source code documentation (Level 4)
+├── c4-code-tests.md                   # Test suite code documentation
+├── c4-code-tests-example.md           # Example tests code documentation
+├── c4-code-docs-reference.md          # API reference docs structure
+├── c4-code-docs-scripts.md            # Documentation build scripts
+├── c4-code-subdir.md                  # Subdirectory test module
+└── apis/                              # API specifications
+    └── arlogi-api.yaml                # OpenAPI 3.1.0 specification
+```
 
-- **[c4-context.md](./c4-context.md)** - High-level system context showing personas, features, and external systems
-  - System overview and purpose
-  - User personas (developers, DevOps, QA)
-  - System features and capabilities
-  - User journey maps
-  - External system dependencies
-  - System context diagram
+## Quick Navigation
 
-### Container Level - Deployment Architecture
+### Start Here
 
-- **[c4-container.md](./c4-container.md)** - Physical deployment units and APIs
-  - Python package container definition
-  - API interfaces and specifications
-  - External system integration
-  - Deployment and infrastructure details
-  - Container relationship diagram
+- **[System Context (c4-context.md)](c4-context.md)** - Begin here for a high-level overview of the arlogi system, its users, and its place in the broader software ecosystem.
 
-### Component Level - Logical Architecture
+### Architecture Levels
 
-- **[c4-component.md](./c4-component.md)** - Master component index
-- **[c4-component-arlogi-logging-library.md](./c4-component-arlogi-logging-library.md)** - Detailed component documentation
-  - Component purpose and responsibilities
-  - Software features provided
-  - Interface definitions
-  - Component relationships
-  - Component architecture diagram
+- **Level 1: [System Context](c4-context.md)** - Who uses the system and what external systems it interacts with
+- **Level 2: [Containers](c4-container.md)** - How the system is deployed (Python package, documentation site, test suite)
+- **Level 3: [Components](c4-component.md)** - Logical components and their relationships
+- **Level 4: [Code Documentation](#code-level-documents)** - Detailed code-level documentation
 
-### Code Level - Implementation Details
+### Component Documentation
 
-- **[c4-code-src-arlogi.md](./c4-code-src-arlogi.md)** - Core library implementation
-- **[c4-code-tests.md](./c4-code-tests.md)** - Test suite implementation
-- **[c4-code-tests-example.md](./c4-code-tests-example.md)** - Example implementations
-  - Function signatures and documentation
-  - Class definitions and methods
-  - Dependencies and relationships
-  - Code structure diagrams
+- **[Core Logging Library](c4-component-core-logging.md)** - The main logging functionality
+- **[Test Suite](c4-component-test-suite.md)** - Quality assurance and testing infrastructure
+- **[Documentation System](c4-component-documentation.md)** - Documentation generation and deployment
+
+### Code-Level Documents
+
+- **[Source Code (src/arlogi)](c4-code-src-arlogi.md)** - Core library implementation
+- **[Test Suite (tests)](c4-code-tests.md)** - Test implementations
+- **[Example Tests (tests/example)](c4-code-tests-example.md)** - Example usage
+- **[Documentation Scripts (docs/scripts)](c4-code-docs-scripts.md)** - Build automation
+- **[API Reference (docs/reference)](c4-code-docs-reference.md)** - Generated documentation
+- **[Subdir Tests (subdir)](c4-code-subdir.md)** - Additional test module
 
 ### API Specifications
 
-- **[apis/arlogi-api.yaml](./apis/arlogi-api.yaml)** - OpenAPI 3.1 specification for all public APIs
+- **[OpenAPI Specification (apis/arlogi-api.yaml)](apis/arlogi-api.yaml)** - Complete API documentation in OpenAPI 3.1.0 format
 
-## C4 Model Overview
+## System Overview
 
-According to the [C4 model](https://c4model.com/), you don't need to use all 4 levels of diagram - the system context and container diagrams are sufficient for most software development teams. This documentation includes all levels for completeness, but teams can choose which levels to use:
-
-- **Context Level**: For non-technical stakeholders - focuses on people and systems
-- **Container Level**: For developers and operations - focuses on deployment units
-- **Component Level**: For architects and developers - focuses on logical design
-- **Code Level**: For developers - focuses on implementation details
-
-## Key Architecture Insights
-
-### System Purpose
-
-`arlogi` is an enhanced Python logging library that provides fine-grained debugging capabilities through a custom TRACE level, beautiful colored console output, structured JSON logging, and enterprise syslog integration.
-
-### Architecture Approach
-
-- **Single Component Design**: The entire library is designed as one cohesive component with well-defined internal boundaries
-- **Library Package Container**: Deployed as a single Python package via PyPI
-- **Type Safety**: Built with modern Python typing and protocol-based design
-- **SOLID Principles**: Clear separation of concerns and maintainable design
+**arlogi** is a robust, type-safe logging library for Python that extends the standard logging module with modern features and premium aesthetics.
 
 ### Key Features
 
-1. **Custom TRACE Level**: Ultra-detailed debugging at level 5
-2. **Premium Colored Output**: Beautiful console logs using Rich library
-3. **Structured JSON Logging**: Perfect for log aggregation systems
-4. **Module-Specific Configuration**: Different log levels per module
-5. **Dedicated Destination Loggers**: JSON-only or syslog-only loggers
-6. **Enterprise Syslog Integration**: Production-ready syslog support
-7. **Advanced Caller Attribution**: Precise source code location tracking
+- Custom TRACE level (level 5) for ultra-detailed debugging
+- Premium colored output using the `rich` library
+- Structured JSON logging for log aggregation systems
+- Module-specific configuration capabilities
+- Dedicated destination loggers (JSON-only, syslog-only)
+- Caller attribution feature to trace log calls across function boundaries
+- Type safety with LoggerProtocol
 
-### User Personas
+## Personas
 
-The system serves multiple user types:
+The system serves the following primary users:
 
-- **Python Application Developers**: Primary users implementing logging in applications
-- **DevOps Engineers**: Managing production logging and monitoring
-- **QA Engineers**: Testing and debugging applications
-- **Log Aggregation Systems**: Programmatic consumers of JSON logs
-- **Syslog Infrastructure**: Enterprise logging systems
+1. **Application Developer** - Build applications with production-ready logging
+2. **Library Developer** - Create reusable libraries with caller attribution
+3. **QA/Testing Engineer** - Test applications with automated test mode
+4. **DevOps Engineer** - Manage logs in production environments
+5. **Documentation User** - Access API documentation and user guides
+6. **Contributor/Maintainer** - Contribute to the codebase
 
-## Documentation Benefits
+## Technology Stack
 
-This C4 documentation provides:
+- **Language**: Python 3.13+
+- **Console Output**: Rich 14.2.0+
+- **Documentation**: MkDocs 1.5+, Material Theme, MkDocstrings
+- **Testing**: pytest 9.0.2+, pytest-cov 7.0.0+
+- **Build System**: uv package manager, hatchling
 
-- **Onboarding**: Quick understanding for new team members
-- **Architecture Decisions**: Clear rationale for design choices
-- **Integration Guide**: How to use the library in different contexts
-- **Maintenance**: Understanding of code structure and relationships
-- **Communication**: Common language for technical discussions
+## Reading Guide
 
-## Navigation
+### For Non-Technical Stakeholders
 
-1. Start with **[Context](./c4-context.md)** for high-level understanding
-2. Review **[Container](./c4-container.md)** for deployment and API details
-3. Examine **[Component](./c4-component-arlogi-logging-library.md)** for logical architecture
-4. Dive into **[Code](./c4-code-src-arlogi.md)** for implementation details
-5. Use **[API Specification](./apis/arlogi-api.yaml)** for integration details
+Start with the **[System Context](c4-context.md)** document to understand:
 
-## Generated On
+- What the system does
+- Who uses it
+- What problems it solves
+- How it fits into the broader ecosystem
 
-This documentation was generated on 2025-12-20 using a bottom-up analysis approach that ensures complete coverage of all code elements and their relationships.
+### For Developers
+
+1. Read the **[System Context](c4-context.md)** for a high-level overview
+2. Review the **[Containers](c4-container.md)** to understand deployment architecture
+3. Study the **[Components](c4-component.md)** to understand logical architecture
+4. Dive into **[Code-Level Documentation](#code-level-documents)** for implementation details
+
+### For Architects
+
+Focus on:
+
+- **[System Context](c4-context.md)** - System boundaries and external relationships
+- **[Containers](c4-container.md)** - Deployment architecture and technology choices
+- **[Components](c4-component.md)** - Component boundaries and interactions
+
+### For Contributors
+
+Start with:
+
+- **[Core Logging Library Component](c4-component-core-logging.md)** - Understand the main component
+- **[Source Code Documentation](c4-code-src-arlogi.md)** - Detailed implementation
+- **[Test Suite Component](c4-component-test-suite.md)** - Testing approach
+
+## Diagrams
+
+Each level of documentation includes Mermaid diagrams that visualize:
+
+- **Context Level** - System context diagram showing users and external systems
+- **Container Level** - Container diagram showing deployment units
+- **Component Level** - Component diagrams showing logical components and relationships
+- **Code Level** - Class hierarchy and module dependency diagrams
+
+These diagrams can be rendered in any Mermaid-compatible viewer, including:
+
+- GitHub/GitLab markdown rendering
+- MkDocs with Mermaid extension
+- VS Code with Mermaid preview extensions
+- Online Mermaid live editor (<https://mermaid.live/>)
+
+## Contributing
+
+When making changes to the arlogi codebase:
+
+1. Update the relevant code-level documentation
+2. Review and update component documentation if needed
+3. Check if container or context documentation needs updates
+4. Ensure all diagrams remain accurate
+
+## Additional Resources
+
+- **[Documentation Index](../index.md)** - Project overview and getting started guide
+- **[API Reference](../API_REFERENCE.md)** - Complete API documentation
+- **[Developer Guide](../DEVELOPER_GUIDE.md)** - Contribution guidelines
+- **[Configuration Guide](../CONFIGURATION_GUIDE.md)** - Configuration options
+- **[Live Documentation](http://192.168.168.5/cpaiops/)** - Deployed documentation site
+
+## License
+
+This documentation is part of the arlogi project and follows the same license terms.
+
+---
+
+**Documentation Version**: 1.0
+**Last Updated**: 2025-12-28
+**C4 Model Version**: Based on <https://c4model.com/>

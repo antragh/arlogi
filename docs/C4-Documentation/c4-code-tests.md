@@ -1,162 +1,252 @@
 # C4 Code Level: tests
 
 ## Overview
-
-- **Name**: Test Suite
-- **Description**: Comprehensive test suite for the arlogi logging library
-- **Location**: `/opt/Code/2026/_Libs/arlogi/tests/`
-- **Language**: Python 3.13+
-- **Purpose**: Validates the functionality of the arlogi logging library including core features, custom logging levels, JSON logging, module-specific levels, and caller attribution
+- **Name**: Arlogi Test Suite
+- **Description**: Comprehensive test suite for the arlogi logging library, covering core functionality, features, and integration examples
+- **Location**: `/opt/Code/2026/_Libs/arlogi/tests`
+- **Language**: Python
+- **Purpose**: Validate the correctness, reliability, and feature completeness of the arlogi logging library through unit tests and integration examples
 
 ## Code Elements
 
-### Functions/Methods
+### Test Functions in test_core.py
 
-#### test_core.py
+#### `test_trace_level_registered()`
+- **Signature**: `test_trace_level_registered() -> None`
+- **Description**: Validates that the TRACE log level is properly registered in the logging system
+- **Location**: `/opt/Code/2026/_Libs/arlogi/tests/test_core.py:6`
+- **Dependencies**: `arlogi.TRACE`, `arlogi.get_logger`, `logging.getLevelName`
 
-- `test_trace_level_registered() -> None`
-  - Description: Tests that the custom TRACE level is properly registered with the logging system
-  - Location: `/opt/Code/2026/_Libs/arlogi/tests/test_core.py:6`
-  - Dependencies: `arlogi.TRACE`, `arlogi.get_logger`, `logging.getLevelName`
+#### `test_protocol_compliance()`
+- **Signature**: `test_protocol_compliance() -> None`
+- **Description**: Ensures that logger instances properly implement the LoggerProtocol interface
+- **Location**: `/opt/Code/2026/_Libs/arlogi/tests/test_core.py:11`
+- **Dependencies**: `arlogi.LoggerProtocol`, `arlogi.get_logger`, `isinstance()`
 
-- `test_protocol_compliance() -> None`
-  - Description: Verifies that the logger returned by get_logger implements the LoggerProtocol interface
-  - Location: `/opt/Code/2026/_Libs/arlogi/tests/test_core.py:11`
-  - Dependencies: `arlogi.LoggerProtocol`, `arlogi.get_logger`
+#### `test_test_mode_detection()`
+- **Signature**: `test_test_mode_detection() -> None`
+- **Description**: Verifies that the LoggerFactory correctly detects test mode and returns appropriate behavior
+- **Location**: `/opt/Code/2026/_Libs/arlogi/tests/test_core.py:15`
+- **Dependencies**: `arlogi.factory.LoggerFactory.is_test_mode()`
 
-- `test_test_mode_detection() -> None`
-  - Description: Tests that the LoggerFactory correctly detects when running in test mode
-  - Location: `/opt/Code/2026/_Libs/arlogi/tests/test_core.py:15`
-  - Dependencies: `arlogi.factory.LoggerFactory.is_test_mode`
+#### `test_logging_calls(caplog)`
+- **Signature**: `test_logging_calls(caplog: Any) -> None`
+- **Description**: Tests that all logging levels (TRACE, DEBUG, INFO) work correctly when called on a logger instance
+- **Location**: `/opt/Code/2026/_Libs/arlogi/tests/test_core.py:19`
+- **Dependencies**: `caplog` (pytest fixture), `arlogi.TRACE`, `arlogi.get_logger`
 
-- `test_logging_calls(caplog: pytest.LogCaptureFixture) -> None`
-  - Description: Tests that logging calls at various levels (TRACE, DEBUG, INFO) are properly captured and logged
-  - Location: `/opt/Code/2026/_Libs/arlogi/tests/test_core.py:19`
-  - Dependencies: `arlogi.TRACE`, `arlogi.get_logger`, `pytest.caplog`
+### Test Functions in test_features.py
 
-#### test_features.py
+#### `test_module_specific_levels()`
+- **Signature**: `test_module_specific_levels() -> None`
+- **Description**: Validates module-specific log level configuration works as expected
+- **Location**: `/opt/Code/2026/_Libs/arlogi/tests/test_features.py:7`
+- **Dependencies**: `arlogi.setup_logging()`, `arlogi.get_logger`, `logging.INFO`, `logging.DEBUG`
 
-- `test_module_specific_levels() -> None`
-  - Description: Tests the ability to set different log levels for different modules/submodules
-  - Location: `/opt/Code/2026/_Libs/arlogi/tests/test_features.py:7`
-  - Dependencies: `arlogi.TRACE`, `arlogi.get_logger`, `arlogi.setup_logging`, `logging`
+#### `test_json_logger(capsys)`
+- **Signature**: `test_json_logger(capsys: Any) -> None`
+- **Description**: Tests the dedicated JSON logger functionality and its output format
+- **Location**: `/opt/Code/2026/_Libs/arlogi/tests/test_features.py:27`
+- **Dependencies**: `capsys` (pytest fixture), `arlogi.get_json_logger()`, `json.loads`
 
-- `test_json_logger(capsys: pytest.CaptureFixture[str]) -> None`
-  - Description: Tests the JSON logger functionality that outputs structured log data in JSON format
-  - Location: `/opt/Code/2026/_Libs/arlogi/tests/test_features.py:27`
-  - Dependencies: `json`, `arlogi.TRACE`, `arlogi.get_json_logger`, `pytest.capsys`
+#### `test_trace_stacklevel(caplog)`
+- **Signature**: `test_trace_stacklevel(caplog: Any) -> None`
+- **Description**: Validates that stacklevel functionality works correctly for the TRACE level
+- **Location**: `/opt/Code/2026/_Libs/arlogi/tests/test_features.py:46`
+- **Dependencies**: `caplog` (pytest fixture), `arlogi.TRACE`, `arlogi.get_logger`
 
-- `test_trace_stacklevel(caplog: pytest.LogCaptureFixture) -> None`
-  - Description: Tests that the TRACE level correctly handles stack level attribution for accurate function name reporting
-  - Location: `/opt/Code/2026/_Libs/arlogi/tests/test_features.py:46`
-  - Dependencies: `arlogi.TRACE`, `arlogi.get_logger`, `pytest.caplog`
+#### `test_caller_attribution(caplog)`
+- **Signature**: `test_caller_attribution(caplog: Any) -> None`
+- **Description**: Tests the caller attribution feature that shows the calling function name in log messages
+- **Location**: `/opt/Code/2026/_Libs/arlogi/tests/test_features.py:55`
+- **Dependencies**: `caplog` (pytest fixture), `arlogi.get_logger`
 
-- `test_caller_attribution(caplog: pytest.LogCaptureFixture) -> None`
-  - Description: Tests the caller attribution feature that shows which function called the logger
-  - Location: `/opt/Code/2026/_Libs/arlogi/tests/test_features.py:55`
-  - Dependencies: `logging`, `arlogi.get_logger`, `pytest.caplog`
+### Integration Examples
 
-#### example/example.py
+#### `main()` function in tests/example/example.py
+- **Signature**: `main() -> None`
+- **Description**: Comprehensive integration example demonstrating all major arlogi features including module-specific levels, dedicated loggers, caller attribution, and cross-module logging
+- **Location**: `/opt/Code/2026/_Libs/arlogi/tests/example/example.py:8`
+- **Dependencies**: `os.environ`, `tests.example.worker`, `arlogi.get_json_logger()`, `arlogi.get_logger()`, `arlogi.get_syslog_logger()`, `arlogi.setup_logging()`
 
-- `main() -> None`
-  - Description: Demonstrates comprehensive usage of the arlogi library including environment variable configuration, module-specific logging, dedicated loggers, and caller attribution
-  - Location: `/opt/Code/2026/_Libs/arlogi/tests/example/example.py:8`
-  - Dependencies: `os`, `worker`, `arlogi.TRACE`, `arlogi.get_json_logger`, `arlogi.get_logger`, `arlogi.get_syslog_logger`, `arlogi.setup_logging`
-
-#### example/worker.py
-
-- `do_work(depth: int = 0) -> None`
-  - Description: Worker function that demonstrates cross-module caller attribution with different depth levels
-  - Location: `/opt/Code/2026/_Libs/arlogi/tests/example/worker.py:5`
-  - Dependencies: `arlogi.get_logger`
-
-### Classes/Modules
-
-#### test_core.py
-
-- **Module**: `test_core`
-  - Description: Core functionality tests for the arlogi logging library
-  - Location: `/opt/Code/2026/_Libs/arlogi/tests/test_core.py`
-  - Functions: `test_trace_level_registered`, `test_protocol_compliance`, `test_test_mode_detection`, `test_logging_calls`
-  - Dependencies: `logging`, `arlogi` (TRACE, LoggerProtocol, get_logger)
-
-#### test_features.py
-
-- **Module**: `test_features`
-  - Description: Advanced feature tests for the arlogi logging library
-  - Location: `/opt/Code/2026/_Libs/arlogi/tests/test_features.py`
-  - Functions: `test_module_specific_levels`, `test_json_logger`, `test_trace_stacklevel`, `test_caller_attribution`
-  - Dependencies: `json`, `logging`, `arlogi` (TRACE, get_json_logger, get_logger, setup_logging)
-
-#### example/example.py
-
-- **Module**: `example`
-  - Description: Comprehensive example demonstrating arlogi library usage
-  - Location: `/opt/Code/2026/_Libs/arlogi/tests/example/example.py`
-  - Functions: `main`
-  - Dependencies: `os`, `worker`, `arlogi` (TRACE, get_json_logger, get_logger, get_syslog_logger, setup_logging)
-
-#### example/worker.py
-
-- **Module**: `worker`
-  - Description: Worker module used in examples to demonstrate cross-module logging
-  - Location: `/opt/Code/2026/_Libs/arlogi/tests/example/worker.py`
-  - Functions: `do_work`
-  - Dependencies: `arlogi.get_logger`
+#### `do_work()` function in tests/example/worker.py
+- **Signature**: `do_work(depth: int = 0) -> None`
+- **Description**: Example worker function demonstrating cross-module caller attribution functionality
+- **Location**: `/opt/Code/2026/_Libs/arlogi/tests/example/worker.py:5`
+- **Dependencies**: `arlogi.get_logger()`, global logger instance
 
 ## Dependencies
 
 ### Internal Dependencies
-
-- `arlogi` - The main logging library being tested
-- `worker` - Local worker module in the example package
-- `example` - Local example module package
+- `arlogi`: Main library being tested
+  - `arlogi.TRACE`: Custom log level constant
+  - `arlogi.LoggerProtocol`: Type hint for logger interface
+  - `arlogi.get_logger()`: Function to get configured logger instances
+  - `arlogi.get_json_logger()`: Function to get JSON-formatted logger
+  - `arlogi.get_syslog_logger()`: Function to get syslog logger
+  - `arlogi.setup_logging()`: Function to configure logging system
+  - `arlogi.factory.LoggerFactory`: Factory class with test mode detection
 
 ### External Dependencies
+- `logging`: Python standard library logging module
+- `json`: Python standard library JSON handling
+- `os`: Python standard library operating system interface
+- `pytest`: Testing framework
+  - `caplog`: Pytest fixture for capturing log output
+  - `capsys`: Pytest fixture for capturing stdout/stderr
 
-- `pytest>=9.0.2` - Testing framework for running tests
-- `pytest-catchlog` - Plugin for capturing log messages (likely part of pytest)
-- `python>=3.13` - Python runtime environment
-- `rich>=14.2.0` - Rich library for enhanced terminal output (used by arlogi)
+### Test Configuration
+- **Test Framework**: pytest 9.0.2+
+- **Coverage**: pytest-cov 7.0.0+ (for test coverage reporting)
+- **Python Version**: 3.13+
 
 ## Relationships
 
+### Test Coverage Overview
+
 ```mermaid
 ---
-title: Test Dependencies and Structure
+title: Arlogi Test Suite Coverage
 ---
-flowchart TB
+flowchart TD
     subgraph Unit Tests
-        test_core[Core Tests<br/>test_core.py]
-        test_features[Feature Tests<br/>test_features.py]
+        TC1[test_trace_level_registered]
+        TC2[test_protocol_compliance]
+        TC3[test_test_mode_detection]
+        TC4[test_logging_calls]
+        TC5[test_module_specific_levels]
+        TC6[test_json_logger]
+        TC7[test_trace_stacklevel]
+        TC8[test_caller_attribution]
     end
+
     subgraph Integration Examples
-        example_example[Main Example<br/>example.py]
-        example_worker[Worker Module<br/>worker.py]
-    end
-    subgraph External Libraries
-        pytest[pytest 9.0.2+]
-        rich[rich 14.2.0+]
-        python[Python 3.13+]
+        IE1[main example]
+        IE2[worker module]
     end
 
-    test_core --> arlogi[arlogi Library]
-    test_features --> arlogi
-    example_example --> arlogi
-    example_worker --> arlogi
+    subgraph Features Tested
+        FT1[TRACE Level]
+        FT2[Protocol Compliance]
+        FT3[Test Mode Detection]
+        FT4[Logging Calls]
+        FT5[Module-Specific Levels]
+        FT6[JSON Logger]
+        FT7[Stack Level]
+        FT8[Caller Attribution]
+        FT9[Cross-Module Logging]
+        FT10[Dedicated Loggers]
+        FT11[Environment Configuration]
+    end
 
-    test_core --> pytest
-    test_features --> pytest
-    example_example --> python
+    TC1 --> FT1
+    TC2 --> FT2
+    TC3 --> FT3
+    TC4 --> FT4
+    TC5 --> FT5
+    TC6 --> FT6
+    TC7 --> FT7
+    TC8 --> FT8
 
-    arlogi --> rich
+    IE1 --> FT1
+    IE1 --> FT5
+    IE1 --> FT6
+    IE1 --> FT8
+    IE1 --> FT9
+    IE1 --> FT10
+    IE1 --> FT11
+
+    IE2 --> FT8
+    IE2 --> FT9
+
+    style TC1 fill:#e1f5fe
+    style TC2 fill:#e1f5fe
+    style TC3 fill:#e1f5fe
+    style TC4 fill:#e1f5fe
+    style TC5 fill:#e1f5fe
+    style TC6 fill:#e1f5fe
+    style TC7 fill:#e1f5fe
+    style TC8 fill:#e1f5fe
+    style IE1 fill:#f3e5f5
+    style IE2 fill:#f3e5f5
+    style FT1 fill:#e8f5e8
+    style FT2 fill:#e8f5e8
+    style FT3 fill:#e8f5e8
+    style FT4 fill:#e8f5e8
+    style FT5 fill:#e8f5e8
+    style FT6 fill:#e8f5e8
+    style FT7 fill:#e8f5e8
+    style FT8 fill:#e8f5e8
+    style FT9 fill:#e8f5e8
+    style FT10 fill:#e8f5e8
+    style FT11 fill:#e8f5e8
 ```
+
+### Test Structure Diagram
+
+```mermaid
+---
+title: Arlogi Test File Organization
+---
+classDiagram
+    namespace tests/
+        class test_core {
+            <<test module>>
+            +test_trace_level_registered() None
+            +test_protocol_compliance() None
+            +test_test_mode_detection() None
+            +test_logging_calls(caplog) None
+        }
+
+        class test_features {
+            <<test module>>
+            +test_module_specific_levels() None
+            +test_json_logger(capsys) None
+            +test_trace_stacklevel(caplog) None
+            +test_caller_attribution(caplog) None
+        }
+
+        namespace example/ {
+            class example {
+                <<example module>>
+                +main() None
+            }
+
+            class worker {
+                <<example module>>
+                logger Logger
+                +do_work(depth int) None
+            }
+        }
+    }
+
+    test_core ..> arlogi : imports
+    test_features ..> arlogi : imports
+    example ..> arlogi : imports
+    worker ..> arlogi : imports
+
+    example --> worker : imports worker
+    worker --> logger : uses global logger
+```
+
+### Key Test Categories
+
+1. **Core Functionality Tests** (test_core.py)
+   - Basic logger initialization and protocol compliance
+   - Test mode detection
+   - Logging level verification
+
+2. **Feature Implementation Tests** (test_features.py)
+   - Module-specific level configuration
+   - JSON logger functionality
+   - Stack level handling
+   - Caller attribution features
+
+3. **Integration Examples** (example/)
+   - Comprehensive feature demonstration
+   - Cross-module logging scenarios
+   - Real-world usage patterns
 
 ## Notes
 
-- The test suite is organized into core functionality tests and advanced feature tests
-- Example code demonstrates practical usage patterns including environment variable configuration
-- Cross-module testing validates that caller attribution works across different modules
-- Tests cover both standard logging levels and the custom TRACE level
-- JSON logging functionality is tested for structured output capability
-- Module-specific logging levels ensure granular control over logging verbosity
+The test suite follows pytest conventions and uses fixtures like `caplog` and `capsys` for capturing log output and console output. The integration examples in the `example/` directory serve both as tests and as documentation of how to use various arlogi features in practice. All tests validate the core logging functionality while the examples demonstrate practical usage patterns including environment-based configuration, dedicated loggers, and cross-module caller attribution.
