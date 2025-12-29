@@ -2,6 +2,23 @@
 
 Comprehensive examples demonstrating arlogi's caller attribution feature using `from_`, `from_caller`, and `**{"from": depth}` parameters.
 
+## Modern Setup
+
+Before using caller attribution, ensure arlogi is configured using the `LoggingConfig` pattern:
+
+```python
+from arlogi import LoggingConfig, LoggerFactory, get_logger
+
+# Configure arlogi
+config = LoggingConfig(level="INFO")
+LoggerFactory._apply_configuration(config)
+
+# Get logger
+logger = get_logger("example")
+```
+
+---
+
 ## Basic Caller Attribution
 
 ### Using `from_=0` (Current Function)
@@ -29,7 +46,7 @@ process_data(42)
 
 **Output:**
 
-```
+```text
 INFO    [process_data()]                          Processing data started
 INFO    [process_data()]                          Processing completed, result=84
 ```
@@ -61,7 +78,7 @@ main_function()
 
 **Output:**
 
-```
+```text
 INFO    [main_function()]                        Main started
 INFO    [from main_function()]                   Helper operation completed
 INFO    [from main_function()]                   Helper operation details, operation_type=compute
@@ -95,7 +112,7 @@ top_function()
 
 **Output:**
 
-```
+```text
 INFO    [top_function()]                        Top function
 INFO    [middle_function()]                      Middle function
 INFO    [from top_function()]                   Deep operation
@@ -204,7 +221,7 @@ test_function()
 
 **Output:**
 
-```
+```text
 INFO    [from test_function()]                   Mixed from_=0, from_caller=1
 INFO    [test_function()]                        Mixed from_=1, from_caller=0
 INFO    [from caller of test_function()]         All three parameters
@@ -234,7 +251,7 @@ main_function()
 
 **Output:**
 
-```
+```text
 INFO    [main_function()]                        Main started
 INFO    [from main_function()]                   Helper completed
 INFO    [main_function()]                        Main completed
@@ -269,7 +286,7 @@ main_function()
 
 **Output:**
 
-```
+```text
 INFO    [app.main_function()]                    Starting main
 INFO    [from app.main_function()]               Processing data, data_id=123
 INFO    [app.main_function()]                    Main completed, result={'status': 'processed'}

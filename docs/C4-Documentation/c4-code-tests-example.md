@@ -1,6 +1,7 @@
 # C4 Code Level: tests/example
 
 ## Overview
+
 - **Name**: Tests Example Directory
 - **Description**: Example/test implementations demonstrating arlogi logging library usage patterns and features
 - **Location**: `/tests/example`
@@ -14,7 +15,7 @@
 - `main() -> None`
   - Description: Main entry point demonstrating comprehensive arlogi features including environment-based configuration, module-specific levels, dedicated loggers, and caller attribution
   - Location: `/opt/Code/2026/_Libs/arlogi/tests/example/example.py:8`
-  - Dependencies: `os.environ`, `setup_logging`, `get_logger`, `get_json_logger`, `get_syslog_logger`, `worker.do_work()`
+  - Dependencies: `os.environ`, `LoggingConfig`, `LoggerFactory`, `get_logger`, `get_json_logger`, `get_syslog_logger`, `worker.do_work()`
 
 - `worker_function() -> None`
   - Description: Nested function demonstrating caller attribution with different depth levels
@@ -65,13 +66,15 @@
 ## Dependencies
 
 ### Internal Dependencies
+
 - `worker.do_work()` - Cross-module worker function calls
-- `arlogi.setup_logging()` - Library setup configuration
+- `arlogi.LoggingConfig`, `arlogi.LoggerFactory` - Modern library configuration
 - `arlogi.get_logger()` - Logger creation
 - `arlogi.get_json_logger()` - Dedicated JSON logger creation
 - `arlogi.get_syslog_logger()` - Syslog logger creation
 
 ### External Dependencies
+
 - `os` - Standard library for environment variable access
 - `arlogi` - Main logging library being demonstrated
 
@@ -108,7 +111,8 @@ classDiagram
 
     namespace arlogi {
         class LoggingSystem {
-            +setup_logging() void
+            +LoggingConfig(level, module_levels, ...)
+            +LoggerFactory._apply_configuration(config)
             +get_logger() Logger
             +get_json_logger() Logger
             +get_syslog_logger() Logger
@@ -133,7 +137,7 @@ title: Logging Data Flow
 flowchart LR
     subgraph Configuration
         A[Environment Variables]
-        B[setup_logging]
+        B[LoggingConfig & LoggerFactory]
     end
 
     subgraph Loggers
@@ -173,7 +177,9 @@ flowchart LR
 ```
 
 ## Notes
+
 The example directory serves as a comprehensive demonstration of arlogi's core features:
+
 - Environment-based log level configuration
 - Module-specific log level overrides
 - Multiple logger types (standard, JSON-only, syslog)

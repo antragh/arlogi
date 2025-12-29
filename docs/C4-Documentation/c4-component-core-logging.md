@@ -135,12 +135,13 @@ The Core Logging Library exposes multiple interfaces for different use cases:
 setup_logging(level: int | str = logging.INFO, **kwargs) -> None
 ```
 
-- **Description**: Configure the root logging system with specified level and options
+- **Description**: Configure the root logging system with specified level and options (Legacy/Deprecated)
 - **Parameters**:
   - `level`: Global logging level (default: INFO)
-  - `**kwargs`: Additional configuration options (module_levels, json_file_name, use_syslog, etc.)
+  - `**kwargs**: Additional configuration options (module_levels, json_file_name, use_syslog, etc.)
 - **Returns**: None
 - **Example**: `setup_logging(level="DEBUG", json_file_name="app.jsonl")`
+- **Note**: This is a legacy helper that internally calls `LoggingConfig` and `LoggerFactory._apply_configuration`.
 
 ```python
 get_logger(name: str, level: int | str | None = None) -> LoggerProtocol
@@ -490,7 +491,7 @@ C4Component
         Component(handler_factory, "HandlerFactory", "Factory", "Creates and configures log handlers")
         Component(trace_logger, "TraceLogger", "Logger", "Custom logger with TRACE level and caller attribution")
         Component(logger_factory, "LoggerFactory", "Factory", "Creates and configures logger instances")
-        Component(api, "Public API", "Functions", "High-level convenience functions: setup_logging, get_logger, etc.")
+        Component(api, "Public API", "Functions", "High-level convenience functions: get_logger, setup_logging (legacy), etc.")
     }
 
     Person(user, "Application Developer", "Developer using arlogi")
@@ -523,7 +524,7 @@ flowchart TB
     end
 
     subgraph API["Public API"]
-        Setup["setup_logging()"]
+        Setup["setup_logging() (legacy)"]
         GetLogger["get_logger()"]
     end
 

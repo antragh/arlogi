@@ -13,7 +13,7 @@ This documentation provides comprehensive coverage of the arlogi logging library
 
 - **Quick Start**: Installation and basic usage
 - **Caller Attribution Feature**: Comprehensive explanation of `from_=0`, `from_caller=1`, and `**{"from": 2}` parameters
-- **Global Configuration**: `setup_logging()` and the modern `LoggingConfig` pattern
+- **Global Configuration**: `LoggingConfig` pattern and the legacy `setup_logging()` helper
 - **Logger Types**: Standard, JSON-only, and syslog loggers
 - **Advanced Usage**: Structured logging, exception handling, log levels
 - **Testing Integration**: Test mode detection and pytest integration
@@ -42,7 +42,7 @@ This documentation provides comprehensive coverage of the arlogi logging library
 
 ### 4. **Configuration Guide** ([CONFIGURATION_GUIDE.md](CONFIGURATION_GUIDE.md))
 
-- **Global Configuration**: `setup_logging()` and `LoggingConfig` architecture
+- **Global Configuration**: `LoggingConfig` architecture and the legacy `setup_logging()` helper
 - **Per-Module Configuration**: Module-level log level overrides
 - **Handler Configuration**: Console, JSON file, and syslog configuration
 - **Application Structure**: Microservice, web app, and CLI configurations

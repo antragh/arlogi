@@ -569,11 +569,15 @@ LoggerFactory._apply_configuration(config)
 ### JSON Logging
 
 ```python
+from arlogi import LoggingConfig, LoggerFactory, get_json_logger
+
 # With console + JSON file
-setup_logging(json_file_name="logs/app.jsonl")
+config = LoggingConfig(json_file_name="logs/app.jsonl")
+LoggerFactory._apply_configuration(config)
 
 # JSON only to console
-setup_logging(json_file_only=True)
+config = LoggingConfig(json_file_only=True)
+LoggerFactory._apply_configuration(config)
 
 # Dedicated JSON logger
 audit = get_json_logger("audit", "logs/audit.jsonl")
@@ -583,8 +587,11 @@ audit.info("User action", extra={"user_id": 123})
 ### Syslog
 
 ```python
+from arlogi import LoggingConfig, LoggerFactory, get_syslog_logger
+
 # Add syslog to root logger
-setup_logging(use_syslog=True)
+config = LoggingConfig(use_syslog=True)
+LoggerFactory._apply_configuration(config)
 
 # Dedicated syslog logger
 syslog = get_syslog_logger("security")

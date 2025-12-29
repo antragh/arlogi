@@ -144,7 +144,7 @@ Arlogi extends Python's standard logging module with modern features designed to
 
 ## User Journeys
 
-### Application Developer - Basic Logging Journey
+### Application Developer: Basic Logging Journey
 
 **Persona**: Application Developer
 
@@ -182,17 +182,18 @@ Arlogi extends Python's standard logging module with modern features designed to
 
 5. **View Output**: Developer sees beautifully formatted colored console output with level indicators and file paths
 
-### Application Developer - JSON Logging Journey
+### Application Developer: JSON Logging Journey
 
 **Persona**: Application Developer, DevOps Engineer
 
 1. **Setup with JSON**: Developer configures logging with JSON file output
 
    ```python
-   setup_logging(
+   config = LoggingConfig(
        level="INFO",
        json_file_name="logs/app.jsonl"
    )
+   LoggerFactory._apply_configuration(config)
    ```
 
    - System: Python Package → JSONFileHandler → JSON Log Files
@@ -208,7 +209,7 @@ Arlogi extends Python's standard logging module with modern features designed to
 
 4. **Integrate with Log Aggregation**: DevOps engineer configures log aggregation system (ELK, Splunk) to parse JSON logs
 
-### Library Developer - Caller Attribution Journey
+### Library Developer: Caller Attribution Journey
 
 **Persona**: Library Developer, Application Developer
 
@@ -244,7 +245,7 @@ Arlogi extends Python's standard logging module with modern features designed to
    logger.debug("Processing", from_=2)  # Show caller's caller
    ```
 
-### Application Developer - TRACE Logging Journey
+### Application Developer: TRACE Logging Journey
 
 **Persona**: Application Developer, Library Developer
 
@@ -268,10 +269,11 @@ Arlogi extends Python's standard logging module with modern features designed to
 3. **Configure TRACE Level**: Developer enables TRACE level for specific modules
 
    ```python
-   setup_logging(
+   config = LoggingConfig(
        level="INFO",
        module_levels={"app.complex": "TRACE"}
    )
+   LoggerFactory._apply_configuration(config)
    ```
 
    - System: Python Package → TRACE level registration (logging.addLevelName)
@@ -279,10 +281,11 @@ Arlogi extends Python's standard logging module with modern features designed to
 4. **Enable for Debugging**: Developer temporarily sets global level to TRACE for debugging
 
    ```python
-   setup_logging(level="TRACE")  # Show ALL logs including TRACE
+   config = LoggingConfig(level="TRACE")
+   LoggerFactory._apply_configuration(config)
    ```
 
-### Application Developer - Module Configuration Journey
+### Application Developer: Module Configuration Journey
 
 **Persona**: Application Developer, DevOps Engineer
 
@@ -295,7 +298,7 @@ Arlogi extends Python's standard logging module with modern features designed to
 2. **Configure Module Levels**: Developer sets up module-specific configuration
 
    ```python
-   setup_logging(
+   config = LoggingConfig(
        level="INFO",
        module_levels={
            "app.database": "DEBUG",
@@ -303,6 +306,7 @@ Arlogi extends Python's standard logging module with modern features designed to
            "app.security": "WARNING"
        }
    )
+   LoggerFactory._apply_configuration(config)
    ```
 
    - System: Python Package → LoggingConfig → LoggerFactory._configure_module_levels()
@@ -322,7 +326,7 @@ Arlogi extends Python's standard logging module with modern features designed to
    - sec_logger.info() → Hidden (only WARNING+ enabled)
    - api_logger.info() → Shows (INFO enabled)
 
-### Application Developer - Dedicated Logger Journey
+### Application Developer: Dedicated Logger Journey
 
 **Persona**: Application Developer, DevOps Engineer
 
@@ -360,7 +364,7 @@ Arlogi extends Python's standard logging module with modern features designed to
 
    - System: Python Package → get_syslog_logger() → ArlogiSyslogHandler → Syslog Daemon
 
-### Application Developer - Advanced Configuration Journey
+### Application Developer: Advanced Configuration Journey
 
 **Persona**: Application Developer, Contributor
 
@@ -400,7 +404,7 @@ Arlogi extends Python's standard logging module with modern features designed to
    new_config = LoggingConfig.from_kwargs(**config_dict)
    ```
 
-### QA/Testing Engineer - Test Mode Journey
+### QA/Testing Engineer: Test Mode Journey
 
 **Persona**: QA/Testing Engineer, Application Developer
 
@@ -439,7 +443,7 @@ Arlogi extends Python's standard logging module with modern features designed to
 
 5. **Verify Logs**: Developer verifies log messages and levels in tests
 
-### DevOps Engineer - Syslog Integration Journey
+### DevOps Engineer: Syslog Integration Journey
 
 **Persona**: DevOps Engineer, Application Developer
 
@@ -450,11 +454,12 @@ Arlogi extends Python's standard logging module with modern features designed to
 2. **Enable Syslog in Application**: Developer configures syslog output
 
    ```python
-   setup_logging(
+   config = LoggingConfig(
        level="INFO",
        use_syslog=True,
        syslog_address="/dev/log"
    )
+   LoggerFactory._apply_configuration(config)
    ```
 
    - System: Python Package → ArlogiSyslogHandler → Unix socket → Syslog Daemon
@@ -469,9 +474,11 @@ Arlogi extends Python's standard logging module with modern features designed to
 4. **Configure Remote Syslog**: DevOps engineer configures remote syslog server
 
    ```python
-   setup_logging(
-       syslog_address=("syslog.example.com", 514)
+   config = LoggingConfig(
+       syslog_address=("syslog.example.com", 514),
+       use_syslog=True
    )
+   LoggerFactory._apply_configuration(config)
    ```
 
    - System: ArlogiSyslogHandler → UDP → Remote Syslog Server
@@ -483,7 +490,7 @@ Arlogi extends Python's standard logging module with modern features designed to
 
 6. **Monitor Logs**: DevOps engineer views logs in syslog dashboard or SIEM tool
 
-### Documentation User - API Reference Journey
+### Documentation User: API Reference Journey
 
 **Persona**: Documentation User, Contributor
 
@@ -515,7 +522,7 @@ Arlogi extends Python's standard logging module with modern features designed to
    - System: Documentation Site → Architecture Documentation
    - Mermaid diagrams showing system context, containers, components
 
-### Contributor - Documentation Generation Journey
+### Contributor: Documentation Generation Journey
 
 **Persona**: Contributor, Maintainer
 

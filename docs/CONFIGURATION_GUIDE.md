@@ -127,9 +127,9 @@ LoggerFactory._apply_configuration(config)
 ### Module Hierarchy Matching
 
 ```python
-from arlogi import setup_logging
+from arlogi import LoggingConfig, LoggerFactory
 
-setup_logging(
+config = LoggingConfig(
     level="INFO",
     module_levels={
         # Affects: app.network.http, app.network.tcp, app.network.udp
@@ -145,6 +145,7 @@ setup_logging(
         "app.network.http.client": "DEBUG"
     }
 )
+LoggerFactory._apply_configuration(config)
 
 # Examples:
 # get_logger("app.network.http") -> TRACE level
@@ -244,28 +245,23 @@ custom_logger.info("Custom JSON logging", custom_field="value")
 ### Syslog Configuration (Modern)
 
 ```python
-from arlogi import setup_logging
+from arlogi import LoggingConfig, LoggerFactory
 
 # Local syslog
-setup_logging(
+config = LoggingConfig(
     level="INFO",
     use_syslog=True,
     syslog_address="/dev/log"  # Default
 )
+LoggerFactory._apply_configuration(config)
 
 # Remote syslog server
-setup_logging(
+config = LoggingConfig(
     level="INFO",
     use_syslog=True,
     syslog_address=("syslog.example.com", 514)
 )
-
-# Syslog with specific facility
-setup_logging(
-    level="INFO",
-    use_syslog=True,
-    syslog_address="/dev/log"
-)
+LoggerFactory._apply_configuration(config)
 
 # Syslog-only logger
 from arlogi import get_syslog_logger
@@ -309,14 +305,14 @@ handler = ArlogiSyslogHandler(
 
 ```python
 # config/logging.py
-from arlogi import setup_logging
+from arlogi import LoggingConfig, LoggerFactory
 
 def setup_service_logging(service_name, environment="production"):
     """Configure logging for microservice"""
 
     if environment == "development":
         # Development: verbose console logging
-        setup_logging(
+        config = LoggingConfig(
             level="DEBUG",
             show_time=True,
             show_level=True,
@@ -324,14 +320,14 @@ def setup_service_logging(service_name, environment="production"):
         )
     elif environment == "testing":
         # Testing: JSON-only for automated analysis
-        setup_logging(
+        config = LoggingConfig(
             level="INFO",
             json_file_name=f"logs/{service_name}.jsonl",
             json_file_only=True
         )
     else:
         # Production: console + JSON + syslog
-        setup_logging(
+        config = LoggingConfig(
             level="INFO",
             module_levels={
                 f"{service_name}.network": "DEBUG",
@@ -343,6 +339,8 @@ def setup_service_logging(service_name, environment="production"):
             show_level=True,
             show_path=True
         )
+
+    LoggerFactory._apply_configuration(config)
 
 # main.py
 from config.logging import setup_service_logging
@@ -358,58 +356,58 @@ logger.info("User service started")
 
 ```python
 # app/config.py
-from arlogi import setup_logging
+from arlogi import LoggingConfig, LoggerFactory
 
-class LoggingConfig:
+class LoggingSetup:
     @staticmethod
     def configure(app_name, environment="development"):
         """Configure logging for web application"""
 
-        base_config = {
-            "module_levels": {
-                f"{app_name}.network": "DEBUG",
-                f"{app_name}.database": "DEBUG",
-                f"{app_name}.auth": "INFO",
-                f"{app_name}.api": "INFO"
-            }
+        module_levels = {
+            f"{app_name}.network": "DEBUG",
+            f"{app_name}.database": "DEBUG",
+            f"{app_name}.auth": "INFO",
+            f"{app_name}.api": "INFO"
         }
 
         if environment == "development":
-            setup_logging(
+            config = LoggingConfig(
                 level="DEBUG",
                 show_time=True,
                 show_path=True,
-                **base_config
+                module_levels=module_levels
             )
 
         elif environment == "staging":
-            setup_logging(
+            config = LoggingConfig(
                 level="INFO",
                 json_file_name=f"logs/{app_name}-staging.jsonl",
                 use_syslog=True,
                 syslog_address=("staging-logs.company.com", 514),
-                **base_config
+                module_levels=module_levels
             )
 
         elif environment == "production":
-            setup_logging(
+            config = LoggingConfig(
                 level="WARNING",  # Less verbose in production
                 module_levels={
                     f"{app_name}.auth": "ERROR",      # Only auth errors
                     f"{app_name}.api": "WARNING",     # API warnings
                     f"{app_name}.business": "INFO",   # Business events
+                    **module_levels
                 },
                 json_file_name=f"logs/{app_name}.jsonl",
                 use_syslog=True,
-                syslog_address=("logs.company.com", 514),
-                **base_config
+                syslog_address=("logs.company.com", 514)
             )
 
+        LoggerFactory._apply_configuration(config)
+
 # app.py
-from app.config import LoggingConfig
+from app.config import LoggingSetup
 from arlogi import get_logger
 
-LoggingConfig.configure("myapp", environment="production")
+LoggingSetup.configure("myapp", environment="production")
 
 app_logger = get_logger("myapp.app")
 app_logger.info("Web application started")
@@ -420,36 +418,38 @@ app_logger.info("Web application started")
 ```python
 # cli/config.py
 import os
-from arlogi import setup_logging
+from arlogi import LoggingConfig, LoggerFactory
 
 def setup_cli_logging(verbosity=0, log_file=None):
     """Configure logging for CLI application"""
 
     if verbosity >= 2:
         # Very verbose: DEBUG level with console details
-        setup_logging(
+        config = LoggingConfig(
             level="DEBUG",
             show_time=True,
             show_level=True,
             show_path=True,
-            json_file_name=log_file if log_file else None
+            json_file_name=log_file
         )
     elif verbosity >= 1:
         # Verbose: INFO level with basic console
-        setup_logging(
+        config = LoggingConfig(
             level="INFO",
             show_time=False,
             show_level=True,
             show_path=False,
-            json_file_name=log_file if log_file else None
+            json_file_name=log_file
         )
     else:
         # Quiet: ERROR level only
-        setup_logging(
+        config = LoggingConfig(
             level="ERROR",
-            json_file_name=log_file if log_file else None,
+            json_file_name=log_file,
             json_file_only=not log_file
         )
+
+    LoggerFactory._apply_configuration(config)
 
 # cli/main.py
 import argparse
@@ -506,11 +506,11 @@ def configure_testing():
 ### Staging Environment
 
 ```python
-from arlogi import setup_logging
+from arlogi import LoggingConfig, LoggerFactory
 
 def configure_staging():
     """Staging: production-like with extra debugging"""
-    setup_logging(
+    config = LoggingConfig(
         level="INFO",
         module_levels={
             "app.auth": "DEBUG",      # Debug authentication
@@ -524,6 +524,7 @@ def configure_staging():
         show_level=True,
         show_path=False
     )
+    LoggerFactory._apply_configuration(config)
 ```
 
 ### Production Environment
@@ -572,7 +573,7 @@ logger.info("Level changed to INFO")
 
 ```python
 import os
-from arlogi import setup_logging
+from arlogi import LoggingConfig, LoggerFactory
 
 def configure_from_env():
     """Configure logging from environment variables"""
@@ -582,7 +583,7 @@ def configure_from_env():
     json_file = os.getenv("LOG_FILE", None)
     syslog_enabled = os.getenv("LOG_SYSLOG", "false").lower() == "true"
 
-    config = {
+    config_kwargs = {
         "level": level,
         "json_file_name": json_file,
         "use_syslog": syslog_enabled
@@ -590,10 +591,10 @@ def configure_from_env():
 
     # Console formatting from environment
     if os.getenv("LOG_SHOW_TIME", "false").lower() == "true":
-        config["show_time"] = True
+        config_kwargs["show_time"] = True
 
     if os.getenv("LOG_SHOW_PATH", "true").lower() == "false":
-        config["show_path"] = False
+        config_kwargs["show_path"] = False
 
     # Module levels from environment (comma-separated)
     module_levels_str = os.getenv("LOG_MODULE_LEVELS", "")
@@ -603,9 +604,10 @@ def configure_from_env():
             if ":" in item:
                 module, level = item.strip().split(":", 1)
                 module_levels[module.strip()] = level.strip()
-        config["module_levels"] = module_levels
+        config_kwargs["module_levels"] = module_levels
 
-    setup_logging(**config)
+    config = LoggingConfig(**config_kwargs)
+    LoggerFactory._apply_configuration(config)
 
 # Usage
 configure_from_env()
@@ -617,7 +619,7 @@ configure_from_env()
 import json
 import yaml
 from pathlib import Path
-from arlogi import setup_logging
+from arlogi import LoggingConfig, LoggerFactory
 
 def load_config_from_file(config_path):
     """Load logging configuration from JSON or YAML file"""
@@ -629,14 +631,15 @@ def load_config_from_file(config_path):
 
     if config_file.suffix.lower() == '.json':
         with open(config_file, 'r') as f:
-            config = json.load(f)
+            data = json.load(f)
     elif config_file.suffix.lower() in ['.yaml', '.yml']:
         with open(config_file, 'r') as f:
-            config = yaml.safe_load(f)
+            data = yaml.safe_load(f)
     else:
         raise ValueError(f"Unsupported config file format: {config_file.suffix}")
 
-    setup_logging(**config)
+    config = LoggingConfig(**data)
+    LoggerFactory._apply_configuration(config)
 
 # config.json example:
 # {

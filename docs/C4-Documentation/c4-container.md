@@ -80,7 +80,7 @@ This container deploys the following component:
 - Handler Implementations (ColoredConsoleHandler, JSONHandler, JSONFileHandler, ArlogiSyslogHandler)
 - Type Definitions (LoggerProtocol, custom TRACE level)
 - Public API Functions (get_logger, get_json_logger, get_syslog_logger)
-- Legacy Helpers (setup_logging)
+- Legacy Helpers (`setup_logging`)
 
 #### Interfaces
 
@@ -97,7 +97,7 @@ This container deploys the following component:
 - `arlogi.get_logger(name, level=None)` - Get standard logger
 - `arlogi.get_json_logger(name, json_file_name=None)` - Get JSON-only logger
 - `arlogi.get_syslog_logger(name, address="/dev/log")` - Get syslog-only logger
-- `arlogi.setup_logging(**kwargs)` - Legacy configuration helper
+- `arlogi.setup_logging(**kwargs)` - Legacy configuration helper (Deprecated)
 - `arlogi.HandlerFactory` - Handler factory class
 - `arlogi.TRACE` - Custom TRACE log level constant
 

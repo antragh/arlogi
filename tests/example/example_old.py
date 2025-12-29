@@ -2,15 +2,16 @@ import os
 
 import worker
 
-from arlogi import LoggingConfig, LoggerFactory, get_json_logger, get_logger, get_syslog_logger
+from arlogi import get_json_logger, get_logger, get_syslog_logger, setup_logging
 
 
 def main():
     # 1. Get log level from environment variable, default to INFO
     env_level = os.environ.get("LOG_LEVEL", "INFO").upper()
 
-    # Create LoggingConfig
-    config = LoggingConfig(
+    # Setup arlogi with the environment level
+    # We also demonstrate module-specific levels and clean formatting here
+    setup_logging(
         level=env_level,
         module_levels={
             "app.network": "TRACE",
@@ -21,9 +22,6 @@ def main():
         json_file_name="logs/root_test.jsonl",
         json_file_only=False, # Default: keep console output too
     )
-
-    # Apply configuration via factory
-    LoggerFactory._apply_configuration(config)
 
     # 2. Get loggers
     logger = get_logger("app.main")

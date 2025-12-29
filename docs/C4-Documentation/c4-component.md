@@ -13,6 +13,7 @@ The arlogi logging library consists of three main components that work together 
 - **Technology**: Python 3.13+, Rich, Python Standard Library
 
 **Key Responsibilities**:
+
 - Core logging infrastructure and API
 - Configuration management via LoggingConfig
 - Logger creation and lifecycle management
@@ -21,12 +22,13 @@ The arlogi logging library consists of three main components that work together 
 - TRACE level logging support
 
 **Public APIs**:
+
 - `LoggingConfig` - Configuration dataclass (Recommended)
 - `LoggerFactory._apply_configuration()` - Apply configuration (Recommended)
 - `get_logger()` - Get standard logger with caller attribution
 - `get_json_logger()` - Get dedicated JSON-only logger
 - `get_syslog_logger()` - Get dedicated syslog-only logger
-- `setup_logging()` - Legacy configuration helper
+- `setup_logging()` - Legacy configuration helper (Deprecated)
 
 ---
 
@@ -39,6 +41,7 @@ The arlogi logging library consists of three main components that work together 
 - **Technology**: Python 3.13+, pytest 9.0.2+, pytest-cov 7.0.0+
 
 **Key Responsibilities**:
+
 - Unit testing of core functionality
 - Feature validation and integration testing
 - Test coverage measurement and reporting
@@ -46,6 +49,7 @@ The arlogi logging library consists of three main components that work together 
 - Regression prevention
 
 **Test Coverage**:
+
 - Core Functionality: 100%
 - Advanced Features: 95%+
 - Integration Patterns: 90%+
@@ -62,6 +66,7 @@ The arlogi logging library consists of three main components that work together 
 - **Technology**: MkDocs, Material Theme, MkDocstrings, Markdown, Python, Bash
 
 **Key Responsibilities**:
+
 - Automatic API documentation generation from source code
 - Static site building and serving
 - Documentation deployment to web servers
@@ -69,6 +74,7 @@ The arlogi logging library consists of three main components that work together 
 - User and developer guide maintenance
 
 **Key Features**:
+
 - Auto-generated API reference from Python docstrings
 - Modern web interface with search functionality
 - Mermaid diagram rendering
@@ -165,12 +171,14 @@ flowchart TB
 ### Core Logging Library Interactions
 
 **With Test Suite**:
+
 - **Tests → Core**: Import and test all public APIs
 - **Tests → Core**: Validate protocol compliance
 - **Tests → Core**: Verify feature implementations
 - **Tests → Core**: Test configuration and factory methods
 
 **With Documentation System**:
+
 - **Docs → Core**: Extract docstrings for API reference
 - **Docs → Core**: Analyze type hints for documentation
 - **Docs → Core**: Document module structure and organization
@@ -179,6 +187,7 @@ flowchart TB
 ### Test Suite Interactions
 
 **With Core Logging Library**:
+
 - Tests all public functions: `get_logger()`, `get_json_logger()`, `get_syslog_logger()`, `setup_logging()` (legacy)
 - Validates configuration classes (`LoggingConfig`, `LoggerFactory`)
 - Verifies protocol compliance and type safety
@@ -186,6 +195,7 @@ flowchart TB
 - Validates custom TRACE level functionality
 
 **With External Systems**:
+
 - Uses pytest framework for test execution
 - Uses pytest-cov for coverage reporting
 - Uses pytest fixtures (caplog, capsys) for output capture
@@ -193,6 +203,7 @@ flowchart TB
 ### Documentation System Interactions
 
 **With Core Logging Library**:
+
 - Extracts API documentation from Python source code
 - Generates reference pages for all modules
 - Creates navigation structure based on module organization
@@ -200,6 +211,7 @@ flowchart TB
 - Provides usage examples from test suite
 
 **With External Systems**:
+
 - Uses MkDocs for static site generation
 - Uses Material theme for web interface
 - Uses MkDocstrings for automatic API documentation
@@ -266,22 +278,26 @@ flowchart LR
 ## Cross-Component Concerns
 
 ### Quality Assurance
+
 - **Test Suite** validates **Core Logging Library** functionality
 - Test coverage metrics ensure reliability of Core Library
 - Integration examples in Test Suite inform Documentation content
 
 ### Documentation Synchronization
+
 - **Documentation System** automatically extracts API docs from **Core Logging Library**
 - Test examples from **Test Suite** demonstrate usage patterns documented by **Documentation System**
 - All three components evolve together to maintain consistency
 
 ### Development Workflow
+
 1. Contributors modify **Core Logging Library**
 2. **Test Suite** validates changes and prevents regressions
 3. **Documentation System** regenerates API documentation from updated code
 4. All changes reviewed together in version control
 
 ### Release Coordination
+
 - Core Library version bump triggers Test Suite validation
 - Documentation version matches Core Library version
 - All components released together as a unified package
@@ -289,18 +305,21 @@ flowchart LR
 ## Technology Stack Summary
 
 ### Core Technologies
+
 - **Python 3.13+**: Primary language for all components
 - **Rich**: Terminal formatting (Core Library)
 - **pytest**: Test framework (Test Suite)
 - **MkDocs**: Documentation generator (Documentation)
 
 ### Supporting Technologies
+
 - **pytest-cov**: Coverage reporting
 - **MkDocstrings**: API documentation extraction
 - **Material Theme**: Documentation web interface
 - **SSH/rsync**: Documentation deployment
 
 ### Development Tools
+
 - **Python Standard Library**: logging, json, dataclasses, typing, etc.
 - **Bash**: Deployment automation scripts
 - **Markdown**: Documentation authoring
@@ -319,6 +338,7 @@ flowchart LR
 ---
 
 **Document Information**
+
 - **Last Updated**: 2025-12-28
 - **C4 Level**: Component
 - **Scope**: All components in the arlogi system

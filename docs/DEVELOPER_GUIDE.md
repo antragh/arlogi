@@ -63,7 +63,7 @@ uv run mypy src/arlogi
 
 ## Project Structure
 
-```
+```text
 arlogi/
 ├── src/
 │   └── arlogi/
@@ -156,8 +156,9 @@ Test interactions between components.
 
 ```python
 def test_setup_with_json_file():
-    """Test that setup_logging creates JSON file handler."""
-    setup_logging(json_file_name="logs/test.jsonl")
+    """Test that configuration creates JSON file handler."""
+    config = LoggingConfig(json_file_name="logs/test.jsonl")
+    LoggerFactory._apply_configuration(config)
     root = logging.getLogger()
     assert any(isinstance(h, JSONFileHandler) for h in root.handlers)
 ```
@@ -201,7 +202,8 @@ class TestLoggerFactory:
     @pytest.mark.parametrize("level", ["DEBUG", "INFO", "WARNING"])
     def test_logger_respects_level(self, level):
         """Test that logger respects configured level."""
-        setup_logging(level=level)
+        config = LoggingConfig(level=level)
+        LoggerFactory._apply_configuration(config)
         logger = get_logger("test")
         assert logger.getEffectiveLevel() == getattr(logging, level)
 ```
@@ -217,10 +219,11 @@ def temp_log_file(tmp_path):
 @pytest.fixture
 def configured_logger(temp_log_file):
     """Create a logger configured for testing."""
-    setup_logging(
+    config = LoggingConfig(
         level="DEBUG",
         json_file_name=str(temp_log_file)
     )
+    LoggerFactory._apply_configuration(config)
     return get_logger("test")
 ```
 
@@ -417,6 +420,7 @@ Arlogi uses semantic versioning: `MAJOR.MINOR.PATCH`
    ```
 
 6. **Publish to PyPI**
+
    ```bash
    uv publish
    ```
@@ -490,6 +494,7 @@ See [MIGRATION.md](docs/MIGRATION.md) for upgrade instructions.
    ```
 
 6. **Push and Create PR**
+
    ```bash
    git push origin feature/your-feature-name
    # Create PR on GitHub
@@ -499,7 +504,7 @@ See [MIGRATION.md](docs/MIGRATION.md) for upgrade instructions.
 
 Follow [Conventional Commits](https://www.conventionalcommits.org/):
 
-```
+```text
 <type>(<scope>): <description>
 
 [optional body]
@@ -518,10 +523,10 @@ Follow [Conventional Commits](https://www.conventionalcommits.org/):
 
 **Examples:**
 
-```
+```text
 feat(factory): add LoggingConfig support
 
-BREAKING CHANGE: setup_logging() signature changed
+BREAKING CHANGE: `setup_logging()` is deprecated in favor of `LoggingConfig`
 
 fix(handlers): resolve unused variable warning
 
@@ -532,7 +537,7 @@ docs(api): update handler examples
 
 #### PR Title
 
-```
+```text
 feat: add async handler support
 ```
 
@@ -735,7 +740,7 @@ jobs:
 
 - **Issues**: [GitHub Issues](https://github.com/your-org/arlogi/issues)
 - **Discussions**: [GitHub Discussions](https://github.com/your-org/arlogi/discussions)
-- **Email**: maintainers@example.com
+- **Email**: <maintainers@example.com>
 
 ---
 

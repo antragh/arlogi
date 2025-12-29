@@ -52,12 +52,12 @@ extra_css:
 nav:
   - Home: index.md
   - User Guide: USER_GUIDE.md
-  - Developer Guide: DEVELOPER_GUIDE.md
-  - Reference: API_REFERENCE.md
-  - Caller Attribution Examples: CALLER_ATTRIBUTION_EXAMPLES.md
   - Configuration Guide: CONFIGURATION_GUIDE.md
+  - Caller Attribution Examples: CALLER_ATTRIBUTION_EXAMPLES.md
+  - Developer Guide: DEVELOPER_GUIDE.md
   - Architecture: ARCHITECTURE.md
-  - Reference:
+  - API Reference: API_REFERENCE.md
+  - Code Reference:
       - Config: reference/arlogi/config.md
       - Factory: reference/arlogi/factory.md
       - Handler factory: reference/arlogi/handler_factory.md
