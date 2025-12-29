@@ -254,41 +254,14 @@
   
   
     <li class="md-nav__item">
-      <a href="../../DEVELOPER_GUIDE/" class="md-nav__link">
+      <a href="../../CONFIGURATION_GUIDE/" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
     
   
-    Developer Guide
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-    
-      
-      
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../../API_REFERENCE/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Reference
+    Configuration Guide
   
 
     
@@ -335,14 +308,14 @@
   
   
     <li class="md-nav__item">
-      <a href="../../CONFIGURATION_GUIDE/" class="md-nav__link">
+      <a href="../../DEVELOPER_GUIDE/" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
     
   
-    Configuration Guide
+    Developer Guide
   
 
     
@@ -388,6 +361,33 @@
   
   
   
+    <li class="md-nav__item">
+      <a href="../../API_REFERENCE/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    API Reference
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
     
     
     
@@ -407,7 +407,7 @@
   <span class="md-ellipsis">
     
   
-    Reference
+    Code Reference
   
 
     
@@ -423,7 +423,7 @@
             <span class="md-nav__icon md-icon"></span>
             
   
-    Reference
+    Code Reference
   
 
           </label>
@@ -1657,20 +1657,24 @@
 <li><strong>Type</strong>: Library</li>
 <li><strong>Technology</strong>: Python 3.13+, Rich, Python Standard Library</li>
 </ul>
-<p><strong>Key Responsibilities</strong>:
-- Core logging infrastructure and API
-- Configuration management via LoggingConfig
-- Logger creation and lifecycle management
-- Custom handler implementations (ColoredConsole, JSON, Syslog)
-- Caller attribution and stack inspection
-- TRACE level logging support</p>
-<p><strong>Public APIs</strong>:
-- <code>LoggingConfig</code> - Configuration dataclass (Recommended)
-- <code>LoggerFactory._apply_configuration()</code> - Apply configuration (Recommended)
-- <code>get_logger()</code> - Get standard logger with caller attribution
-- <code>get_json_logger()</code> - Get dedicated JSON-only logger
-- <code>get_syslog_logger()</code> - Get dedicated syslog-only logger
-- <code>setup_logging()</code> - Legacy configuration helper</p>
+<p><strong>Key Responsibilities</strong>:</p>
+<ul>
+<li>Core logging infrastructure and API</li>
+<li>Configuration management via LoggingConfig</li>
+<li>Logger creation and lifecycle management</li>
+<li>Custom handler implementations (ColoredConsole, JSON, Syslog)</li>
+<li>Caller attribution and stack inspection</li>
+<li>TRACE level logging support</li>
+</ul>
+<p><strong>Public APIs</strong>:</p>
+<ul>
+<li><code>LoggingConfig</code> - Configuration dataclass (Recommended)</li>
+<li><code>LoggerFactory._apply_configuration()</code> - Apply configuration (Recommended)</li>
+<li><code>get_logger()</code> - Get standard logger with caller attribution</li>
+<li><code>get_json_logger()</code> - Get dedicated JSON-only logger</li>
+<li><code>get_syslog_logger()</code> - Get dedicated syslog-only logger</li>
+<li><code>setup_logging()</code> - Legacy configuration helper (Deprecated)</li>
+</ul>
 <hr />
 <h3 id="test-suite">Test Suite</h3>
 <ul>
@@ -1680,17 +1684,21 @@
 <li><strong>Type</strong>: Test Suite</li>
 <li><strong>Technology</strong>: Python 3.13+, pytest 9.0.2+, pytest-cov 7.0.0+</li>
 </ul>
-<p><strong>Key Responsibilities</strong>:
-- Unit testing of core functionality
-- Feature validation and integration testing
-- Test coverage measurement and reporting
-- Practical usage examples and demonstrations
-- Regression prevention</p>
-<p><strong>Test Coverage</strong>:
-- Core Functionality: 100%
-- Advanced Features: 95%+
-- Integration Patterns: 90%+
-- Edge Cases: 85%+</p>
+<p><strong>Key Responsibilities</strong>:</p>
+<ul>
+<li>Unit testing of core functionality</li>
+<li>Feature validation and integration testing</li>
+<li>Test coverage measurement and reporting</li>
+<li>Practical usage examples and demonstrations</li>
+<li>Regression prevention</li>
+</ul>
+<p><strong>Test Coverage</strong>:</p>
+<ul>
+<li>Core Functionality: 100%</li>
+<li>Advanced Features: 95%+</li>
+<li>Integration Patterns: 90%+</li>
+<li>Edge Cases: 85%+</li>
+</ul>
 <hr />
 <h3 id="documentation-system">Documentation System</h3>
 <ul>
@@ -1700,17 +1708,21 @@
 <li><strong>Type</strong>: Documentation Infrastructure</li>
 <li><strong>Technology</strong>: MkDocs, Material Theme, MkDocstrings, Markdown, Python, Bash</li>
 </ul>
-<p><strong>Key Responsibilities</strong>:
-- Automatic API documentation generation from source code
-- Static site building and serving
-- Documentation deployment to web servers
-- Developer tools for reference page generation
-- User and developer guide maintenance</p>
-<p><strong>Key Features</strong>:
-- Auto-generated API reference from Python docstrings
-- Modern web interface with search functionality
-- Mermaid diagram rendering
-- Automated deployment via SSH/rsync</p>
+<p><strong>Key Responsibilities</strong>:</p>
+<ul>
+<li>Automatic API documentation generation from source code</li>
+<li>Static site building and serving</li>
+<li>Documentation deployment to web servers</li>
+<li>Developer tools for reference page generation</li>
+<li>User and developer guide maintenance</li>
+</ul>
+<p><strong>Key Features</strong>:</p>
+<ul>
+<li>Auto-generated API reference from Python docstrings</li>
+<li>Modern web interface with search functionality</li>
+<li>Mermaid diagram rendering</li>
+<li>Automated deployment via SSH/rsync</li>
+</ul>
 <hr />
 <h2 id="component-relationships">Component Relationships</h2>
 <p>The three components form a cohesive system with clear dependencies and interactions:</p>
@@ -1789,40 +1801,52 @@
     style Docs fill:#fff3e0,stroke:#e65100,stroke-width:2px</code></pre>
 <h2 id="component-interactions">Component Interactions</h2>
 <h3 id="core-logging-library-interactions">Core Logging Library Interactions</h3>
-<p><strong>With Test Suite</strong>:
-- <strong>Tests → Core</strong>: Import and test all public APIs
-- <strong>Tests → Core</strong>: Validate protocol compliance
-- <strong>Tests → Core</strong>: Verify feature implementations
-- <strong>Tests → Core</strong>: Test configuration and factory methods</p>
-<p><strong>With Documentation System</strong>:
-- <strong>Docs → Core</strong>: Extract docstrings for API reference
-- <strong>Docs → Core</strong>: Analyze type hints for documentation
-- <strong>Docs → Core</strong>: Document module structure and organization
-- <strong>Core → Docs</strong>: Provide source code for documentation generation</p>
+<p><strong>With Test Suite</strong>:</p>
+<ul>
+<li><strong>Tests → Core</strong>: Import and test all public APIs</li>
+<li><strong>Tests → Core</strong>: Validate protocol compliance</li>
+<li><strong>Tests → Core</strong>: Verify feature implementations</li>
+<li><strong>Tests → Core</strong>: Test configuration and factory methods</li>
+</ul>
+<p><strong>With Documentation System</strong>:</p>
+<ul>
+<li><strong>Docs → Core</strong>: Extract docstrings for API reference</li>
+<li><strong>Docs → Core</strong>: Analyze type hints for documentation</li>
+<li><strong>Docs → Core</strong>: Document module structure and organization</li>
+<li><strong>Core → Docs</strong>: Provide source code for documentation generation</li>
+</ul>
 <h3 id="test-suite-interactions">Test Suite Interactions</h3>
-<p><strong>With Core Logging Library</strong>:
-- Tests all public functions: <code>get_logger()</code>, <code>get_json_logger()</code>, <code>get_syslog_logger()</code>, <code>setup_logging()</code> (legacy)
-- Validates configuration classes (<code>LoggingConfig</code>, <code>LoggerFactory</code>)
-- Verifies protocol compliance and type safety
-- Tests handler implementations (ColoredConsole, JSON, Syslog)
-- Validates custom TRACE level functionality</p>
-<p><strong>With External Systems</strong>:
-- Uses pytest framework for test execution
-- Uses pytest-cov for coverage reporting
-- Uses pytest fixtures (caplog, capsys) for output capture</p>
+<p><strong>With Core Logging Library</strong>:</p>
+<ul>
+<li>Tests all public functions: <code>get_logger()</code>, <code>get_json_logger()</code>, <code>get_syslog_logger()</code>, <code>setup_logging()</code> (legacy)</li>
+<li>Validates configuration classes (<code>LoggingConfig</code>, <code>LoggerFactory</code>)</li>
+<li>Verifies protocol compliance and type safety</li>
+<li>Tests handler implementations (ColoredConsole, JSON, Syslog)</li>
+<li>Validates custom TRACE level functionality</li>
+</ul>
+<p><strong>With External Systems</strong>:</p>
+<ul>
+<li>Uses pytest framework for test execution</li>
+<li>Uses pytest-cov for coverage reporting</li>
+<li>Uses pytest fixtures (caplog, capsys) for output capture</li>
+</ul>
 <h3 id="documentation-system-interactions">Documentation System Interactions</h3>
-<p><strong>With Core Logging Library</strong>:
-- Extracts API documentation from Python source code
-- Generates reference pages for all modules
-- Creates navigation structure based on module organization
-- Documents configuration classes and their parameters
-- Provides usage examples from test suite</p>
-<p><strong>With External Systems</strong>:
-- Uses MkDocs for static site generation
-- Uses Material theme for web interface
-- Uses MkDocstrings for automatic API documentation
-- Deploys to nginx web server via SSH/rsync
-- Serves documentation to application developers</p>
+<p><strong>With Core Logging Library</strong>:</p>
+<ul>
+<li>Extracts API documentation from Python source code</li>
+<li>Generates reference pages for all modules</li>
+<li>Creates navigation structure based on module organization</li>
+<li>Documents configuration classes and their parameters</li>
+<li>Provides usage examples from test suite</li>
+</ul>
+<p><strong>With External Systems</strong>:</p>
+<ul>
+<li>Uses MkDocs for static site generation</li>
+<li>Uses Material theme for web interface</li>
+<li>Uses MkDocstrings for automatic API documentation</li>
+<li>Deploys to nginx web server via SSH/rsync</li>
+<li>Serves documentation to application developers</li>
+</ul>
 <h2 id="data-flow">Data Flow</h2>
 <pre class="mermaid"><code>flowchart LR
     subgraph "Development Workflow"
@@ -1965,11 +1989,13 @@
 <li><strong><a href="../c4-code-src-arlogi/">Code Documentation</a></strong> - Implementation details</li>
 </ul>
 <hr />
-<p><strong>Document Information</strong>
-- <strong>Last Updated</strong>: 2025-12-28
-- <strong>C4 Level</strong>: Component
-- <strong>Scope</strong>: All components in the arlogi system
-- <strong>Purpose</strong>: Master index and overview of all system components</p>
+<p><strong>Document Information</strong></p>
+<ul>
+<li><strong>Last Updated</strong>: 2025-12-28</li>
+<li><strong>C4 Level</strong>: Component</li>
+<li><strong>Scope</strong>: All components in the arlogi system</li>
+<li><strong>Purpose</strong>: Master index and overview of all system components</li>
+</ul>
 
 
 

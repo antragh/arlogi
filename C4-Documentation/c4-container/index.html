@@ -254,41 +254,14 @@
   
   
     <li class="md-nav__item">
-      <a href="../../DEVELOPER_GUIDE/" class="md-nav__link">
+      <a href="../../CONFIGURATION_GUIDE/" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
     
   
-    Developer Guide
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-    
-      
-      
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../../API_REFERENCE/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Reference
+    Configuration Guide
   
 
     
@@ -335,14 +308,14 @@
   
   
     <li class="md-nav__item">
-      <a href="../../CONFIGURATION_GUIDE/" class="md-nav__link">
+      <a href="../../DEVELOPER_GUIDE/" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
     
   
-    Configuration Guide
+    Developer Guide
   
 
     
@@ -388,6 +361,33 @@
   
   
   
+    <li class="md-nav__item">
+      <a href="../../API_REFERENCE/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    API Reference
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
     
     
     
@@ -407,7 +407,7 @@
   <span class="md-ellipsis">
     
   
-    Reference
+    Code Reference
   
 
     
@@ -423,7 +423,7 @@
             <span class="md-nav__icon md-icon"></span>
             
   
-    Reference
+    Code Reference
   
 
           </label>
@@ -2371,7 +2371,7 @@
 <li>Handler Implementations (ColoredConsoleHandler, JSONHandler, JSONFileHandler, ArlogiSyslogHandler)</li>
 <li>Type Definitions (LoggerProtocol, custom TRACE level)</li>
 <li>Public API Functions (get_logger, get_json_logger, get_syslog_logger)</li>
-<li>Legacy Helpers (setup_logging)</li>
+<li>Legacy Helpers (<code>setup_logging</code>)</li>
 </ul>
 <h4 id="interfaces">Interfaces</h4>
 <h5 id="python-module-api">Python Module API</h5>
@@ -2385,7 +2385,7 @@
 <li><code>arlogi.get_logger(name, level=None)</code> - Get standard logger</li>
 <li><code>arlogi.get_json_logger(name, json_file_name=None)</code> - Get JSON-only logger</li>
 <li><code>arlogi.get_syslog_logger(name, address="/dev/log")</code> - Get syslog-only logger</li>
-<li><code>arlogi.setup_logging(**kwargs)</code> - Legacy configuration helper</li>
+<li><code>arlogi.setup_logging(**kwargs)</code> - Legacy configuration helper (Deprecated)</li>
 <li><code>arlogi.HandlerFactory</code> - Handler factory class</li>
 <li><code>arlogi.TRACE</code> - Custom TRACE log level constant</li>
 </ul>

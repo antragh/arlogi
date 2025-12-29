@@ -9,10 +9,10 @@
       
       
       
-        <link rel="prev" href="../CALLER_ATTRIBUTION_EXAMPLES/">
+        <link rel="prev" href="../USER_GUIDE/">
       
       
-        <link rel="next" href="../ARCHITECTURE/">
+        <link rel="next" href="../CALLER_ATTRIBUTION_EXAMPLES/">
       
       
         
@@ -235,87 +235,6 @@
     
   
     User Guide
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-    
-      
-      
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../DEVELOPER_GUIDE/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Developer Guide
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-    
-      
-      
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../API_REFERENCE/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Reference
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-    
-      
-      
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../CALLER_ATTRIBUTION_EXAMPLES/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Caller Attribution Examples
   
 
     
@@ -932,6 +851,60 @@
   
   
     <li class="md-nav__item">
+      <a href="../CALLER_ATTRIBUTION_EXAMPLES/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Caller Attribution Examples
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../DEVELOPER_GUIDE/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Developer Guide
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
       <a href="../ARCHITECTURE/" class="md-nav__link">
         
   
@@ -940,6 +913,33 @@
     
   
     Architecture
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../API_REFERENCE/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    API Reference
   
 
     
@@ -977,7 +977,7 @@
   <span class="md-ellipsis">
     
   
-    Reference
+    Code Reference
   
 
     
@@ -993,7 +993,7 @@
             <span class="md-nav__icon md-icon"></span>
             
   
-    Reference
+    Code Reference
   
 
           </label>
@@ -2262,9 +2262,9 @@
 </span><span id="__span-4-16"><a id="__codelineno-4-16" name="__codelineno-4-16" href="#__codelineno-4-16"></a><span class="n">LoggerFactory</span><span class="o">.</span><span class="n">_apply_configuration</span><span class="p">(</span><span class="n">config</span><span class="p">)</span>
 </span></code></pre></div>
 <h3 id="module-hierarchy-matching">Module Hierarchy Matching</h3>
-<div class="language-python highlight"><pre><span></span><code><span id="__span-5-1"><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a><span class="kn">from</span><span class="w"> </span><span class="nn">arlogi</span><span class="w"> </span><span class="kn">import</span> <span class="n">setup_logging</span>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-5-1"><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a><span class="kn">from</span><span class="w"> </span><span class="nn">arlogi</span><span class="w"> </span><span class="kn">import</span> <span class="n">LoggingConfig</span><span class="p">,</span> <span class="n">LoggerFactory</span>
 </span><span id="__span-5-2"><a id="__codelineno-5-2" name="__codelineno-5-2" href="#__codelineno-5-2"></a>
-</span><span id="__span-5-3"><a id="__codelineno-5-3" name="__codelineno-5-3" href="#__codelineno-5-3"></a><span class="n">setup_logging</span><span class="p">(</span>
+</span><span id="__span-5-3"><a id="__codelineno-5-3" name="__codelineno-5-3" href="#__codelineno-5-3"></a><span class="n">config</span> <span class="o">=</span> <span class="n">LoggingConfig</span><span class="p">(</span>
 </span><span id="__span-5-4"><a id="__codelineno-5-4" name="__codelineno-5-4" href="#__codelineno-5-4"></a>    <span class="n">level</span><span class="o">=</span><span class="s2">&quot;INFO&quot;</span><span class="p">,</span>
 </span><span id="__span-5-5"><a id="__codelineno-5-5" name="__codelineno-5-5" href="#__codelineno-5-5"></a>    <span class="n">module_levels</span><span class="o">=</span><span class="p">{</span>
 </span><span id="__span-5-6"><a id="__codelineno-5-6" name="__codelineno-5-6" href="#__codelineno-5-6"></a>        <span class="c1"># Affects: app.network.http, app.network.tcp, app.network.udp</span>
@@ -2280,13 +2280,14 @@
 </span><span id="__span-5-16"><a id="__codelineno-5-16" name="__codelineno-5-16" href="#__codelineno-5-16"></a>        <span class="s2">&quot;app.network.http.client&quot;</span><span class="p">:</span> <span class="s2">&quot;DEBUG&quot;</span>
 </span><span id="__span-5-17"><a id="__codelineno-5-17" name="__codelineno-5-17" href="#__codelineno-5-17"></a>    <span class="p">}</span>
 </span><span id="__span-5-18"><a id="__codelineno-5-18" name="__codelineno-5-18" href="#__codelineno-5-18"></a><span class="p">)</span>
-</span><span id="__span-5-19"><a id="__codelineno-5-19" name="__codelineno-5-19" href="#__codelineno-5-19"></a>
-</span><span id="__span-5-20"><a id="__codelineno-5-20" name="__codelineno-5-20" href="#__codelineno-5-20"></a><span class="c1"># Examples:</span>
-</span><span id="__span-5-21"><a id="__codelineno-5-21" name="__codelineno-5-21" href="#__codelineno-5-21"></a><span class="c1"># get_logger(&quot;app.network.http&quot;) -&gt; TRACE level</span>
-</span><span id="__span-5-22"><a id="__codelineno-5-22" name="__codelineno-5-22" href="#__codelineno-5-22"></a><span class="c1"># get_logger(&quot;app.network.tcp&quot;) -&gt; TRACE level</span>
-</span><span id="__span-5-23"><a id="__codelineno-5-23" name="__codelineno-5-23" href="#__codelineno-5-23"></a><span class="c1"># get_logger(&quot;app.database.mysql&quot;) -&gt; DEBUG level</span>
-</span><span id="__span-5-24"><a id="__codelineno-5-24" name="__codelineno-5-24" href="#__codelineno-5-24"></a><span class="c1"># get_logger(&quot;app.network.http.client&quot;) -&gt; DEBUG level (specific override)</span>
-</span><span id="__span-5-25"><a id="__codelineno-5-25" name="__codelineno-5-25" href="#__codelineno-5-25"></a><span class="c1"># get_logger(&quot;app.other&quot;) -&gt; INFO level (global)</span>
+</span><span id="__span-5-19"><a id="__codelineno-5-19" name="__codelineno-5-19" href="#__codelineno-5-19"></a><span class="n">LoggerFactory</span><span class="o">.</span><span class="n">_apply_configuration</span><span class="p">(</span><span class="n">config</span><span class="p">)</span>
+</span><span id="__span-5-20"><a id="__codelineno-5-20" name="__codelineno-5-20" href="#__codelineno-5-20"></a>
+</span><span id="__span-5-21"><a id="__codelineno-5-21" name="__codelineno-5-21" href="#__codelineno-5-21"></a><span class="c1"># Examples:</span>
+</span><span id="__span-5-22"><a id="__codelineno-5-22" name="__codelineno-5-22" href="#__codelineno-5-22"></a><span class="c1"># get_logger(&quot;app.network.http&quot;) -&gt; TRACE level</span>
+</span><span id="__span-5-23"><a id="__codelineno-5-23" name="__codelineno-5-23" href="#__codelineno-5-23"></a><span class="c1"># get_logger(&quot;app.network.tcp&quot;) -&gt; TRACE level</span>
+</span><span id="__span-5-24"><a id="__codelineno-5-24" name="__codelineno-5-24" href="#__codelineno-5-24"></a><span class="c1"># get_logger(&quot;app.database.mysql&quot;) -&gt; DEBUG level</span>
+</span><span id="__span-5-25"><a id="__codelineno-5-25" name="__codelineno-5-25" href="#__codelineno-5-25"></a><span class="c1"># get_logger(&quot;app.network.http.client&quot;) -&gt; DEBUG level (specific override)</span>
+</span><span id="__span-5-26"><a id="__codelineno-5-26" name="__codelineno-5-26" href="#__codelineno-5-26"></a><span class="c1"># get_logger(&quot;app.other&quot;) -&gt; INFO level (global)</span>
 </span></code></pre></div>
 <h2 id="handler-configuration">Handler Configuration</h2>
 <h3 id="console-handler-configuration">Console Handler Configuration</h3>
@@ -2362,33 +2363,28 @@
 </span><span id="__span-9-20"><a id="__codelineno-9-20" name="__codelineno-9-20" href="#__codelineno-9-20"></a><span class="n">custom_logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Custom JSON logging&quot;</span><span class="p">,</span> <span class="n">custom_field</span><span class="o">=</span><span class="s2">&quot;value&quot;</span><span class="p">)</span>
 </span></code></pre></div>
 <h3 id="syslog-configuration-modern">Syslog Configuration (Modern)</h3>
-<div class="language-python highlight"><pre><span></span><code><span id="__span-10-1"><a id="__codelineno-10-1" name="__codelineno-10-1" href="#__codelineno-10-1"></a><span class="kn">from</span><span class="w"> </span><span class="nn">arlogi</span><span class="w"> </span><span class="kn">import</span> <span class="n">setup_logging</span>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-10-1"><a id="__codelineno-10-1" name="__codelineno-10-1" href="#__codelineno-10-1"></a><span class="kn">from</span><span class="w"> </span><span class="nn">arlogi</span><span class="w"> </span><span class="kn">import</span> <span class="n">LoggingConfig</span><span class="p">,</span> <span class="n">LoggerFactory</span>
 </span><span id="__span-10-2"><a id="__codelineno-10-2" name="__codelineno-10-2" href="#__codelineno-10-2"></a>
 </span><span id="__span-10-3"><a id="__codelineno-10-3" name="__codelineno-10-3" href="#__codelineno-10-3"></a><span class="c1"># Local syslog</span>
-</span><span id="__span-10-4"><a id="__codelineno-10-4" name="__codelineno-10-4" href="#__codelineno-10-4"></a><span class="n">setup_logging</span><span class="p">(</span>
+</span><span id="__span-10-4"><a id="__codelineno-10-4" name="__codelineno-10-4" href="#__codelineno-10-4"></a><span class="n">config</span> <span class="o">=</span> <span class="n">LoggingConfig</span><span class="p">(</span>
 </span><span id="__span-10-5"><a id="__codelineno-10-5" name="__codelineno-10-5" href="#__codelineno-10-5"></a>    <span class="n">level</span><span class="o">=</span><span class="s2">&quot;INFO&quot;</span><span class="p">,</span>
 </span><span id="__span-10-6"><a id="__codelineno-10-6" name="__codelineno-10-6" href="#__codelineno-10-6"></a>    <span class="n">use_syslog</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
 </span><span id="__span-10-7"><a id="__codelineno-10-7" name="__codelineno-10-7" href="#__codelineno-10-7"></a>    <span class="n">syslog_address</span><span class="o">=</span><span class="s2">&quot;/dev/log&quot;</span>  <span class="c1"># Default</span>
 </span><span id="__span-10-8"><a id="__codelineno-10-8" name="__codelineno-10-8" href="#__codelineno-10-8"></a><span class="p">)</span>
-</span><span id="__span-10-9"><a id="__codelineno-10-9" name="__codelineno-10-9" href="#__codelineno-10-9"></a>
-</span><span id="__span-10-10"><a id="__codelineno-10-10" name="__codelineno-10-10" href="#__codelineno-10-10"></a><span class="c1"># Remote syslog server</span>
-</span><span id="__span-10-11"><a id="__codelineno-10-11" name="__codelineno-10-11" href="#__codelineno-10-11"></a><span class="n">setup_logging</span><span class="p">(</span>
-</span><span id="__span-10-12"><a id="__codelineno-10-12" name="__codelineno-10-12" href="#__codelineno-10-12"></a>    <span class="n">level</span><span class="o">=</span><span class="s2">&quot;INFO&quot;</span><span class="p">,</span>
-</span><span id="__span-10-13"><a id="__codelineno-10-13" name="__codelineno-10-13" href="#__codelineno-10-13"></a>    <span class="n">use_syslog</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-</span><span id="__span-10-14"><a id="__codelineno-10-14" name="__codelineno-10-14" href="#__codelineno-10-14"></a>    <span class="n">syslog_address</span><span class="o">=</span><span class="p">(</span><span class="s2">&quot;syslog.example.com&quot;</span><span class="p">,</span> <span class="mi">514</span><span class="p">)</span>
-</span><span id="__span-10-15"><a id="__codelineno-10-15" name="__codelineno-10-15" href="#__codelineno-10-15"></a><span class="p">)</span>
-</span><span id="__span-10-16"><a id="__codelineno-10-16" name="__codelineno-10-16" href="#__codelineno-10-16"></a>
-</span><span id="__span-10-17"><a id="__codelineno-10-17" name="__codelineno-10-17" href="#__codelineno-10-17"></a><span class="c1"># Syslog with specific facility</span>
-</span><span id="__span-10-18"><a id="__codelineno-10-18" name="__codelineno-10-18" href="#__codelineno-10-18"></a><span class="n">setup_logging</span><span class="p">(</span>
-</span><span id="__span-10-19"><a id="__codelineno-10-19" name="__codelineno-10-19" href="#__codelineno-10-19"></a>    <span class="n">level</span><span class="o">=</span><span class="s2">&quot;INFO&quot;</span><span class="p">,</span>
-</span><span id="__span-10-20"><a id="__codelineno-10-20" name="__codelineno-10-20" href="#__codelineno-10-20"></a>    <span class="n">use_syslog</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-</span><span id="__span-10-21"><a id="__codelineno-10-21" name="__codelineno-10-21" href="#__codelineno-10-21"></a>    <span class="n">syslog_address</span><span class="o">=</span><span class="s2">&quot;/dev/log&quot;</span>
-</span><span id="__span-10-22"><a id="__codelineno-10-22" name="__codelineno-10-22" href="#__codelineno-10-22"></a><span class="p">)</span>
-</span><span id="__span-10-23"><a id="__codelineno-10-23" name="__codelineno-10-23" href="#__codelineno-10-23"></a>
-</span><span id="__span-10-24"><a id="__codelineno-10-24" name="__codelineno-10-24" href="#__codelineno-10-24"></a><span class="c1"># Syslog-only logger</span>
-</span><span id="__span-10-25"><a id="__codelineno-10-25" name="__codelineno-10-25" href="#__codelineno-10-25"></a><span class="kn">from</span><span class="w"> </span><span class="nn">arlogi</span><span class="w"> </span><span class="kn">import</span> <span class="n">get_syslog_logger</span>
-</span><span id="__span-10-26"><a id="__codelineno-10-26" name="__codelineno-10-26" href="#__codelineno-10-26"></a><span class="n">syslog_logger</span> <span class="o">=</span> <span class="n">get_syslog_logger</span><span class="p">(</span><span class="s2">&quot;security&quot;</span><span class="p">)</span>
-</span><span id="__span-10-27"><a id="__codelineno-10-27" name="__codelineno-10-27" href="#__codelineno-10-27"></a><span class="n">syslog_logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s2">&quot;Security event detected&quot;</span><span class="p">)</span>
+</span><span id="__span-10-9"><a id="__codelineno-10-9" name="__codelineno-10-9" href="#__codelineno-10-9"></a><span class="n">LoggerFactory</span><span class="o">.</span><span class="n">_apply_configuration</span><span class="p">(</span><span class="n">config</span><span class="p">)</span>
+</span><span id="__span-10-10"><a id="__codelineno-10-10" name="__codelineno-10-10" href="#__codelineno-10-10"></a>
+</span><span id="__span-10-11"><a id="__codelineno-10-11" name="__codelineno-10-11" href="#__codelineno-10-11"></a><span class="c1"># Remote syslog server</span>
+</span><span id="__span-10-12"><a id="__codelineno-10-12" name="__codelineno-10-12" href="#__codelineno-10-12"></a><span class="n">config</span> <span class="o">=</span> <span class="n">LoggingConfig</span><span class="p">(</span>
+</span><span id="__span-10-13"><a id="__codelineno-10-13" name="__codelineno-10-13" href="#__codelineno-10-13"></a>    <span class="n">level</span><span class="o">=</span><span class="s2">&quot;INFO&quot;</span><span class="p">,</span>
+</span><span id="__span-10-14"><a id="__codelineno-10-14" name="__codelineno-10-14" href="#__codelineno-10-14"></a>    <span class="n">use_syslog</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+</span><span id="__span-10-15"><a id="__codelineno-10-15" name="__codelineno-10-15" href="#__codelineno-10-15"></a>    <span class="n">syslog_address</span><span class="o">=</span><span class="p">(</span><span class="s2">&quot;syslog.example.com&quot;</span><span class="p">,</span> <span class="mi">514</span><span class="p">)</span>
+</span><span id="__span-10-16"><a id="__codelineno-10-16" name="__codelineno-10-16" href="#__codelineno-10-16"></a><span class="p">)</span>
+</span><span id="__span-10-17"><a id="__codelineno-10-17" name="__codelineno-10-17" href="#__codelineno-10-17"></a><span class="n">LoggerFactory</span><span class="o">.</span><span class="n">_apply_configuration</span><span class="p">(</span><span class="n">config</span><span class="p">)</span>
+</span><span id="__span-10-18"><a id="__codelineno-10-18" name="__codelineno-10-18" href="#__codelineno-10-18"></a>
+</span><span id="__span-10-19"><a id="__codelineno-10-19" name="__codelineno-10-19" href="#__codelineno-10-19"></a><span class="c1"># Syslog-only logger</span>
+</span><span id="__span-10-20"><a id="__codelineno-10-20" name="__codelineno-10-20" href="#__codelineno-10-20"></a><span class="kn">from</span><span class="w"> </span><span class="nn">arlogi</span><span class="w"> </span><span class="kn">import</span> <span class="n">get_syslog_logger</span>
+</span><span id="__span-10-21"><a id="__codelineno-10-21" name="__codelineno-10-21" href="#__codelineno-10-21"></a><span class="n">syslog_logger</span> <span class="o">=</span> <span class="n">get_syslog_logger</span><span class="p">(</span><span class="s2">&quot;security&quot;</span><span class="p">)</span>
+</span><span id="__span-10-22"><a id="__codelineno-10-22" name="__codelineno-10-22" href="#__codelineno-10-22"></a><span class="n">syslog_logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s2">&quot;Security event detected&quot;</span><span class="p">)</span>
 </span></code></pre></div>
 <h4 id="syslog-handler-details">Syslog Handler Details</h4>
 <div class="language-python highlight"><pre><span></span><code><span id="__span-11-1"><a id="__codelineno-11-1" name="__codelineno-11-1" href="#__codelineno-11-1"></a><span class="kn">from</span><span class="w"> </span><span class="nn">arlogi.handlers</span><span class="w"> </span><span class="kn">import</span> <span class="n">ArlogiSyslogHandler</span>
@@ -2420,14 +2416,14 @@
 <h2 id="application-structure-examples">Application Structure Examples</h2>
 <h3 id="microservice-configuration">Microservice Configuration</h3>
 <div class="language-python highlight"><pre><span></span><code><span id="__span-12-1"><a id="__codelineno-12-1" name="__codelineno-12-1" href="#__codelineno-12-1"></a><span class="c1"># config/logging.py</span>
-</span><span id="__span-12-2"><a id="__codelineno-12-2" name="__codelineno-12-2" href="#__codelineno-12-2"></a><span class="kn">from</span><span class="w"> </span><span class="nn">arlogi</span><span class="w"> </span><span class="kn">import</span> <span class="n">setup_logging</span>
+</span><span id="__span-12-2"><a id="__codelineno-12-2" name="__codelineno-12-2" href="#__codelineno-12-2"></a><span class="kn">from</span><span class="w"> </span><span class="nn">arlogi</span><span class="w"> </span><span class="kn">import</span> <span class="n">LoggingConfig</span><span class="p">,</span> <span class="n">LoggerFactory</span>
 </span><span id="__span-12-3"><a id="__codelineno-12-3" name="__codelineno-12-3" href="#__codelineno-12-3"></a>
 </span><span id="__span-12-4"><a id="__codelineno-12-4" name="__codelineno-12-4" href="#__codelineno-12-4"></a><span class="k">def</span><span class="w"> </span><span class="nf">setup_service_logging</span><span class="p">(</span><span class="n">service_name</span><span class="p">,</span> <span class="n">environment</span><span class="o">=</span><span class="s2">&quot;production&quot;</span><span class="p">):</span>
 </span><span id="__span-12-5"><a id="__codelineno-12-5" name="__codelineno-12-5" href="#__codelineno-12-5"></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;Configure logging for microservice&quot;&quot;&quot;</span>
 </span><span id="__span-12-6"><a id="__codelineno-12-6" name="__codelineno-12-6" href="#__codelineno-12-6"></a>
 </span><span id="__span-12-7"><a id="__codelineno-12-7" name="__codelineno-12-7" href="#__codelineno-12-7"></a>    <span class="k">if</span> <span class="n">environment</span> <span class="o">==</span> <span class="s2">&quot;development&quot;</span><span class="p">:</span>
 </span><span id="__span-12-8"><a id="__codelineno-12-8" name="__codelineno-12-8" href="#__codelineno-12-8"></a>        <span class="c1"># Development: verbose console logging</span>
-</span><span id="__span-12-9"><a id="__codelineno-12-9" name="__codelineno-12-9" href="#__codelineno-12-9"></a>        <span class="n">setup_logging</span><span class="p">(</span>
+</span><span id="__span-12-9"><a id="__codelineno-12-9" name="__codelineno-12-9" href="#__codelineno-12-9"></a>        <span class="n">config</span> <span class="o">=</span> <span class="n">LoggingConfig</span><span class="p">(</span>
 </span><span id="__span-12-10"><a id="__codelineno-12-10" name="__codelineno-12-10" href="#__codelineno-12-10"></a>            <span class="n">level</span><span class="o">=</span><span class="s2">&quot;DEBUG&quot;</span><span class="p">,</span>
 </span><span id="__span-12-11"><a id="__codelineno-12-11" name="__codelineno-12-11" href="#__codelineno-12-11"></a>            <span class="n">show_time</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
 </span><span id="__span-12-12"><a id="__codelineno-12-12" name="__codelineno-12-12" href="#__codelineno-12-12"></a>            <span class="n">show_level</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
@@ -2435,14 +2431,14 @@
 </span><span id="__span-12-14"><a id="__codelineno-12-14" name="__codelineno-12-14" href="#__codelineno-12-14"></a>        <span class="p">)</span>
 </span><span id="__span-12-15"><a id="__codelineno-12-15" name="__codelineno-12-15" href="#__codelineno-12-15"></a>    <span class="k">elif</span> <span class="n">environment</span> <span class="o">==</span> <span class="s2">&quot;testing&quot;</span><span class="p">:</span>
 </span><span id="__span-12-16"><a id="__codelineno-12-16" name="__codelineno-12-16" href="#__codelineno-12-16"></a>        <span class="c1"># Testing: JSON-only for automated analysis</span>
-</span><span id="__span-12-17"><a id="__codelineno-12-17" name="__codelineno-12-17" href="#__codelineno-12-17"></a>        <span class="n">setup_logging</span><span class="p">(</span>
+</span><span id="__span-12-17"><a id="__codelineno-12-17" name="__codelineno-12-17" href="#__codelineno-12-17"></a>        <span class="n">config</span> <span class="o">=</span> <span class="n">LoggingConfig</span><span class="p">(</span>
 </span><span id="__span-12-18"><a id="__codelineno-12-18" name="__codelineno-12-18" href="#__codelineno-12-18"></a>            <span class="n">level</span><span class="o">=</span><span class="s2">&quot;INFO&quot;</span><span class="p">,</span>
 </span><span id="__span-12-19"><a id="__codelineno-12-19" name="__codelineno-12-19" href="#__codelineno-12-19"></a>            <span class="n">json_file_name</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;logs/</span><span class="si">{</span><span class="n">service_name</span><span class="si">}</span><span class="s2">.jsonl&quot;</span><span class="p">,</span>
 </span><span id="__span-12-20"><a id="__codelineno-12-20" name="__codelineno-12-20" href="#__codelineno-12-20"></a>            <span class="n">json_file_only</span><span class="o">=</span><span class="kc">True</span>
 </span><span id="__span-12-21"><a id="__codelineno-12-21" name="__codelineno-12-21" href="#__codelineno-12-21"></a>        <span class="p">)</span>
 </span><span id="__span-12-22"><a id="__codelineno-12-22" name="__codelineno-12-22" href="#__codelineno-12-22"></a>    <span class="k">else</span><span class="p">:</span>
 </span><span id="__span-12-23"><a id="__codelineno-12-23" name="__codelineno-12-23" href="#__codelineno-12-23"></a>        <span class="c1"># Production: console + JSON + syslog</span>
-</span><span id="__span-12-24"><a id="__codelineno-12-24" name="__codelineno-12-24" href="#__codelineno-12-24"></a>        <span class="n">setup_logging</span><span class="p">(</span>
+</span><span id="__span-12-24"><a id="__codelineno-12-24" name="__codelineno-12-24" href="#__codelineno-12-24"></a>        <span class="n">config</span> <span class="o">=</span> <span class="n">LoggingConfig</span><span class="p">(</span>
 </span><span id="__span-12-25"><a id="__codelineno-12-25" name="__codelineno-12-25" href="#__codelineno-12-25"></a>            <span class="n">level</span><span class="o">=</span><span class="s2">&quot;INFO&quot;</span><span class="p">,</span>
 </span><span id="__span-12-26"><a id="__codelineno-12-26" name="__codelineno-12-26" href="#__codelineno-12-26"></a>            <span class="n">module_levels</span><span class="o">=</span><span class="p">{</span>
 </span><span id="__span-12-27"><a id="__codelineno-12-27" name="__codelineno-12-27" href="#__codelineno-12-27"></a>                <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">service_name</span><span class="si">}</span><span class="s2">.network&quot;</span><span class="p">:</span> <span class="s2">&quot;DEBUG&quot;</span><span class="p">,</span>
@@ -2455,69 +2451,71 @@
 </span><span id="__span-12-34"><a id="__codelineno-12-34" name="__codelineno-12-34" href="#__codelineno-12-34"></a>            <span class="n">show_path</span><span class="o">=</span><span class="kc">True</span>
 </span><span id="__span-12-35"><a id="__codelineno-12-35" name="__codelineno-12-35" href="#__codelineno-12-35"></a>        <span class="p">)</span>
 </span><span id="__span-12-36"><a id="__codelineno-12-36" name="__codelineno-12-36" href="#__codelineno-12-36"></a>
-</span><span id="__span-12-37"><a id="__codelineno-12-37" name="__codelineno-12-37" href="#__codelineno-12-37"></a><span class="c1"># main.py</span>
-</span><span id="__span-12-38"><a id="__codelineno-12-38" name="__codelineno-12-38" href="#__codelineno-12-38"></a><span class="kn">from</span><span class="w"> </span><span class="nn">config.logging</span><span class="w"> </span><span class="kn">import</span> <span class="n">setup_service_logging</span>
-</span><span id="__span-12-39"><a id="__codelineno-12-39" name="__codelineno-12-39" href="#__codelineno-12-39"></a><span class="kn">from</span><span class="w"> </span><span class="nn">arlogi</span><span class="w"> </span><span class="kn">import</span> <span class="n">get_logger</span>
-</span><span id="__span-12-40"><a id="__codelineno-12-40" name="__codelineno-12-40" href="#__codelineno-12-40"></a>
-</span><span id="__span-12-41"><a id="__codelineno-12-41" name="__codelineno-12-41" href="#__codelineno-12-41"></a><span class="n">setup_service_logging</span><span class="p">(</span><span class="s2">&quot;user-service&quot;</span><span class="p">,</span> <span class="n">environment</span><span class="o">=</span><span class="s2">&quot;production&quot;</span><span class="p">)</span>
+</span><span id="__span-12-37"><a id="__codelineno-12-37" name="__codelineno-12-37" href="#__codelineno-12-37"></a>    <span class="n">LoggerFactory</span><span class="o">.</span><span class="n">_apply_configuration</span><span class="p">(</span><span class="n">config</span><span class="p">)</span>
+</span><span id="__span-12-38"><a id="__codelineno-12-38" name="__codelineno-12-38" href="#__codelineno-12-38"></a>
+</span><span id="__span-12-39"><a id="__codelineno-12-39" name="__codelineno-12-39" href="#__codelineno-12-39"></a><span class="c1"># main.py</span>
+</span><span id="__span-12-40"><a id="__codelineno-12-40" name="__codelineno-12-40" href="#__codelineno-12-40"></a><span class="kn">from</span><span class="w"> </span><span class="nn">config.logging</span><span class="w"> </span><span class="kn">import</span> <span class="n">setup_service_logging</span>
+</span><span id="__span-12-41"><a id="__codelineno-12-41" name="__codelineno-12-41" href="#__codelineno-12-41"></a><span class="kn">from</span><span class="w"> </span><span class="nn">arlogi</span><span class="w"> </span><span class="kn">import</span> <span class="n">get_logger</span>
 </span><span id="__span-12-42"><a id="__codelineno-12-42" name="__codelineno-12-42" href="#__codelineno-12-42"></a>
-</span><span id="__span-12-43"><a id="__codelineno-12-43" name="__codelineno-12-43" href="#__codelineno-12-43"></a><span class="n">logger</span> <span class="o">=</span> <span class="n">get_logger</span><span class="p">(</span><span class="s2">&quot;user-service.main&quot;</span><span class="p">)</span>
-</span><span id="__span-12-44"><a id="__codelineno-12-44" name="__codelineno-12-44" href="#__codelineno-12-44"></a><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;User service started&quot;</span><span class="p">)</span>
+</span><span id="__span-12-43"><a id="__codelineno-12-43" name="__codelineno-12-43" href="#__codelineno-12-43"></a><span class="n">setup_service_logging</span><span class="p">(</span><span class="s2">&quot;user-service&quot;</span><span class="p">,</span> <span class="n">environment</span><span class="o">=</span><span class="s2">&quot;production&quot;</span><span class="p">)</span>
+</span><span id="__span-12-44"><a id="__codelineno-12-44" name="__codelineno-12-44" href="#__codelineno-12-44"></a>
+</span><span id="__span-12-45"><a id="__codelineno-12-45" name="__codelineno-12-45" href="#__codelineno-12-45"></a><span class="n">logger</span> <span class="o">=</span> <span class="n">get_logger</span><span class="p">(</span><span class="s2">&quot;user-service.main&quot;</span><span class="p">)</span>
+</span><span id="__span-12-46"><a id="__codelineno-12-46" name="__codelineno-12-46" href="#__codelineno-12-46"></a><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;User service started&quot;</span><span class="p">)</span>
 </span></code></pre></div>
 <h3 id="web-application-configuration">Web Application Configuration</h3>
 <div class="language-python highlight"><pre><span></span><code><span id="__span-13-1"><a id="__codelineno-13-1" name="__codelineno-13-1" href="#__codelineno-13-1"></a><span class="c1"># app/config.py</span>
-</span><span id="__span-13-2"><a id="__codelineno-13-2" name="__codelineno-13-2" href="#__codelineno-13-2"></a><span class="kn">from</span><span class="w"> </span><span class="nn">arlogi</span><span class="w"> </span><span class="kn">import</span> <span class="n">setup_logging</span>
+</span><span id="__span-13-2"><a id="__codelineno-13-2" name="__codelineno-13-2" href="#__codelineno-13-2"></a><span class="kn">from</span><span class="w"> </span><span class="nn">arlogi</span><span class="w"> </span><span class="kn">import</span> <span class="n">LoggingConfig</span><span class="p">,</span> <span class="n">LoggerFactory</span>
 </span><span id="__span-13-3"><a id="__codelineno-13-3" name="__codelineno-13-3" href="#__codelineno-13-3"></a>
-</span><span id="__span-13-4"><a id="__codelineno-13-4" name="__codelineno-13-4" href="#__codelineno-13-4"></a><span class="k">class</span><span class="w"> </span><span class="nc">LoggingConfig</span><span class="p">:</span>
+</span><span id="__span-13-4"><a id="__codelineno-13-4" name="__codelineno-13-4" href="#__codelineno-13-4"></a><span class="k">class</span><span class="w"> </span><span class="nc">LoggingSetup</span><span class="p">:</span>
 </span><span id="__span-13-5"><a id="__codelineno-13-5" name="__codelineno-13-5" href="#__codelineno-13-5"></a>    <span class="nd">@staticmethod</span>
 </span><span id="__span-13-6"><a id="__codelineno-13-6" name="__codelineno-13-6" href="#__codelineno-13-6"></a>    <span class="k">def</span><span class="w"> </span><span class="nf">configure</span><span class="p">(</span><span class="n">app_name</span><span class="p">,</span> <span class="n">environment</span><span class="o">=</span><span class="s2">&quot;development&quot;</span><span class="p">):</span>
 </span><span id="__span-13-7"><a id="__codelineno-13-7" name="__codelineno-13-7" href="#__codelineno-13-7"></a><span class="w">        </span><span class="sd">&quot;&quot;&quot;Configure logging for web application&quot;&quot;&quot;</span>
 </span><span id="__span-13-8"><a id="__codelineno-13-8" name="__codelineno-13-8" href="#__codelineno-13-8"></a>
-</span><span id="__span-13-9"><a id="__codelineno-13-9" name="__codelineno-13-9" href="#__codelineno-13-9"></a>        <span class="n">base_config</span> <span class="o">=</span> <span class="p">{</span>
-</span><span id="__span-13-10"><a id="__codelineno-13-10" name="__codelineno-13-10" href="#__codelineno-13-10"></a>            <span class="s2">&quot;module_levels&quot;</span><span class="p">:</span> <span class="p">{</span>
-</span><span id="__span-13-11"><a id="__codelineno-13-11" name="__codelineno-13-11" href="#__codelineno-13-11"></a>                <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">app_name</span><span class="si">}</span><span class="s2">.network&quot;</span><span class="p">:</span> <span class="s2">&quot;DEBUG&quot;</span><span class="p">,</span>
-</span><span id="__span-13-12"><a id="__codelineno-13-12" name="__codelineno-13-12" href="#__codelineno-13-12"></a>                <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">app_name</span><span class="si">}</span><span class="s2">.database&quot;</span><span class="p">:</span> <span class="s2">&quot;DEBUG&quot;</span><span class="p">,</span>
-</span><span id="__span-13-13"><a id="__codelineno-13-13" name="__codelineno-13-13" href="#__codelineno-13-13"></a>                <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">app_name</span><span class="si">}</span><span class="s2">.auth&quot;</span><span class="p">:</span> <span class="s2">&quot;INFO&quot;</span><span class="p">,</span>
-</span><span id="__span-13-14"><a id="__codelineno-13-14" name="__codelineno-13-14" href="#__codelineno-13-14"></a>                <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">app_name</span><span class="si">}</span><span class="s2">.api&quot;</span><span class="p">:</span> <span class="s2">&quot;INFO&quot;</span>
-</span><span id="__span-13-15"><a id="__codelineno-13-15" name="__codelineno-13-15" href="#__codelineno-13-15"></a>            <span class="p">}</span>
-</span><span id="__span-13-16"><a id="__codelineno-13-16" name="__codelineno-13-16" href="#__codelineno-13-16"></a>        <span class="p">}</span>
-</span><span id="__span-13-17"><a id="__codelineno-13-17" name="__codelineno-13-17" href="#__codelineno-13-17"></a>
-</span><span id="__span-13-18"><a id="__codelineno-13-18" name="__codelineno-13-18" href="#__codelineno-13-18"></a>        <span class="k">if</span> <span class="n">environment</span> <span class="o">==</span> <span class="s2">&quot;development&quot;</span><span class="p">:</span>
-</span><span id="__span-13-19"><a id="__codelineno-13-19" name="__codelineno-13-19" href="#__codelineno-13-19"></a>            <span class="n">setup_logging</span><span class="p">(</span>
-</span><span id="__span-13-20"><a id="__codelineno-13-20" name="__codelineno-13-20" href="#__codelineno-13-20"></a>                <span class="n">level</span><span class="o">=</span><span class="s2">&quot;DEBUG&quot;</span><span class="p">,</span>
-</span><span id="__span-13-21"><a id="__codelineno-13-21" name="__codelineno-13-21" href="#__codelineno-13-21"></a>                <span class="n">show_time</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-</span><span id="__span-13-22"><a id="__codelineno-13-22" name="__codelineno-13-22" href="#__codelineno-13-22"></a>                <span class="n">show_path</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-</span><span id="__span-13-23"><a id="__codelineno-13-23" name="__codelineno-13-23" href="#__codelineno-13-23"></a>                <span class="o">**</span><span class="n">base_config</span>
-</span><span id="__span-13-24"><a id="__codelineno-13-24" name="__codelineno-13-24" href="#__codelineno-13-24"></a>            <span class="p">)</span>
-</span><span id="__span-13-25"><a id="__codelineno-13-25" name="__codelineno-13-25" href="#__codelineno-13-25"></a>
-</span><span id="__span-13-26"><a id="__codelineno-13-26" name="__codelineno-13-26" href="#__codelineno-13-26"></a>        <span class="k">elif</span> <span class="n">environment</span> <span class="o">==</span> <span class="s2">&quot;staging&quot;</span><span class="p">:</span>
-</span><span id="__span-13-27"><a id="__codelineno-13-27" name="__codelineno-13-27" href="#__codelineno-13-27"></a>            <span class="n">setup_logging</span><span class="p">(</span>
-</span><span id="__span-13-28"><a id="__codelineno-13-28" name="__codelineno-13-28" href="#__codelineno-13-28"></a>                <span class="n">level</span><span class="o">=</span><span class="s2">&quot;INFO&quot;</span><span class="p">,</span>
-</span><span id="__span-13-29"><a id="__codelineno-13-29" name="__codelineno-13-29" href="#__codelineno-13-29"></a>                <span class="n">json_file_name</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;logs/</span><span class="si">{</span><span class="n">app_name</span><span class="si">}</span><span class="s2">-staging.jsonl&quot;</span><span class="p">,</span>
-</span><span id="__span-13-30"><a id="__codelineno-13-30" name="__codelineno-13-30" href="#__codelineno-13-30"></a>                <span class="n">use_syslog</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-</span><span id="__span-13-31"><a id="__codelineno-13-31" name="__codelineno-13-31" href="#__codelineno-13-31"></a>                <span class="n">syslog_address</span><span class="o">=</span><span class="p">(</span><span class="s2">&quot;staging-logs.company.com&quot;</span><span class="p">,</span> <span class="mi">514</span><span class="p">),</span>
-</span><span id="__span-13-32"><a id="__codelineno-13-32" name="__codelineno-13-32" href="#__codelineno-13-32"></a>                <span class="o">**</span><span class="n">base_config</span>
-</span><span id="__span-13-33"><a id="__codelineno-13-33" name="__codelineno-13-33" href="#__codelineno-13-33"></a>            <span class="p">)</span>
-</span><span id="__span-13-34"><a id="__codelineno-13-34" name="__codelineno-13-34" href="#__codelineno-13-34"></a>
-</span><span id="__span-13-35"><a id="__codelineno-13-35" name="__codelineno-13-35" href="#__codelineno-13-35"></a>        <span class="k">elif</span> <span class="n">environment</span> <span class="o">==</span> <span class="s2">&quot;production&quot;</span><span class="p">:</span>
-</span><span id="__span-13-36"><a id="__codelineno-13-36" name="__codelineno-13-36" href="#__codelineno-13-36"></a>            <span class="n">setup_logging</span><span class="p">(</span>
-</span><span id="__span-13-37"><a id="__codelineno-13-37" name="__codelineno-13-37" href="#__codelineno-13-37"></a>                <span class="n">level</span><span class="o">=</span><span class="s2">&quot;WARNING&quot;</span><span class="p">,</span>  <span class="c1"># Less verbose in production</span>
-</span><span id="__span-13-38"><a id="__codelineno-13-38" name="__codelineno-13-38" href="#__codelineno-13-38"></a>                <span class="n">module_levels</span><span class="o">=</span><span class="p">{</span>
-</span><span id="__span-13-39"><a id="__codelineno-13-39" name="__codelineno-13-39" href="#__codelineno-13-39"></a>                    <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">app_name</span><span class="si">}</span><span class="s2">.auth&quot;</span><span class="p">:</span> <span class="s2">&quot;ERROR&quot;</span><span class="p">,</span>      <span class="c1"># Only auth errors</span>
-</span><span id="__span-13-40"><a id="__codelineno-13-40" name="__codelineno-13-40" href="#__codelineno-13-40"></a>                    <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">app_name</span><span class="si">}</span><span class="s2">.api&quot;</span><span class="p">:</span> <span class="s2">&quot;WARNING&quot;</span><span class="p">,</span>     <span class="c1"># API warnings</span>
-</span><span id="__span-13-41"><a id="__codelineno-13-41" name="__codelineno-13-41" href="#__codelineno-13-41"></a>                    <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">app_name</span><span class="si">}</span><span class="s2">.business&quot;</span><span class="p">:</span> <span class="s2">&quot;INFO&quot;</span><span class="p">,</span>   <span class="c1"># Business events</span>
-</span><span id="__span-13-42"><a id="__codelineno-13-42" name="__codelineno-13-42" href="#__codelineno-13-42"></a>                <span class="p">},</span>
-</span><span id="__span-13-43"><a id="__codelineno-13-43" name="__codelineno-13-43" href="#__codelineno-13-43"></a>                <span class="n">json_file_name</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;logs/</span><span class="si">{</span><span class="n">app_name</span><span class="si">}</span><span class="s2">.jsonl&quot;</span><span class="p">,</span>
-</span><span id="__span-13-44"><a id="__codelineno-13-44" name="__codelineno-13-44" href="#__codelineno-13-44"></a>                <span class="n">use_syslog</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-</span><span id="__span-13-45"><a id="__codelineno-13-45" name="__codelineno-13-45" href="#__codelineno-13-45"></a>                <span class="n">syslog_address</span><span class="o">=</span><span class="p">(</span><span class="s2">&quot;logs.company.com&quot;</span><span class="p">,</span> <span class="mi">514</span><span class="p">),</span>
-</span><span id="__span-13-46"><a id="__codelineno-13-46" name="__codelineno-13-46" href="#__codelineno-13-46"></a>                <span class="o">**</span><span class="n">base_config</span>
-</span><span id="__span-13-47"><a id="__codelineno-13-47" name="__codelineno-13-47" href="#__codelineno-13-47"></a>            <span class="p">)</span>
+</span><span id="__span-13-9"><a id="__codelineno-13-9" name="__codelineno-13-9" href="#__codelineno-13-9"></a>        <span class="n">module_levels</span> <span class="o">=</span> <span class="p">{</span>
+</span><span id="__span-13-10"><a id="__codelineno-13-10" name="__codelineno-13-10" href="#__codelineno-13-10"></a>            <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">app_name</span><span class="si">}</span><span class="s2">.network&quot;</span><span class="p">:</span> <span class="s2">&quot;DEBUG&quot;</span><span class="p">,</span>
+</span><span id="__span-13-11"><a id="__codelineno-13-11" name="__codelineno-13-11" href="#__codelineno-13-11"></a>            <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">app_name</span><span class="si">}</span><span class="s2">.database&quot;</span><span class="p">:</span> <span class="s2">&quot;DEBUG&quot;</span><span class="p">,</span>
+</span><span id="__span-13-12"><a id="__codelineno-13-12" name="__codelineno-13-12" href="#__codelineno-13-12"></a>            <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">app_name</span><span class="si">}</span><span class="s2">.auth&quot;</span><span class="p">:</span> <span class="s2">&quot;INFO&quot;</span><span class="p">,</span>
+</span><span id="__span-13-13"><a id="__codelineno-13-13" name="__codelineno-13-13" href="#__codelineno-13-13"></a>            <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">app_name</span><span class="si">}</span><span class="s2">.api&quot;</span><span class="p">:</span> <span class="s2">&quot;INFO&quot;</span>
+</span><span id="__span-13-14"><a id="__codelineno-13-14" name="__codelineno-13-14" href="#__codelineno-13-14"></a>        <span class="p">}</span>
+</span><span id="__span-13-15"><a id="__codelineno-13-15" name="__codelineno-13-15" href="#__codelineno-13-15"></a>
+</span><span id="__span-13-16"><a id="__codelineno-13-16" name="__codelineno-13-16" href="#__codelineno-13-16"></a>        <span class="k">if</span> <span class="n">environment</span> <span class="o">==</span> <span class="s2">&quot;development&quot;</span><span class="p">:</span>
+</span><span id="__span-13-17"><a id="__codelineno-13-17" name="__codelineno-13-17" href="#__codelineno-13-17"></a>            <span class="n">config</span> <span class="o">=</span> <span class="n">LoggingConfig</span><span class="p">(</span>
+</span><span id="__span-13-18"><a id="__codelineno-13-18" name="__codelineno-13-18" href="#__codelineno-13-18"></a>                <span class="n">level</span><span class="o">=</span><span class="s2">&quot;DEBUG&quot;</span><span class="p">,</span>
+</span><span id="__span-13-19"><a id="__codelineno-13-19" name="__codelineno-13-19" href="#__codelineno-13-19"></a>                <span class="n">show_time</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+</span><span id="__span-13-20"><a id="__codelineno-13-20" name="__codelineno-13-20" href="#__codelineno-13-20"></a>                <span class="n">show_path</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+</span><span id="__span-13-21"><a id="__codelineno-13-21" name="__codelineno-13-21" href="#__codelineno-13-21"></a>                <span class="n">module_levels</span><span class="o">=</span><span class="n">module_levels</span>
+</span><span id="__span-13-22"><a id="__codelineno-13-22" name="__codelineno-13-22" href="#__codelineno-13-22"></a>            <span class="p">)</span>
+</span><span id="__span-13-23"><a id="__codelineno-13-23" name="__codelineno-13-23" href="#__codelineno-13-23"></a>
+</span><span id="__span-13-24"><a id="__codelineno-13-24" name="__codelineno-13-24" href="#__codelineno-13-24"></a>        <span class="k">elif</span> <span class="n">environment</span> <span class="o">==</span> <span class="s2">&quot;staging&quot;</span><span class="p">:</span>
+</span><span id="__span-13-25"><a id="__codelineno-13-25" name="__codelineno-13-25" href="#__codelineno-13-25"></a>            <span class="n">config</span> <span class="o">=</span> <span class="n">LoggingConfig</span><span class="p">(</span>
+</span><span id="__span-13-26"><a id="__codelineno-13-26" name="__codelineno-13-26" href="#__codelineno-13-26"></a>                <span class="n">level</span><span class="o">=</span><span class="s2">&quot;INFO&quot;</span><span class="p">,</span>
+</span><span id="__span-13-27"><a id="__codelineno-13-27" name="__codelineno-13-27" href="#__codelineno-13-27"></a>                <span class="n">json_file_name</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;logs/</span><span class="si">{</span><span class="n">app_name</span><span class="si">}</span><span class="s2">-staging.jsonl&quot;</span><span class="p">,</span>
+</span><span id="__span-13-28"><a id="__codelineno-13-28" name="__codelineno-13-28" href="#__codelineno-13-28"></a>                <span class="n">use_syslog</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+</span><span id="__span-13-29"><a id="__codelineno-13-29" name="__codelineno-13-29" href="#__codelineno-13-29"></a>                <span class="n">syslog_address</span><span class="o">=</span><span class="p">(</span><span class="s2">&quot;staging-logs.company.com&quot;</span><span class="p">,</span> <span class="mi">514</span><span class="p">),</span>
+</span><span id="__span-13-30"><a id="__codelineno-13-30" name="__codelineno-13-30" href="#__codelineno-13-30"></a>                <span class="n">module_levels</span><span class="o">=</span><span class="n">module_levels</span>
+</span><span id="__span-13-31"><a id="__codelineno-13-31" name="__codelineno-13-31" href="#__codelineno-13-31"></a>            <span class="p">)</span>
+</span><span id="__span-13-32"><a id="__codelineno-13-32" name="__codelineno-13-32" href="#__codelineno-13-32"></a>
+</span><span id="__span-13-33"><a id="__codelineno-13-33" name="__codelineno-13-33" href="#__codelineno-13-33"></a>        <span class="k">elif</span> <span class="n">environment</span> <span class="o">==</span> <span class="s2">&quot;production&quot;</span><span class="p">:</span>
+</span><span id="__span-13-34"><a id="__codelineno-13-34" name="__codelineno-13-34" href="#__codelineno-13-34"></a>            <span class="n">config</span> <span class="o">=</span> <span class="n">LoggingConfig</span><span class="p">(</span>
+</span><span id="__span-13-35"><a id="__codelineno-13-35" name="__codelineno-13-35" href="#__codelineno-13-35"></a>                <span class="n">level</span><span class="o">=</span><span class="s2">&quot;WARNING&quot;</span><span class="p">,</span>  <span class="c1"># Less verbose in production</span>
+</span><span id="__span-13-36"><a id="__codelineno-13-36" name="__codelineno-13-36" href="#__codelineno-13-36"></a>                <span class="n">module_levels</span><span class="o">=</span><span class="p">{</span>
+</span><span id="__span-13-37"><a id="__codelineno-13-37" name="__codelineno-13-37" href="#__codelineno-13-37"></a>                    <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">app_name</span><span class="si">}</span><span class="s2">.auth&quot;</span><span class="p">:</span> <span class="s2">&quot;ERROR&quot;</span><span class="p">,</span>      <span class="c1"># Only auth errors</span>
+</span><span id="__span-13-38"><a id="__codelineno-13-38" name="__codelineno-13-38" href="#__codelineno-13-38"></a>                    <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">app_name</span><span class="si">}</span><span class="s2">.api&quot;</span><span class="p">:</span> <span class="s2">&quot;WARNING&quot;</span><span class="p">,</span>     <span class="c1"># API warnings</span>
+</span><span id="__span-13-39"><a id="__codelineno-13-39" name="__codelineno-13-39" href="#__codelineno-13-39"></a>                    <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">app_name</span><span class="si">}</span><span class="s2">.business&quot;</span><span class="p">:</span> <span class="s2">&quot;INFO&quot;</span><span class="p">,</span>   <span class="c1"># Business events</span>
+</span><span id="__span-13-40"><a id="__codelineno-13-40" name="__codelineno-13-40" href="#__codelineno-13-40"></a>                    <span class="o">**</span><span class="n">module_levels</span>
+</span><span id="__span-13-41"><a id="__codelineno-13-41" name="__codelineno-13-41" href="#__codelineno-13-41"></a>                <span class="p">},</span>
+</span><span id="__span-13-42"><a id="__codelineno-13-42" name="__codelineno-13-42" href="#__codelineno-13-42"></a>                <span class="n">json_file_name</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;logs/</span><span class="si">{</span><span class="n">app_name</span><span class="si">}</span><span class="s2">.jsonl&quot;</span><span class="p">,</span>
+</span><span id="__span-13-43"><a id="__codelineno-13-43" name="__codelineno-13-43" href="#__codelineno-13-43"></a>                <span class="n">use_syslog</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+</span><span id="__span-13-44"><a id="__codelineno-13-44" name="__codelineno-13-44" href="#__codelineno-13-44"></a>                <span class="n">syslog_address</span><span class="o">=</span><span class="p">(</span><span class="s2">&quot;logs.company.com&quot;</span><span class="p">,</span> <span class="mi">514</span><span class="p">)</span>
+</span><span id="__span-13-45"><a id="__codelineno-13-45" name="__codelineno-13-45" href="#__codelineno-13-45"></a>            <span class="p">)</span>
+</span><span id="__span-13-46"><a id="__codelineno-13-46" name="__codelineno-13-46" href="#__codelineno-13-46"></a>
+</span><span id="__span-13-47"><a id="__codelineno-13-47" name="__codelineno-13-47" href="#__codelineno-13-47"></a>        <span class="n">LoggerFactory</span><span class="o">.</span><span class="n">_apply_configuration</span><span class="p">(</span><span class="n">config</span><span class="p">)</span>
 </span><span id="__span-13-48"><a id="__codelineno-13-48" name="__codelineno-13-48" href="#__codelineno-13-48"></a>
 </span><span id="__span-13-49"><a id="__codelineno-13-49" name="__codelineno-13-49" href="#__codelineno-13-49"></a><span class="c1"># app.py</span>
-</span><span id="__span-13-50"><a id="__codelineno-13-50" name="__codelineno-13-50" href="#__codelineno-13-50"></a><span class="kn">from</span><span class="w"> </span><span class="nn">app.config</span><span class="w"> </span><span class="kn">import</span> <span class="n">LoggingConfig</span>
+</span><span id="__span-13-50"><a id="__codelineno-13-50" name="__codelineno-13-50" href="#__codelineno-13-50"></a><span class="kn">from</span><span class="w"> </span><span class="nn">app.config</span><span class="w"> </span><span class="kn">import</span> <span class="n">LoggingSetup</span>
 </span><span id="__span-13-51"><a id="__codelineno-13-51" name="__codelineno-13-51" href="#__codelineno-13-51"></a><span class="kn">from</span><span class="w"> </span><span class="nn">arlogi</span><span class="w"> </span><span class="kn">import</span> <span class="n">get_logger</span>
 </span><span id="__span-13-52"><a id="__codelineno-13-52" name="__codelineno-13-52" href="#__codelineno-13-52"></a>
-</span><span id="__span-13-53"><a id="__codelineno-13-53" name="__codelineno-13-53" href="#__codelineno-13-53"></a><span class="n">LoggingConfig</span><span class="o">.</span><span class="n">configure</span><span class="p">(</span><span class="s2">&quot;myapp&quot;</span><span class="p">,</span> <span class="n">environment</span><span class="o">=</span><span class="s2">&quot;production&quot;</span><span class="p">)</span>
+</span><span id="__span-13-53"><a id="__codelineno-13-53" name="__codelineno-13-53" href="#__codelineno-13-53"></a><span class="n">LoggingSetup</span><span class="o">.</span><span class="n">configure</span><span class="p">(</span><span class="s2">&quot;myapp&quot;</span><span class="p">,</span> <span class="n">environment</span><span class="o">=</span><span class="s2">&quot;production&quot;</span><span class="p">)</span>
 </span><span id="__span-13-54"><a id="__codelineno-13-54" name="__codelineno-13-54" href="#__codelineno-13-54"></a>
 </span><span id="__span-13-55"><a id="__codelineno-13-55" name="__codelineno-13-55" href="#__codelineno-13-55"></a><span class="n">app_logger</span> <span class="o">=</span> <span class="n">get_logger</span><span class="p">(</span><span class="s2">&quot;myapp.app&quot;</span><span class="p">)</span>
 </span><span id="__span-13-56"><a id="__codelineno-13-56" name="__codelineno-13-56" href="#__codelineno-13-56"></a><span class="n">app_logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Web application started&quot;</span><span class="p">)</span>
@@ -2525,55 +2523,57 @@
 <h3 id="cli-application-configuration">CLI Application Configuration</h3>
 <div class="language-python highlight"><pre><span></span><code><span id="__span-14-1"><a id="__codelineno-14-1" name="__codelineno-14-1" href="#__codelineno-14-1"></a><span class="c1"># cli/config.py</span>
 </span><span id="__span-14-2"><a id="__codelineno-14-2" name="__codelineno-14-2" href="#__codelineno-14-2"></a><span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
-</span><span id="__span-14-3"><a id="__codelineno-14-3" name="__codelineno-14-3" href="#__codelineno-14-3"></a><span class="kn">from</span><span class="w"> </span><span class="nn">arlogi</span><span class="w"> </span><span class="kn">import</span> <span class="n">setup_logging</span>
+</span><span id="__span-14-3"><a id="__codelineno-14-3" name="__codelineno-14-3" href="#__codelineno-14-3"></a><span class="kn">from</span><span class="w"> </span><span class="nn">arlogi</span><span class="w"> </span><span class="kn">import</span> <span class="n">LoggingConfig</span><span class="p">,</span> <span class="n">LoggerFactory</span>
 </span><span id="__span-14-4"><a id="__codelineno-14-4" name="__codelineno-14-4" href="#__codelineno-14-4"></a>
 </span><span id="__span-14-5"><a id="__codelineno-14-5" name="__codelineno-14-5" href="#__codelineno-14-5"></a><span class="k">def</span><span class="w"> </span><span class="nf">setup_cli_logging</span><span class="p">(</span><span class="n">verbosity</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">log_file</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 </span><span id="__span-14-6"><a id="__codelineno-14-6" name="__codelineno-14-6" href="#__codelineno-14-6"></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;Configure logging for CLI application&quot;&quot;&quot;</span>
 </span><span id="__span-14-7"><a id="__codelineno-14-7" name="__codelineno-14-7" href="#__codelineno-14-7"></a>
 </span><span id="__span-14-8"><a id="__codelineno-14-8" name="__codelineno-14-8" href="#__codelineno-14-8"></a>    <span class="k">if</span> <span class="n">verbosity</span> <span class="o">&gt;=</span> <span class="mi">2</span><span class="p">:</span>
 </span><span id="__span-14-9"><a id="__codelineno-14-9" name="__codelineno-14-9" href="#__codelineno-14-9"></a>        <span class="c1"># Very verbose: DEBUG level with console details</span>
-</span><span id="__span-14-10"><a id="__codelineno-14-10" name="__codelineno-14-10" href="#__codelineno-14-10"></a>        <span class="n">setup_logging</span><span class="p">(</span>
+</span><span id="__span-14-10"><a id="__codelineno-14-10" name="__codelineno-14-10" href="#__codelineno-14-10"></a>        <span class="n">config</span> <span class="o">=</span> <span class="n">LoggingConfig</span><span class="p">(</span>
 </span><span id="__span-14-11"><a id="__codelineno-14-11" name="__codelineno-14-11" href="#__codelineno-14-11"></a>            <span class="n">level</span><span class="o">=</span><span class="s2">&quot;DEBUG&quot;</span><span class="p">,</span>
 </span><span id="__span-14-12"><a id="__codelineno-14-12" name="__codelineno-14-12" href="#__codelineno-14-12"></a>            <span class="n">show_time</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
 </span><span id="__span-14-13"><a id="__codelineno-14-13" name="__codelineno-14-13" href="#__codelineno-14-13"></a>            <span class="n">show_level</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
 </span><span id="__span-14-14"><a id="__codelineno-14-14" name="__codelineno-14-14" href="#__codelineno-14-14"></a>            <span class="n">show_path</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-</span><span id="__span-14-15"><a id="__codelineno-14-15" name="__codelineno-14-15" href="#__codelineno-14-15"></a>            <span class="n">json_file_name</span><span class="o">=</span><span class="n">log_file</span> <span class="k">if</span> <span class="n">log_file</span> <span class="k">else</span> <span class="kc">None</span>
+</span><span id="__span-14-15"><a id="__codelineno-14-15" name="__codelineno-14-15" href="#__codelineno-14-15"></a>            <span class="n">json_file_name</span><span class="o">=</span><span class="n">log_file</span>
 </span><span id="__span-14-16"><a id="__codelineno-14-16" name="__codelineno-14-16" href="#__codelineno-14-16"></a>        <span class="p">)</span>
 </span><span id="__span-14-17"><a id="__codelineno-14-17" name="__codelineno-14-17" href="#__codelineno-14-17"></a>    <span class="k">elif</span> <span class="n">verbosity</span> <span class="o">&gt;=</span> <span class="mi">1</span><span class="p">:</span>
 </span><span id="__span-14-18"><a id="__codelineno-14-18" name="__codelineno-14-18" href="#__codelineno-14-18"></a>        <span class="c1"># Verbose: INFO level with basic console</span>
-</span><span id="__span-14-19"><a id="__codelineno-14-19" name="__codelineno-14-19" href="#__codelineno-14-19"></a>        <span class="n">setup_logging</span><span class="p">(</span>
+</span><span id="__span-14-19"><a id="__codelineno-14-19" name="__codelineno-14-19" href="#__codelineno-14-19"></a>        <span class="n">config</span> <span class="o">=</span> <span class="n">LoggingConfig</span><span class="p">(</span>
 </span><span id="__span-14-20"><a id="__codelineno-14-20" name="__codelineno-14-20" href="#__codelineno-14-20"></a>            <span class="n">level</span><span class="o">=</span><span class="s2">&quot;INFO&quot;</span><span class="p">,</span>
 </span><span id="__span-14-21"><a id="__codelineno-14-21" name="__codelineno-14-21" href="#__codelineno-14-21"></a>            <span class="n">show_time</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
 </span><span id="__span-14-22"><a id="__codelineno-14-22" name="__codelineno-14-22" href="#__codelineno-14-22"></a>            <span class="n">show_level</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
 </span><span id="__span-14-23"><a id="__codelineno-14-23" name="__codelineno-14-23" href="#__codelineno-14-23"></a>            <span class="n">show_path</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
-</span><span id="__span-14-24"><a id="__codelineno-14-24" name="__codelineno-14-24" href="#__codelineno-14-24"></a>            <span class="n">json_file_name</span><span class="o">=</span><span class="n">log_file</span> <span class="k">if</span> <span class="n">log_file</span> <span class="k">else</span> <span class="kc">None</span>
+</span><span id="__span-14-24"><a id="__codelineno-14-24" name="__codelineno-14-24" href="#__codelineno-14-24"></a>            <span class="n">json_file_name</span><span class="o">=</span><span class="n">log_file</span>
 </span><span id="__span-14-25"><a id="__codelineno-14-25" name="__codelineno-14-25" href="#__codelineno-14-25"></a>        <span class="p">)</span>
 </span><span id="__span-14-26"><a id="__codelineno-14-26" name="__codelineno-14-26" href="#__codelineno-14-26"></a>    <span class="k">else</span><span class="p">:</span>
 </span><span id="__span-14-27"><a id="__codelineno-14-27" name="__codelineno-14-27" href="#__codelineno-14-27"></a>        <span class="c1"># Quiet: ERROR level only</span>
-</span><span id="__span-14-28"><a id="__codelineno-14-28" name="__codelineno-14-28" href="#__codelineno-14-28"></a>        <span class="n">setup_logging</span><span class="p">(</span>
+</span><span id="__span-14-28"><a id="__codelineno-14-28" name="__codelineno-14-28" href="#__codelineno-14-28"></a>        <span class="n">config</span> <span class="o">=</span> <span class="n">LoggingConfig</span><span class="p">(</span>
 </span><span id="__span-14-29"><a id="__codelineno-14-29" name="__codelineno-14-29" href="#__codelineno-14-29"></a>            <span class="n">level</span><span class="o">=</span><span class="s2">&quot;ERROR&quot;</span><span class="p">,</span>
-</span><span id="__span-14-30"><a id="__codelineno-14-30" name="__codelineno-14-30" href="#__codelineno-14-30"></a>            <span class="n">json_file_name</span><span class="o">=</span><span class="n">log_file</span> <span class="k">if</span> <span class="n">log_file</span> <span class="k">else</span> <span class="kc">None</span><span class="p">,</span>
+</span><span id="__span-14-30"><a id="__codelineno-14-30" name="__codelineno-14-30" href="#__codelineno-14-30"></a>            <span class="n">json_file_name</span><span class="o">=</span><span class="n">log_file</span><span class="p">,</span>
 </span><span id="__span-14-31"><a id="__codelineno-14-31" name="__codelineno-14-31" href="#__codelineno-14-31"></a>            <span class="n">json_file_only</span><span class="o">=</span><span class="ow">not</span> <span class="n">log_file</span>
 </span><span id="__span-14-32"><a id="__codelineno-14-32" name="__codelineno-14-32" href="#__codelineno-14-32"></a>        <span class="p">)</span>
 </span><span id="__span-14-33"><a id="__codelineno-14-33" name="__codelineno-14-33" href="#__codelineno-14-33"></a>
-</span><span id="__span-14-34"><a id="__codelineno-14-34" name="__codelineno-14-34" href="#__codelineno-14-34"></a><span class="c1"># cli/main.py</span>
-</span><span id="__span-14-35"><a id="__codelineno-14-35" name="__codelineno-14-35" href="#__codelineno-14-35"></a><span class="kn">import</span><span class="w"> </span><span class="nn">argparse</span>
-</span><span id="__span-14-36"><a id="__codelineno-14-36" name="__codelineno-14-36" href="#__codelineno-14-36"></a><span class="kn">from</span><span class="w"> </span><span class="nn">cli.config</span><span class="w"> </span><span class="kn">import</span> <span class="n">setup_cli_logging</span>
-</span><span id="__span-14-37"><a id="__codelineno-14-37" name="__codelineno-14-37" href="#__codelineno-14-37"></a><span class="kn">from</span><span class="w"> </span><span class="nn">arlogi</span><span class="w"> </span><span class="kn">import</span> <span class="n">get_logger</span>
-</span><span id="__span-14-38"><a id="__codelineno-14-38" name="__codelineno-14-38" href="#__codelineno-14-38"></a>
-</span><span id="__span-14-39"><a id="__codelineno-14-39" name="__codelineno-14-39" href="#__codelineno-14-39"></a><span class="k">def</span><span class="w"> </span><span class="nf">main</span><span class="p">():</span>
-</span><span id="__span-14-40"><a id="__codelineno-14-40" name="__codelineno-14-40" href="#__codelineno-14-40"></a>    <span class="n">parser</span> <span class="o">=</span> <span class="n">argparse</span><span class="o">.</span><span class="n">ArgumentParser</span><span class="p">()</span>
-</span><span id="__span-14-41"><a id="__codelineno-14-41" name="__codelineno-14-41" href="#__codelineno-14-41"></a>    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s2">&quot;-v&quot;</span><span class="p">,</span> <span class="s2">&quot;--verbose&quot;</span><span class="p">,</span> <span class="n">action</span><span class="o">=</span><span class="s2">&quot;count&quot;</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
-</span><span id="__span-14-42"><a id="__codelineno-14-42" name="__codelineno-14-42" href="#__codelineno-14-42"></a>    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s2">&quot;--log-file&quot;</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Log to file&quot;</span><span class="p">)</span>
-</span><span id="__span-14-43"><a id="__codelineno-14-43" name="__codelineno-14-43" href="#__codelineno-14-43"></a>    <span class="n">args</span> <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">parse_args</span><span class="p">()</span>
-</span><span id="__span-14-44"><a id="__codelineno-14-44" name="__codelineno-14-44" href="#__codelineno-14-44"></a>
-</span><span id="__span-14-45"><a id="__codelineno-14-45" name="__codelineno-14-45" href="#__codelineno-14-45"></a>    <span class="n">setup_cli_logging</span><span class="p">(</span><span class="n">args</span><span class="o">.</span><span class="n">verbose</span><span class="p">,</span> <span class="n">args</span><span class="o">.</span><span class="n">log_file</span><span class="p">)</span>
+</span><span id="__span-14-34"><a id="__codelineno-14-34" name="__codelineno-14-34" href="#__codelineno-14-34"></a>    <span class="n">LoggerFactory</span><span class="o">.</span><span class="n">_apply_configuration</span><span class="p">(</span><span class="n">config</span><span class="p">)</span>
+</span><span id="__span-14-35"><a id="__codelineno-14-35" name="__codelineno-14-35" href="#__codelineno-14-35"></a>
+</span><span id="__span-14-36"><a id="__codelineno-14-36" name="__codelineno-14-36" href="#__codelineno-14-36"></a><span class="c1"># cli/main.py</span>
+</span><span id="__span-14-37"><a id="__codelineno-14-37" name="__codelineno-14-37" href="#__codelineno-14-37"></a><span class="kn">import</span><span class="w"> </span><span class="nn">argparse</span>
+</span><span id="__span-14-38"><a id="__codelineno-14-38" name="__codelineno-14-38" href="#__codelineno-14-38"></a><span class="kn">from</span><span class="w"> </span><span class="nn">cli.config</span><span class="w"> </span><span class="kn">import</span> <span class="n">setup_cli_logging</span>
+</span><span id="__span-14-39"><a id="__codelineno-14-39" name="__codelineno-14-39" href="#__codelineno-14-39"></a><span class="kn">from</span><span class="w"> </span><span class="nn">arlogi</span><span class="w"> </span><span class="kn">import</span> <span class="n">get_logger</span>
+</span><span id="__span-14-40"><a id="__codelineno-14-40" name="__codelineno-14-40" href="#__codelineno-14-40"></a>
+</span><span id="__span-14-41"><a id="__codelineno-14-41" name="__codelineno-14-41" href="#__codelineno-14-41"></a><span class="k">def</span><span class="w"> </span><span class="nf">main</span><span class="p">():</span>
+</span><span id="__span-14-42"><a id="__codelineno-14-42" name="__codelineno-14-42" href="#__codelineno-14-42"></a>    <span class="n">parser</span> <span class="o">=</span> <span class="n">argparse</span><span class="o">.</span><span class="n">ArgumentParser</span><span class="p">()</span>
+</span><span id="__span-14-43"><a id="__codelineno-14-43" name="__codelineno-14-43" href="#__codelineno-14-43"></a>    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s2">&quot;-v&quot;</span><span class="p">,</span> <span class="s2">&quot;--verbose&quot;</span><span class="p">,</span> <span class="n">action</span><span class="o">=</span><span class="s2">&quot;count&quot;</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+</span><span id="__span-14-44"><a id="__codelineno-14-44" name="__codelineno-14-44" href="#__codelineno-14-44"></a>    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s2">&quot;--log-file&quot;</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Log to file&quot;</span><span class="p">)</span>
+</span><span id="__span-14-45"><a id="__codelineno-14-45" name="__codelineno-14-45" href="#__codelineno-14-45"></a>    <span class="n">args</span> <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">parse_args</span><span class="p">()</span>
 </span><span id="__span-14-46"><a id="__codelineno-14-46" name="__codelineno-14-46" href="#__codelineno-14-46"></a>
-</span><span id="__span-14-47"><a id="__codelineno-14-47" name="__codelineno-14-47" href="#__codelineno-14-47"></a>    <span class="n">logger</span> <span class="o">=</span> <span class="n">get_logger</span><span class="p">(</span><span class="s2">&quot;cli.main&quot;</span><span class="p">)</span>
-</span><span id="__span-14-48"><a id="__codelineno-14-48" name="__codelineno-14-48" href="#__codelineno-14-48"></a>    <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;CLI application started&quot;</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">verbose</span><span class="p">)</span>
-</span><span id="__span-14-49"><a id="__codelineno-14-49" name="__codelineno-14-49" href="#__codelineno-14-49"></a>
-</span><span id="__span-14-50"><a id="__codelineno-14-50" name="__codelineno-14-50" href="#__codelineno-14-50"></a><span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
-</span><span id="__span-14-51"><a id="__codelineno-14-51" name="__codelineno-14-51" href="#__codelineno-14-51"></a>    <span class="n">main</span><span class="p">()</span>
+</span><span id="__span-14-47"><a id="__codelineno-14-47" name="__codelineno-14-47" href="#__codelineno-14-47"></a>    <span class="n">setup_cli_logging</span><span class="p">(</span><span class="n">args</span><span class="o">.</span><span class="n">verbose</span><span class="p">,</span> <span class="n">args</span><span class="o">.</span><span class="n">log_file</span><span class="p">)</span>
+</span><span id="__span-14-48"><a id="__codelineno-14-48" name="__codelineno-14-48" href="#__codelineno-14-48"></a>
+</span><span id="__span-14-49"><a id="__codelineno-14-49" name="__codelineno-14-49" href="#__codelineno-14-49"></a>    <span class="n">logger</span> <span class="o">=</span> <span class="n">get_logger</span><span class="p">(</span><span class="s2">&quot;cli.main&quot;</span><span class="p">)</span>
+</span><span id="__span-14-50"><a id="__codelineno-14-50" name="__codelineno-14-50" href="#__codelineno-14-50"></a>    <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;CLI application started&quot;</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">verbose</span><span class="p">)</span>
+</span><span id="__span-14-51"><a id="__codelineno-14-51" name="__codelineno-14-51" href="#__codelineno-14-51"></a>
+</span><span id="__span-14-52"><a id="__codelineno-14-52" name="__codelineno-14-52" href="#__codelineno-14-52"></a><span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
+</span><span id="__span-14-53"><a id="__codelineno-14-53" name="__codelineno-14-53" href="#__codelineno-14-53"></a>    <span class="n">main</span><span class="p">()</span>
 </span></code></pre></div>
 <h2 id="environment-specific-configuration">Environment-Specific Configuration</h2>
 <h3 id="development-environment">Development Environment</h3>
@@ -2601,11 +2601,11 @@
 </span><span id="__span-16-10"><a id="__codelineno-16-10" name="__codelineno-16-10" href="#__codelineno-16-10"></a>    <span class="n">LoggerFactory</span><span class="o">.</span><span class="n">_apply_configuration</span><span class="p">(</span><span class="n">config</span><span class="p">)</span>
 </span></code></pre></div>
 <h3 id="staging-environment">Staging Environment</h3>
-<div class="language-python highlight"><pre><span></span><code><span id="__span-17-1"><a id="__codelineno-17-1" name="__codelineno-17-1" href="#__codelineno-17-1"></a><span class="kn">from</span><span class="w"> </span><span class="nn">arlogi</span><span class="w"> </span><span class="kn">import</span> <span class="n">setup_logging</span>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-17-1"><a id="__codelineno-17-1" name="__codelineno-17-1" href="#__codelineno-17-1"></a><span class="kn">from</span><span class="w"> </span><span class="nn">arlogi</span><span class="w"> </span><span class="kn">import</span> <span class="n">LoggingConfig</span><span class="p">,</span> <span class="n">LoggerFactory</span>
 </span><span id="__span-17-2"><a id="__codelineno-17-2" name="__codelineno-17-2" href="#__codelineno-17-2"></a>
 </span><span id="__span-17-3"><a id="__codelineno-17-3" name="__codelineno-17-3" href="#__codelineno-17-3"></a><span class="k">def</span><span class="w"> </span><span class="nf">configure_staging</span><span class="p">():</span>
 </span><span id="__span-17-4"><a id="__codelineno-17-4" name="__codelineno-17-4" href="#__codelineno-17-4"></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;Staging: production-like with extra debugging&quot;&quot;&quot;</span>
-</span><span id="__span-17-5"><a id="__codelineno-17-5" name="__codelineno-17-5" href="#__codelineno-17-5"></a>    <span class="n">setup_logging</span><span class="p">(</span>
+</span><span id="__span-17-5"><a id="__codelineno-17-5" name="__codelineno-17-5" href="#__codelineno-17-5"></a>    <span class="n">config</span> <span class="o">=</span> <span class="n">LoggingConfig</span><span class="p">(</span>
 </span><span id="__span-17-6"><a id="__codelineno-17-6" name="__codelineno-17-6" href="#__codelineno-17-6"></a>        <span class="n">level</span><span class="o">=</span><span class="s2">&quot;INFO&quot;</span><span class="p">,</span>
 </span><span id="__span-17-7"><a id="__codelineno-17-7" name="__codelineno-17-7" href="#__codelineno-17-7"></a>        <span class="n">module_levels</span><span class="o">=</span><span class="p">{</span>
 </span><span id="__span-17-8"><a id="__codelineno-17-8" name="__codelineno-17-8" href="#__codelineno-17-8"></a>            <span class="s2">&quot;app.auth&quot;</span><span class="p">:</span> <span class="s2">&quot;DEBUG&quot;</span><span class="p">,</span>      <span class="c1"># Debug authentication</span>
@@ -2619,6 +2619,7 @@
 </span><span id="__span-17-16"><a id="__codelineno-17-16" name="__codelineno-17-16" href="#__codelineno-17-16"></a>        <span class="n">show_level</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
 </span><span id="__span-17-17"><a id="__codelineno-17-17" name="__codelineno-17-17" href="#__codelineno-17-17"></a>        <span class="n">show_path</span><span class="o">=</span><span class="kc">False</span>
 </span><span id="__span-17-18"><a id="__codelineno-17-18" name="__codelineno-17-18" href="#__codelineno-17-18"></a>    <span class="p">)</span>
+</span><span id="__span-17-19"><a id="__codelineno-17-19" name="__codelineno-17-19" href="#__codelineno-17-19"></a>    <span class="n">LoggerFactory</span><span class="o">.</span><span class="n">_apply_configuration</span><span class="p">(</span><span class="n">config</span><span class="p">)</span>
 </span></code></pre></div>
 <h3 id="production-environment">Production Environment</h3>
 <div class="language-python highlight"><pre><span></span><code><span id="__span-18-1"><a id="__codelineno-18-1" name="__codelineno-18-1" href="#__codelineno-18-1"></a><span class="kn">from</span><span class="w"> </span><span class="nn">arlogi</span><span class="w"> </span><span class="kn">import</span> <span class="n">LoggingConfig</span><span class="p">,</span> <span class="n">LoggerFactory</span>
@@ -2657,7 +2658,7 @@
 </span></code></pre></div>
 <h3 id="configuration-from-environment-variables">Configuration from Environment Variables</h3>
 <div class="language-python highlight"><pre><span></span><code><span id="__span-20-1"><a id="__codelineno-20-1" name="__codelineno-20-1" href="#__codelineno-20-1"></a><span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
-</span><span id="__span-20-2"><a id="__codelineno-20-2" name="__codelineno-20-2" href="#__codelineno-20-2"></a><span class="kn">from</span><span class="w"> </span><span class="nn">arlogi</span><span class="w"> </span><span class="kn">import</span> <span class="n">setup_logging</span>
+</span><span id="__span-20-2"><a id="__codelineno-20-2" name="__codelineno-20-2" href="#__codelineno-20-2"></a><span class="kn">from</span><span class="w"> </span><span class="nn">arlogi</span><span class="w"> </span><span class="kn">import</span> <span class="n">LoggingConfig</span><span class="p">,</span> <span class="n">LoggerFactory</span>
 </span><span id="__span-20-3"><a id="__codelineno-20-3" name="__codelineno-20-3" href="#__codelineno-20-3"></a>
 </span><span id="__span-20-4"><a id="__codelineno-20-4" name="__codelineno-20-4" href="#__codelineno-20-4"></a><span class="k">def</span><span class="w"> </span><span class="nf">configure_from_env</span><span class="p">():</span>
 </span><span id="__span-20-5"><a id="__codelineno-20-5" name="__codelineno-20-5" href="#__codelineno-20-5"></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;Configure logging from environment variables&quot;&quot;&quot;</span>
@@ -2667,7 +2668,7 @@
 </span><span id="__span-20-9"><a id="__codelineno-20-9" name="__codelineno-20-9" href="#__codelineno-20-9"></a>    <span class="n">json_file</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s2">&quot;LOG_FILE&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
 </span><span id="__span-20-10"><a id="__codelineno-20-10" name="__codelineno-20-10" href="#__codelineno-20-10"></a>    <span class="n">syslog_enabled</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s2">&quot;LOG_SYSLOG&quot;</span><span class="p">,</span> <span class="s2">&quot;false&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">==</span> <span class="s2">&quot;true&quot;</span>
 </span><span id="__span-20-11"><a id="__codelineno-20-11" name="__codelineno-20-11" href="#__codelineno-20-11"></a>
-</span><span id="__span-20-12"><a id="__codelineno-20-12" name="__codelineno-20-12" href="#__codelineno-20-12"></a>    <span class="n">config</span> <span class="o">=</span> <span class="p">{</span>
+</span><span id="__span-20-12"><a id="__codelineno-20-12" name="__codelineno-20-12" href="#__codelineno-20-12"></a>    <span class="n">config_kwargs</span> <span class="o">=</span> <span class="p">{</span>
 </span><span id="__span-20-13"><a id="__codelineno-20-13" name="__codelineno-20-13" href="#__codelineno-20-13"></a>        <span class="s2">&quot;level&quot;</span><span class="p">:</span> <span class="n">level</span><span class="p">,</span>
 </span><span id="__span-20-14"><a id="__codelineno-20-14" name="__codelineno-20-14" href="#__codelineno-20-14"></a>        <span class="s2">&quot;json_file_name&quot;</span><span class="p">:</span> <span class="n">json_file</span><span class="p">,</span>
 </span><span id="__span-20-15"><a id="__codelineno-20-15" name="__codelineno-20-15" href="#__codelineno-20-15"></a>        <span class="s2">&quot;use_syslog&quot;</span><span class="p">:</span> <span class="n">syslog_enabled</span>
@@ -2675,10 +2676,10 @@
 </span><span id="__span-20-17"><a id="__codelineno-20-17" name="__codelineno-20-17" href="#__codelineno-20-17"></a>
 </span><span id="__span-20-18"><a id="__codelineno-20-18" name="__codelineno-20-18" href="#__codelineno-20-18"></a>    <span class="c1"># Console formatting from environment</span>
 </span><span id="__span-20-19"><a id="__codelineno-20-19" name="__codelineno-20-19" href="#__codelineno-20-19"></a>    <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s2">&quot;LOG_SHOW_TIME&quot;</span><span class="p">,</span> <span class="s2">&quot;false&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">==</span> <span class="s2">&quot;true&quot;</span><span class="p">:</span>
-</span><span id="__span-20-20"><a id="__codelineno-20-20" name="__codelineno-20-20" href="#__codelineno-20-20"></a>        <span class="n">config</span><span class="p">[</span><span class="s2">&quot;show_time&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span>
+</span><span id="__span-20-20"><a id="__codelineno-20-20" name="__codelineno-20-20" href="#__codelineno-20-20"></a>        <span class="n">config_kwargs</span><span class="p">[</span><span class="s2">&quot;show_time&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span>
 </span><span id="__span-20-21"><a id="__codelineno-20-21" name="__codelineno-20-21" href="#__codelineno-20-21"></a>
 </span><span id="__span-20-22"><a id="__codelineno-20-22" name="__codelineno-20-22" href="#__codelineno-20-22"></a>    <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s2">&quot;LOG_SHOW_PATH&quot;</span><span class="p">,</span> <span class="s2">&quot;true&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">==</span> <span class="s2">&quot;false&quot;</span><span class="p">:</span>
-</span><span id="__span-20-23"><a id="__codelineno-20-23" name="__codelineno-20-23" href="#__codelineno-20-23"></a>        <span class="n">config</span><span class="p">[</span><span class="s2">&quot;show_path&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span>
+</span><span id="__span-20-23"><a id="__codelineno-20-23" name="__codelineno-20-23" href="#__codelineno-20-23"></a>        <span class="n">config_kwargs</span><span class="p">[</span><span class="s2">&quot;show_path&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span>
 </span><span id="__span-20-24"><a id="__codelineno-20-24" name="__codelineno-20-24" href="#__codelineno-20-24"></a>
 </span><span id="__span-20-25"><a id="__codelineno-20-25" name="__codelineno-20-25" href="#__codelineno-20-25"></a>    <span class="c1"># Module levels from environment (comma-separated)</span>
 </span><span id="__span-20-26"><a id="__codelineno-20-26" name="__codelineno-20-26" href="#__codelineno-20-26"></a>    <span class="n">module_levels_str</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s2">&quot;LOG_MODULE_LEVELS&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">)</span>
@@ -2688,18 +2689,19 @@
 </span><span id="__span-20-30"><a id="__codelineno-20-30" name="__codelineno-20-30" href="#__codelineno-20-30"></a>            <span class="k">if</span> <span class="s2">&quot;:&quot;</span> <span class="ow">in</span> <span class="n">item</span><span class="p">:</span>
 </span><span id="__span-20-31"><a id="__codelineno-20-31" name="__codelineno-20-31" href="#__codelineno-20-31"></a>                <span class="n">module</span><span class="p">,</span> <span class="n">level</span> <span class="o">=</span> <span class="n">item</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;:&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
 </span><span id="__span-20-32"><a id="__codelineno-20-32" name="__codelineno-20-32" href="#__codelineno-20-32"></a>                <span class="n">module_levels</span><span class="p">[</span><span class="n">module</span><span class="o">.</span><span class="n">strip</span><span class="p">()]</span> <span class="o">=</span> <span class="n">level</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
-</span><span id="__span-20-33"><a id="__codelineno-20-33" name="__codelineno-20-33" href="#__codelineno-20-33"></a>        <span class="n">config</span><span class="p">[</span><span class="s2">&quot;module_levels&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">module_levels</span>
+</span><span id="__span-20-33"><a id="__codelineno-20-33" name="__codelineno-20-33" href="#__codelineno-20-33"></a>        <span class="n">config_kwargs</span><span class="p">[</span><span class="s2">&quot;module_levels&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">module_levels</span>
 </span><span id="__span-20-34"><a id="__codelineno-20-34" name="__codelineno-20-34" href="#__codelineno-20-34"></a>
-</span><span id="__span-20-35"><a id="__codelineno-20-35" name="__codelineno-20-35" href="#__codelineno-20-35"></a>    <span class="n">setup_logging</span><span class="p">(</span><span class="o">**</span><span class="n">config</span><span class="p">)</span>
-</span><span id="__span-20-36"><a id="__codelineno-20-36" name="__codelineno-20-36" href="#__codelineno-20-36"></a>
-</span><span id="__span-20-37"><a id="__codelineno-20-37" name="__codelineno-20-37" href="#__codelineno-20-37"></a><span class="c1"># Usage</span>
-</span><span id="__span-20-38"><a id="__codelineno-20-38" name="__codelineno-20-38" href="#__codelineno-20-38"></a><span class="n">configure_from_env</span><span class="p">()</span>
+</span><span id="__span-20-35"><a id="__codelineno-20-35" name="__codelineno-20-35" href="#__codelineno-20-35"></a>    <span class="n">config</span> <span class="o">=</span> <span class="n">LoggingConfig</span><span class="p">(</span><span class="o">**</span><span class="n">config_kwargs</span><span class="p">)</span>
+</span><span id="__span-20-36"><a id="__codelineno-20-36" name="__codelineno-20-36" href="#__codelineno-20-36"></a>    <span class="n">LoggerFactory</span><span class="o">.</span><span class="n">_apply_configuration</span><span class="p">(</span><span class="n">config</span><span class="p">)</span>
+</span><span id="__span-20-37"><a id="__codelineno-20-37" name="__codelineno-20-37" href="#__codelineno-20-37"></a>
+</span><span id="__span-20-38"><a id="__codelineno-20-38" name="__codelineno-20-38" href="#__codelineno-20-38"></a><span class="c1"># Usage</span>
+</span><span id="__span-20-39"><a id="__codelineno-20-39" name="__codelineno-20-39" href="#__codelineno-20-39"></a><span class="n">configure_from_env</span><span class="p">()</span>
 </span></code></pre></div>
 <h3 id="configuration-file-support">Configuration File Support</h3>
 <div class="language-python highlight"><pre><span></span><code><span id="__span-21-1"><a id="__codelineno-21-1" name="__codelineno-21-1" href="#__codelineno-21-1"></a><span class="kn">import</span><span class="w"> </span><span class="nn">json</span>
 </span><span id="__span-21-2"><a id="__codelineno-21-2" name="__codelineno-21-2" href="#__codelineno-21-2"></a><span class="kn">import</span><span class="w"> </span><span class="nn">yaml</span>
 </span><span id="__span-21-3"><a id="__codelineno-21-3" name="__codelineno-21-3" href="#__codelineno-21-3"></a><span class="kn">from</span><span class="w"> </span><span class="nn">pathlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">Path</span>
-</span><span id="__span-21-4"><a id="__codelineno-21-4" name="__codelineno-21-4" href="#__codelineno-21-4"></a><span class="kn">from</span><span class="w"> </span><span class="nn">arlogi</span><span class="w"> </span><span class="kn">import</span> <span class="n">setup_logging</span>
+</span><span id="__span-21-4"><a id="__codelineno-21-4" name="__codelineno-21-4" href="#__codelineno-21-4"></a><span class="kn">from</span><span class="w"> </span><span class="nn">arlogi</span><span class="w"> </span><span class="kn">import</span> <span class="n">LoggingConfig</span><span class="p">,</span> <span class="n">LoggerFactory</span>
 </span><span id="__span-21-5"><a id="__codelineno-21-5" name="__codelineno-21-5" href="#__codelineno-21-5"></a>
 </span><span id="__span-21-6"><a id="__codelineno-21-6" name="__codelineno-21-6" href="#__codelineno-21-6"></a><span class="k">def</span><span class="w"> </span><span class="nf">load_config_from_file</span><span class="p">(</span><span class="n">config_path</span><span class="p">):</span>
 </span><span id="__span-21-7"><a id="__codelineno-21-7" name="__codelineno-21-7" href="#__codelineno-21-7"></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;Load logging configuration from JSON or YAML file&quot;&quot;&quot;</span>
@@ -2711,30 +2713,31 @@
 </span><span id="__span-21-13"><a id="__codelineno-21-13" name="__codelineno-21-13" href="#__codelineno-21-13"></a>
 </span><span id="__span-21-14"><a id="__codelineno-21-14" name="__codelineno-21-14" href="#__codelineno-21-14"></a>    <span class="k">if</span> <span class="n">config_file</span><span class="o">.</span><span class="n">suffix</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">==</span> <span class="s1">&#39;.json&#39;</span><span class="p">:</span>
 </span><span id="__span-21-15"><a id="__codelineno-21-15" name="__codelineno-21-15" href="#__codelineno-21-15"></a>        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">config_file</span><span class="p">,</span> <span class="s1">&#39;r&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
-</span><span id="__span-21-16"><a id="__codelineno-21-16" name="__codelineno-21-16" href="#__codelineno-21-16"></a>            <span class="n">config</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
+</span><span id="__span-21-16"><a id="__codelineno-21-16" name="__codelineno-21-16" href="#__codelineno-21-16"></a>            <span class="n">data</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
 </span><span id="__span-21-17"><a id="__codelineno-21-17" name="__codelineno-21-17" href="#__codelineno-21-17"></a>    <span class="k">elif</span> <span class="n">config_file</span><span class="o">.</span><span class="n">suffix</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;.yaml&#39;</span><span class="p">,</span> <span class="s1">&#39;.yml&#39;</span><span class="p">]:</span>
 </span><span id="__span-21-18"><a id="__codelineno-21-18" name="__codelineno-21-18" href="#__codelineno-21-18"></a>        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">config_file</span><span class="p">,</span> <span class="s1">&#39;r&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
-</span><span id="__span-21-19"><a id="__codelineno-21-19" name="__codelineno-21-19" href="#__codelineno-21-19"></a>            <span class="n">config</span> <span class="o">=</span> <span class="n">yaml</span><span class="o">.</span><span class="n">safe_load</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
+</span><span id="__span-21-19"><a id="__codelineno-21-19" name="__codelineno-21-19" href="#__codelineno-21-19"></a>            <span class="n">data</span> <span class="o">=</span> <span class="n">yaml</span><span class="o">.</span><span class="n">safe_load</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
 </span><span id="__span-21-20"><a id="__codelineno-21-20" name="__codelineno-21-20" href="#__codelineno-21-20"></a>    <span class="k">else</span><span class="p">:</span>
 </span><span id="__span-21-21"><a id="__codelineno-21-21" name="__codelineno-21-21" href="#__codelineno-21-21"></a>        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Unsupported config file format: </span><span class="si">{</span><span class="n">config_file</span><span class="o">.</span><span class="n">suffix</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 </span><span id="__span-21-22"><a id="__codelineno-21-22" name="__codelineno-21-22" href="#__codelineno-21-22"></a>
-</span><span id="__span-21-23"><a id="__codelineno-21-23" name="__codelineno-21-23" href="#__codelineno-21-23"></a>    <span class="n">setup_logging</span><span class="p">(</span><span class="o">**</span><span class="n">config</span><span class="p">)</span>
-</span><span id="__span-21-24"><a id="__codelineno-21-24" name="__codelineno-21-24" href="#__codelineno-21-24"></a>
-</span><span id="__span-21-25"><a id="__codelineno-21-25" name="__codelineno-21-25" href="#__codelineno-21-25"></a><span class="c1"># config.json example:</span>
-</span><span id="__span-21-26"><a id="__codelineno-21-26" name="__codelineno-21-26" href="#__codelineno-21-26"></a><span class="c1"># {</span>
-</span><span id="__span-21-27"><a id="__codelineno-21-27" name="__codelineno-21-27" href="#__codelineno-21-27"></a><span class="c1">#   &quot;level&quot;: &quot;INFO&quot;,</span>
-</span><span id="__span-21-28"><a id="__codelineno-21-28" name="__codelineno-21-28" href="#__codelineno-21-28"></a><span class="c1">#   &quot;module_levels&quot;: {</span>
-</span><span id="__span-21-29"><a id="__codelineno-21-29" name="__codelineno-21-29" href="#__codelineno-21-29"></a><span class="c1">#     &quot;app.database&quot;: &quot;DEBUG&quot;,</span>
-</span><span id="__span-21-30"><a id="__codelineno-21-30" name="__codelineno-21-30" href="#__codelineno-21-30"></a><span class="c1">#     &quot;app.auth&quot;: &quot;WARNING&quot;</span>
-</span><span id="__span-21-31"><a id="__codelineno-21-31" name="__codelineno-21-31" href="#__codelineno-21-31"></a><span class="c1">#   },</span>
-</span><span id="__span-21-32"><a id="__codelineno-21-32" name="__codelineno-21-32" href="#__codelineno-21-32"></a><span class="c1">#   &quot;json_file_name&quot;: &quot;logs/app.jsonl&quot;,</span>
-</span><span id="__span-21-33"><a id="__codelineno-21-33" name="__codelineno-21-33" href="#__codelineno-21-33"></a><span class="c1">#   &quot;show_time&quot;: false,</span>
-</span><span id="__span-21-34"><a id="__codelineno-21-34" name="__codelineno-21-34" href="#__codelineno-21-34"></a><span class="c1">#   &quot;show_level&quot;: true,</span>
-</span><span id="__span-21-35"><a id="__codelineno-21-35" name="__codelineno-21-35" href="#__codelineno-21-35"></a><span class="c1">#   &quot;show_path&quot;: true</span>
-</span><span id="__span-21-36"><a id="__codelineno-21-36" name="__codelineno-21-36" href="#__codelineno-21-36"></a><span class="c1"># }</span>
-</span><span id="__span-21-37"><a id="__codelineno-21-37" name="__codelineno-21-37" href="#__codelineno-21-37"></a>
-</span><span id="__span-21-38"><a id="__codelineno-21-38" name="__codelineno-21-38" href="#__codelineno-21-38"></a><span class="c1"># Usage</span>
-</span><span id="__span-21-39"><a id="__codelineno-21-39" name="__codelineno-21-39" href="#__codelineno-21-39"></a><span class="n">load_config_from_file</span><span class="p">(</span><span class="s2">&quot;config/logging.json&quot;</span><span class="p">)</span>
+</span><span id="__span-21-23"><a id="__codelineno-21-23" name="__codelineno-21-23" href="#__codelineno-21-23"></a>    <span class="n">config</span> <span class="o">=</span> <span class="n">LoggingConfig</span><span class="p">(</span><span class="o">**</span><span class="n">data</span><span class="p">)</span>
+</span><span id="__span-21-24"><a id="__codelineno-21-24" name="__codelineno-21-24" href="#__codelineno-21-24"></a>    <span class="n">LoggerFactory</span><span class="o">.</span><span class="n">_apply_configuration</span><span class="p">(</span><span class="n">config</span><span class="p">)</span>
+</span><span id="__span-21-25"><a id="__codelineno-21-25" name="__codelineno-21-25" href="#__codelineno-21-25"></a>
+</span><span id="__span-21-26"><a id="__codelineno-21-26" name="__codelineno-21-26" href="#__codelineno-21-26"></a><span class="c1"># config.json example:</span>
+</span><span id="__span-21-27"><a id="__codelineno-21-27" name="__codelineno-21-27" href="#__codelineno-21-27"></a><span class="c1"># {</span>
+</span><span id="__span-21-28"><a id="__codelineno-21-28" name="__codelineno-21-28" href="#__codelineno-21-28"></a><span class="c1">#   &quot;level&quot;: &quot;INFO&quot;,</span>
+</span><span id="__span-21-29"><a id="__codelineno-21-29" name="__codelineno-21-29" href="#__codelineno-21-29"></a><span class="c1">#   &quot;module_levels&quot;: {</span>
+</span><span id="__span-21-30"><a id="__codelineno-21-30" name="__codelineno-21-30" href="#__codelineno-21-30"></a><span class="c1">#     &quot;app.database&quot;: &quot;DEBUG&quot;,</span>
+</span><span id="__span-21-31"><a id="__codelineno-21-31" name="__codelineno-21-31" href="#__codelineno-21-31"></a><span class="c1">#     &quot;app.auth&quot;: &quot;WARNING&quot;</span>
+</span><span id="__span-21-32"><a id="__codelineno-21-32" name="__codelineno-21-32" href="#__codelineno-21-32"></a><span class="c1">#   },</span>
+</span><span id="__span-21-33"><a id="__codelineno-21-33" name="__codelineno-21-33" href="#__codelineno-21-33"></a><span class="c1">#   &quot;json_file_name&quot;: &quot;logs/app.jsonl&quot;,</span>
+</span><span id="__span-21-34"><a id="__codelineno-21-34" name="__codelineno-21-34" href="#__codelineno-21-34"></a><span class="c1">#   &quot;show_time&quot;: false,</span>
+</span><span id="__span-21-35"><a id="__codelineno-21-35" name="__codelineno-21-35" href="#__codelineno-21-35"></a><span class="c1">#   &quot;show_level&quot;: true,</span>
+</span><span id="__span-21-36"><a id="__codelineno-21-36" name="__codelineno-21-36" href="#__codelineno-21-36"></a><span class="c1">#   &quot;show_path&quot;: true</span>
+</span><span id="__span-21-37"><a id="__codelineno-21-37" name="__codelineno-21-37" href="#__codelineno-21-37"></a><span class="c1"># }</span>
+</span><span id="__span-21-38"><a id="__codelineno-21-38" name="__codelineno-21-38" href="#__codelineno-21-38"></a>
+</span><span id="__span-21-39"><a id="__codelineno-21-39" name="__codelineno-21-39" href="#__codelineno-21-39"></a><span class="c1"># Usage</span>
+</span><span id="__span-21-40"><a id="__codelineno-21-40" name="__codelineno-21-40" href="#__codelineno-21-40"></a><span class="n">load_config_from_file</span><span class="p">(</span><span class="s2">&quot;config/logging.json&quot;</span><span class="p">)</span>
 </span></code></pre></div>
 <h2 id="advanced-handler-configuration">Advanced Handler Configuration</h2>
 <h3 id="multiple-json-files">Multiple JSON Files</h3>

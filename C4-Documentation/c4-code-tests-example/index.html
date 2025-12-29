@@ -254,41 +254,14 @@
   
   
     <li class="md-nav__item">
-      <a href="../../DEVELOPER_GUIDE/" class="md-nav__link">
+      <a href="../../CONFIGURATION_GUIDE/" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
     
   
-    Developer Guide
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-    
-      
-      
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../../API_REFERENCE/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Reference
+    Configuration Guide
   
 
     
@@ -335,14 +308,14 @@
   
   
     <li class="md-nav__item">
-      <a href="../../CONFIGURATION_GUIDE/" class="md-nav__link">
+      <a href="../../DEVELOPER_GUIDE/" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
     
   
-    Configuration Guide
+    Developer Guide
   
 
     
@@ -388,6 +361,33 @@
   
   
   
+    <li class="md-nav__item">
+      <a href="../../API_REFERENCE/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    API Reference
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
     
     
     
@@ -407,7 +407,7 @@
   <span class="md-ellipsis">
     
   
-    Reference
+    Code Reference
   
 
     
@@ -423,7 +423,7 @@
             <span class="md-nav__icon md-icon"></span>
             
   
-    Reference
+    Code Reference
   
 
           </label>
@@ -1408,7 +1408,7 @@
 <li>Description: Main entry point demonstrating comprehensive arlogi features including environment-based configuration, module-specific levels, dedicated loggers, and caller attribution</li>
 <li>Location: <code>/opt/Code/2026/_Libs/arlogi/tests/example/example.py:8</code></li>
 <li>
-<p>Dependencies: <code>os.environ</code>, <code>setup_logging</code>, <code>get_logger</code>, <code>get_json_logger</code>, <code>get_syslog_logger</code>, <code>worker.do_work()</code></p>
+<p>Dependencies: <code>os.environ</code>, <code>LoggingConfig</code>, <code>LoggerFactory</code>, <code>get_logger</code>, <code>get_json_logger</code>, <code>get_syslog_logger</code>, <code>worker.do_work()</code></p>
 </li>
 <li>
 <p><code>worker_function() -&gt; None</code></p>
@@ -1483,7 +1483,7 @@
 <h3 id="internal-dependencies">Internal Dependencies</h3>
 <ul>
 <li><code>worker.do_work()</code> - Cross-module worker function calls</li>
-<li><code>arlogi.setup_logging()</code> - Library setup configuration</li>
+<li><code>arlogi.LoggingConfig</code>, <code>arlogi.LoggerFactory</code> - Modern library configuration</li>
 <li><code>arlogi.get_logger()</code> - Logger creation</li>
 <li><code>arlogi.get_json_logger()</code> - Dedicated JSON logger creation</li>
 <li><code>arlogi.get_syslog_logger()</code> - Syslog logger creation</li>
@@ -1522,7 +1522,8 @@ classDiagram
 
     namespace arlogi {
         class LoggingSystem {
-            +setup_logging() void
+            +LoggingConfig(level, module_levels, ...)
+            +LoggerFactory._apply_configuration(config)
             +get_logger() Logger
             +get_json_logger() Logger
             +get_syslog_logger() Logger
@@ -1543,7 +1544,7 @@ title: Logging Data Flow
 flowchart LR
     subgraph Configuration
         A[Environment Variables]
-        B[setup_logging]
+        B[LoggingConfig &amp; LoggerFactory]
     end
 
     subgraph Loggers
@@ -1581,13 +1582,15 @@ flowchart LR
     note for B "Module-specific levels configured&lt;br/&gt;app.network: TRACE&lt;br/&gt;app.database: DEBUG"
     note for H "Cross-module attribution support"</code></pre>
 <h2 id="notes">Notes</h2>
-<p>The example directory serves as a comprehensive demonstration of arlogi's core features:
-- Environment-based log level configuration
-- Module-specific log level overrides
-- Multiple logger types (standard, JSON-only, syslog)
-- Caller attribution with depth control (<code>from_</code> parameter)
-- Cross-module logging attribution support
-- Clean formatting with optional time/path display</p>
+<p>The example directory serves as a comprehensive demonstration of arlogi's core features:</p>
+<ul>
+<li>Environment-based log level configuration</li>
+<li>Module-specific log level overrides</li>
+<li>Multiple logger types (standard, JSON-only, syslog)</li>
+<li>Caller attribution with depth control (<code>from_</code> parameter)</li>
+<li>Cross-module logging attribution support</li>
+<li>Clean formatting with optional time/path display</li>
+</ul>
 <p>The structure shows how logging can be organized across modules while maintaining proper attribution and separation of concerns in a multi-module application.</p>
 
 

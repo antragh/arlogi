@@ -254,41 +254,14 @@
   
   
     <li class="md-nav__item">
-      <a href="../../DEVELOPER_GUIDE/" class="md-nav__link">
+      <a href="../../CONFIGURATION_GUIDE/" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
     
   
-    Developer Guide
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-    
-      
-      
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../../API_REFERENCE/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Reference
+    Configuration Guide
   
 
     
@@ -335,14 +308,14 @@
   
   
     <li class="md-nav__item">
-      <a href="../../CONFIGURATION_GUIDE/" class="md-nav__link">
+      <a href="../../DEVELOPER_GUIDE/" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
     
   
-    Configuration Guide
+    Developer Guide
   
 
     
@@ -388,6 +361,33 @@
   
   
   
+    <li class="md-nav__item">
+      <a href="../../API_REFERENCE/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    API Reference
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
     
     
     
@@ -407,7 +407,7 @@
   <span class="md-ellipsis">
     
   
-    Reference
+    Code Reference
   
 
     
@@ -423,7 +423,7 @@
             <span class="md-nav__icon md-icon"></span>
             
   
-    Reference
+    Code Reference
   
 
           </label>
@@ -2289,12 +2289,13 @@
 <div class="language-python highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="n">setup_logging</span><span class="p">(</span><span class="n">level</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">INFO</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span>
 </span></code></pre></div>
 <ul>
-<li><strong>Description</strong>: Configure the root logging system with specified level and options</li>
+<li><strong>Description</strong>: Configure the root logging system with specified level and options (Legacy/Deprecated)</li>
 <li><strong>Parameters</strong>:</li>
 <li><code>level</code>: Global logging level (default: INFO)</li>
-<li><code>**kwargs</code>: Additional configuration options (module_levels, json_file_name, use_syslog, etc.)</li>
+<li>`<strong>kwargs</strong>: Additional configuration options (module_levels, json_file_name, use_syslog, etc.)</li>
 <li><strong>Returns</strong>: None</li>
 <li><strong>Example</strong>: <code>setup_logging(level="DEBUG", json_file_name="app.jsonl")</code></li>
+<li><strong>Note</strong>: This is a legacy helper that internally calls <code>LoggingConfig</code> and <code>LoggerFactory._apply_configuration</code>.</li>
 </ul>
 <div class="language-python highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="n">get_logger</span><span class="p">(</span><span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">level</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">LoggerProtocol</span>
 </span></code></pre></div>
@@ -2626,7 +2627,7 @@
         Component(handler_factory, "HandlerFactory", "Factory", "Creates and configures log handlers")
         Component(trace_logger, "TraceLogger", "Logger", "Custom logger with TRACE level and caller attribution")
         Component(logger_factory, "LoggerFactory", "Factory", "Creates and configures logger instances")
-        Component(api, "Public API", "Functions", "High-level convenience functions: setup_logging, get_logger, etc.")
+        Component(api, "Public API", "Functions", "High-level convenience functions: get_logger, setup_logging (legacy), etc.")
     }
 
     Person(user, "Application Developer", "Developer using arlogi")
@@ -2655,7 +2656,7 @@
     end
 
     subgraph API["Public API"]
-        Setup["setup_logging()"]
+        Setup["setup_logging() (legacy)"]
         GetLogger["get_logger()"]
     end
 

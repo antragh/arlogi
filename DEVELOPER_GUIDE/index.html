@@ -9,10 +9,10 @@
       
       
       
-        <link rel="prev" href="../USER_GUIDE/">
+        <link rel="prev" href="../CALLER_ATTRIBUTION_EXAMPLES/">
       
       
-        <link rel="next" href="../API_REFERENCE/">
+        <link rel="next" href="../ARCHITECTURE/">
       
       
         
@@ -235,6 +235,60 @@
     
   
     User Guide
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../CONFIGURATION_GUIDE/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Configuration Guide
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../CALLER_ATTRIBUTION_EXAMPLES/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Caller Attribution Examples
   
 
     
@@ -995,87 +1049,6 @@
   
   
     <li class="md-nav__item">
-      <a href="../API_REFERENCE/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Reference
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-    
-      
-      
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../CALLER_ATTRIBUTION_EXAMPLES/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Caller Attribution Examples
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-    
-      
-      
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../CONFIGURATION_GUIDE/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Configuration Guide
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-    
-      
-      
-  
-  
-  
-  
-    <li class="md-nav__item">
       <a href="../ARCHITECTURE/" class="md-nav__link">
         
   
@@ -1084,6 +1057,33 @@
     
   
     Architecture
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../API_REFERENCE/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    API Reference
   
 
     
@@ -1121,7 +1121,7 @@
   <span class="md-ellipsis">
     
   
-    Reference
+    Code Reference
   
 
     
@@ -1137,7 +1137,7 @@
             <span class="md-nav__icon md-icon"></span>
             
   
-    Reference
+    Code Reference
   
 
           </label>
@@ -2631,10 +2631,11 @@
 <h4 id="integration-tests">Integration Tests</h4>
 <p>Test interactions between components.</p>
 <div class="language-python highlight"><pre><span></span><code><span id="__span-6-1"><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a><span class="k">def</span><span class="w"> </span><span class="nf">test_setup_with_json_file</span><span class="p">():</span>
-</span><span id="__span-6-2"><a id="__codelineno-6-2" name="__codelineno-6-2" href="#__codelineno-6-2"></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;Test that setup_logging creates JSON file handler.&quot;&quot;&quot;</span>
-</span><span id="__span-6-3"><a id="__codelineno-6-3" name="__codelineno-6-3" href="#__codelineno-6-3"></a>    <span class="n">setup_logging</span><span class="p">(</span><span class="n">json_file_name</span><span class="o">=</span><span class="s2">&quot;logs/test.jsonl&quot;</span><span class="p">)</span>
-</span><span id="__span-6-4"><a id="__codelineno-6-4" name="__codelineno-6-4" href="#__codelineno-6-4"></a>    <span class="n">root</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">()</span>
-</span><span id="__span-6-5"><a id="__codelineno-6-5" name="__codelineno-6-5" href="#__codelineno-6-5"></a>    <span class="k">assert</span> <span class="nb">any</span><span class="p">(</span><span class="nb">isinstance</span><span class="p">(</span><span class="n">h</span><span class="p">,</span> <span class="n">JSONFileHandler</span><span class="p">)</span> <span class="k">for</span> <span class="n">h</span> <span class="ow">in</span> <span class="n">root</span><span class="o">.</span><span class="n">handlers</span><span class="p">)</span>
+</span><span id="__span-6-2"><a id="__codelineno-6-2" name="__codelineno-6-2" href="#__codelineno-6-2"></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;Test that configuration creates JSON file handler.&quot;&quot;&quot;</span>
+</span><span id="__span-6-3"><a id="__codelineno-6-3" name="__codelineno-6-3" href="#__codelineno-6-3"></a>    <span class="n">config</span> <span class="o">=</span> <span class="n">LoggingConfig</span><span class="p">(</span><span class="n">json_file_name</span><span class="o">=</span><span class="s2">&quot;logs/test.jsonl&quot;</span><span class="p">)</span>
+</span><span id="__span-6-4"><a id="__codelineno-6-4" name="__codelineno-6-4" href="#__codelineno-6-4"></a>    <span class="n">LoggerFactory</span><span class="o">.</span><span class="n">_apply_configuration</span><span class="p">(</span><span class="n">config</span><span class="p">)</span>
+</span><span id="__span-6-5"><a id="__codelineno-6-5" name="__codelineno-6-5" href="#__codelineno-6-5"></a>    <span class="n">root</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">()</span>
+</span><span id="__span-6-6"><a id="__codelineno-6-6" name="__codelineno-6-6" href="#__codelineno-6-6"></a>    <span class="k">assert</span> <span class="nb">any</span><span class="p">(</span><span class="nb">isinstance</span><span class="p">(</span><span class="n">h</span><span class="p">,</span> <span class="n">JSONFileHandler</span><span class="p">)</span> <span class="k">for</span> <span class="n">h</span> <span class="ow">in</span> <span class="n">root</span><span class="o">.</span><span class="n">handlers</span><span class="p">)</span>
 </span></code></pre></div>
 <h4 id="feature-tests">Feature Tests</h4>
 <p>Test end-to-end functionality.</p>
@@ -2668,9 +2669,10 @@
 </span><span id="__span-8-20"><a id="__codelineno-8-20" name="__codelineno-8-20" href="#__codelineno-8-20"></a>    <span class="nd">@pytest</span><span class="o">.</span><span class="n">mark</span><span class="o">.</span><span class="n">parametrize</span><span class="p">(</span><span class="s2">&quot;level&quot;</span><span class="p">,</span> <span class="p">[</span><span class="s2">&quot;DEBUG&quot;</span><span class="p">,</span> <span class="s2">&quot;INFO&quot;</span><span class="p">,</span> <span class="s2">&quot;WARNING&quot;</span><span class="p">])</span>
 </span><span id="__span-8-21"><a id="__codelineno-8-21" name="__codelineno-8-21" href="#__codelineno-8-21"></a>    <span class="k">def</span><span class="w"> </span><span class="nf">test_logger_respects_level</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">level</span><span class="p">):</span>
 </span><span id="__span-8-22"><a id="__codelineno-8-22" name="__codelineno-8-22" href="#__codelineno-8-22"></a><span class="w">        </span><span class="sd">&quot;&quot;&quot;Test that logger respects configured level.&quot;&quot;&quot;</span>
-</span><span id="__span-8-23"><a id="__codelineno-8-23" name="__codelineno-8-23" href="#__codelineno-8-23"></a>        <span class="n">setup_logging</span><span class="p">(</span><span class="n">level</span><span class="o">=</span><span class="n">level</span><span class="p">)</span>
-</span><span id="__span-8-24"><a id="__codelineno-8-24" name="__codelineno-8-24" href="#__codelineno-8-24"></a>        <span class="n">logger</span> <span class="o">=</span> <span class="n">get_logger</span><span class="p">(</span><span class="s2">&quot;test&quot;</span><span class="p">)</span>
-</span><span id="__span-8-25"><a id="__codelineno-8-25" name="__codelineno-8-25" href="#__codelineno-8-25"></a>        <span class="k">assert</span> <span class="n">logger</span><span class="o">.</span><span class="n">getEffectiveLevel</span><span class="p">()</span> <span class="o">==</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">logging</span><span class="p">,</span> <span class="n">level</span><span class="p">)</span>
+</span><span id="__span-8-23"><a id="__codelineno-8-23" name="__codelineno-8-23" href="#__codelineno-8-23"></a>        <span class="n">config</span> <span class="o">=</span> <span class="n">LoggingConfig</span><span class="p">(</span><span class="n">level</span><span class="o">=</span><span class="n">level</span><span class="p">)</span>
+</span><span id="__span-8-24"><a id="__codelineno-8-24" name="__codelineno-8-24" href="#__codelineno-8-24"></a>        <span class="n">LoggerFactory</span><span class="o">.</span><span class="n">_apply_configuration</span><span class="p">(</span><span class="n">config</span><span class="p">)</span>
+</span><span id="__span-8-25"><a id="__codelineno-8-25" name="__codelineno-8-25" href="#__codelineno-8-25"></a>        <span class="n">logger</span> <span class="o">=</span> <span class="n">get_logger</span><span class="p">(</span><span class="s2">&quot;test&quot;</span><span class="p">)</span>
+</span><span id="__span-8-26"><a id="__codelineno-8-26" name="__codelineno-8-26" href="#__codelineno-8-26"></a>        <span class="k">assert</span> <span class="n">logger</span><span class="o">.</span><span class="n">getEffectiveLevel</span><span class="p">()</span> <span class="o">==</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">logging</span><span class="p">,</span> <span class="n">level</span><span class="p">)</span>
 </span></code></pre></div>
 <h4 id="test-fixtures">Test Fixtures</h4>
 <div class="language-python highlight"><pre><span></span><code><span id="__span-9-1"><a id="__codelineno-9-1" name="__codelineno-9-1" href="#__codelineno-9-1"></a><span class="nd">@pytest</span><span class="o">.</span><span class="n">fixture</span>
@@ -2681,11 +2683,12 @@
 </span><span id="__span-9-6"><a id="__codelineno-9-6" name="__codelineno-9-6" href="#__codelineno-9-6"></a><span class="nd">@pytest</span><span class="o">.</span><span class="n">fixture</span>
 </span><span id="__span-9-7"><a id="__codelineno-9-7" name="__codelineno-9-7" href="#__codelineno-9-7"></a><span class="k">def</span><span class="w"> </span><span class="nf">configured_logger</span><span class="p">(</span><span class="n">temp_log_file</span><span class="p">):</span>
 </span><span id="__span-9-8"><a id="__codelineno-9-8" name="__codelineno-9-8" href="#__codelineno-9-8"></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;Create a logger configured for testing.&quot;&quot;&quot;</span>
-</span><span id="__span-9-9"><a id="__codelineno-9-9" name="__codelineno-9-9" href="#__codelineno-9-9"></a>    <span class="n">setup_logging</span><span class="p">(</span>
+</span><span id="__span-9-9"><a id="__codelineno-9-9" name="__codelineno-9-9" href="#__codelineno-9-9"></a>    <span class="n">config</span> <span class="o">=</span> <span class="n">LoggingConfig</span><span class="p">(</span>
 </span><span id="__span-9-10"><a id="__codelineno-9-10" name="__codelineno-9-10" href="#__codelineno-9-10"></a>        <span class="n">level</span><span class="o">=</span><span class="s2">&quot;DEBUG&quot;</span><span class="p">,</span>
 </span><span id="__span-9-11"><a id="__codelineno-9-11" name="__codelineno-9-11" href="#__codelineno-9-11"></a>        <span class="n">json_file_name</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">temp_log_file</span><span class="p">)</span>
 </span><span id="__span-9-12"><a id="__codelineno-9-12" name="__codelineno-9-12" href="#__codelineno-9-12"></a>    <span class="p">)</span>
-</span><span id="__span-9-13"><a id="__codelineno-9-13" name="__codelineno-9-13" href="#__codelineno-9-13"></a>    <span class="k">return</span> <span class="n">get_logger</span><span class="p">(</span><span class="s2">&quot;test&quot;</span><span class="p">)</span>
+</span><span id="__span-9-13"><a id="__codelineno-9-13" name="__codelineno-9-13" href="#__codelineno-9-13"></a>    <span class="n">LoggerFactory</span><span class="o">.</span><span class="n">_apply_configuration</span><span class="p">(</span><span class="n">config</span><span class="p">)</span>
+</span><span id="__span-9-14"><a id="__codelineno-9-14" name="__codelineno-9-14" href="#__codelineno-9-14"></a>    <span class="k">return</span> <span class="n">get_logger</span><span class="p">(</span><span class="s2">&quot;test&quot;</span><span class="p">)</span>
 </span></code></pre></div>
 <h3 id="test-mode-detection">Test Mode Detection</h3>
 <p>Tests should work correctly with arlogi's test mode detection:</p>
@@ -2890,10 +2893,10 @@
 <div class="language-bash highlight"><pre><span></span><code><span id="__span-21-1"><a id="__codelineno-21-1" name="__codelineno-21-1" href="#__codelineno-21-1"></a>uv<span class="w"> </span>build
 </span></code></pre></div>
 <ol>
-<li><strong>Publish to PyPI</strong>
-   <div class="language-bash highlight"><pre><span></span><code><span id="__span-22-1"><a id="__codelineno-22-1" name="__codelineno-22-1" href="#__codelineno-22-1"></a>uv<span class="w"> </span>publish
-</span></code></pre></div></li>
+<li><strong>Publish to PyPI</strong></li>
 </ol>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-22-1"><a id="__codelineno-22-1" name="__codelineno-22-1" href="#__codelineno-22-1"></a>uv<span class="w"> </span>publish
+</span></code></pre></div>
 <h3 id="release-notes-template">Release Notes Template</h3>
 <div class="language-markdown highlight"><pre><span></span><code><span id="__span-23-1"><a id="__codelineno-23-1" name="__codelineno-23-1" href="#__codelineno-23-1"></a><span class="gh"># Release {version}</span>
 </span><span id="__span-23-2"><a id="__codelineno-23-2" name="__codelineno-23-2" href="#__codelineno-23-2"></a>
@@ -2956,11 +2959,11 @@
 </span><span id="__span-27-2"><a id="__codelineno-27-2" name="__codelineno-27-2" href="#__codelineno-27-2"></a>git<span class="w"> </span>commit<span class="w"> </span>-m<span class="w"> </span><span class="s2">&quot;feat: add new feature&quot;</span>
 </span></code></pre></div>
 <ol>
-<li><strong>Push and Create PR</strong>
-   <div class="language-bash highlight"><pre><span></span><code><span id="__span-28-1"><a id="__codelineno-28-1" name="__codelineno-28-1" href="#__codelineno-28-1"></a>git<span class="w"> </span>push<span class="w"> </span>origin<span class="w"> </span>feature/your-feature-name
-</span><span id="__span-28-2"><a id="__codelineno-28-2" name="__codelineno-28-2" href="#__codelineno-28-2"></a><span class="c1"># Create PR on GitHub</span>
-</span></code></pre></div></li>
+<li><strong>Push and Create PR</strong></li>
 </ol>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-28-1"><a id="__codelineno-28-1" name="__codelineno-28-1" href="#__codelineno-28-1"></a>git<span class="w"> </span>push<span class="w"> </span>origin<span class="w"> </span>feature/your-feature-name
+</span><span id="__span-28-2"><a id="__codelineno-28-2" name="__codelineno-28-2" href="#__codelineno-28-2"></a><span class="c1"># Create PR on GitHub</span>
+</span></code></pre></div>
 <h3 id="commit-message-format">Commit Message Format</h3>
 <p>Follow <a href="https://www.conventionalcommits.org/">Conventional Commits</a>:</p>
 <div class="language-text highlight"><pre><span></span><code><span id="__span-29-1"><a id="__codelineno-29-1" name="__codelineno-29-1" href="#__codelineno-29-1"></a>&lt;type&gt;(&lt;scope&gt;): &lt;description&gt;
@@ -2981,7 +2984,7 @@
 <p><strong>Examples:</strong></p>
 <div class="language-text highlight"><pre><span></span><code><span id="__span-30-1"><a id="__codelineno-30-1" name="__codelineno-30-1" href="#__codelineno-30-1"></a>feat(factory): add LoggingConfig support
 </span><span id="__span-30-2"><a id="__codelineno-30-2" name="__codelineno-30-2" href="#__codelineno-30-2"></a>
-</span><span id="__span-30-3"><a id="__codelineno-30-3" name="__codelineno-30-3" href="#__codelineno-30-3"></a>BREAKING CHANGE: setup_logging() signature changed
+</span><span id="__span-30-3"><a id="__codelineno-30-3" name="__codelineno-30-3" href="#__codelineno-30-3"></a>BREAKING CHANGE: `setup_logging()` is deprecated in favor of `LoggingConfig`
 </span><span id="__span-30-4"><a id="__codelineno-30-4" name="__codelineno-30-4" href="#__codelineno-30-4"></a>
 </span><span id="__span-30-5"><a id="__codelineno-30-5" name="__codelineno-30-5" href="#__codelineno-30-5"></a>fix(handlers): resolve unused variable warning
 </span><span id="__span-30-6"><a id="__codelineno-30-6" name="__codelineno-30-6" href="#__codelineno-30-6"></a>
@@ -3193,7 +3196,7 @@
 <ul>
 <li><strong>Issues</strong>: <a href="https://github.com/your-org/arlogi/issues">GitHub Issues</a></li>
 <li><strong>Discussions</strong>: <a href="https://github.com/your-org/arlogi/discussions">GitHub Discussions</a></li>
-<li><strong>Email</strong>: maintainers@example.com</li>
+<li><strong>Email</strong>: <a href="&#109;&#97;&#105;&#108;&#116;&#111;&#58;&#109;&#97;&#105;&#110;&#116;&#97;&#105;&#110;&#101;&#114;&#115;&#64;&#101;&#120;&#97;&#109;&#112;&#108;&#101;&#46;&#99;&#111;&#109;">&#109;&#97;&#105;&#110;&#116;&#97;&#105;&#110;&#101;&#114;&#115;&#64;&#101;&#120;&#97;&#109;&#112;&#108;&#101;&#46;&#99;&#111;&#109;</a></li>
 </ul>
 <hr />
 <h2 id="license">License</h2>
