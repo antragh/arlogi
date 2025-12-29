@@ -288,7 +288,7 @@
   <span class="md-ellipsis">
     
   
-    API Reference
+    Reference
   
 
     
@@ -1853,7 +1853,7 @@
 <li>
 <p><code>LoggerFactory.setup(level: int | str = logging.INFO, **kwargs) -&gt; None</code></p>
 </li>
-<li>Description: Centralized logging setup method that configures root logger</li>
+<li>Description: Centralized logging setup method that configures root logger (Legacy helper, calls _apply_configuration)</li>
 <li>Location: <code>/opt/Code/2026/_Libs/arlogi/src/arlogi/factory.py:179</code></li>
 <li>
 <p>Dependencies: <code>LoggingConfig</code>, <code>_apply_configuration</code> method</p>
@@ -1861,7 +1861,7 @@
 <li>
 <p><code>LoggerFactory._apply_configuration(config: LoggingConfig) -&gt; None</code></p>
 </li>
-<li>Description: Applies a LoggingConfig to the root logger</li>
+<li>Description: Applies a LoggingConfig to the root logger (Primary configuration method)</li>
 <li>Location: <code>/opt/Code/2026/_Libs/arlogi/src/arlogi/factory.py:221</code></li>
 <li>
 <p>Dependencies: <code>_initialize_trace_level</code>, <code>_configure_root_logger</code>, <code>_clear_and_add_handlers</code>, <code>_configure_module_levels</code></p>
@@ -1941,7 +1941,7 @@
 <li>
 <p><code>setup_logging(level: int | str = logging.INFO, **kwargs) -&gt; None</code></p>
 </li>
-<li>Description: Convenience wrapper around LoggerFactory.setup()</li>
+<li>Description: Convenience wrapper around LoggerFactory.setup() (Legacy helper)</li>
 <li>Location: <code>/opt/Code/2026/_Libs/arlogi/src/arlogi/factory.py:374</code></li>
 <li>
 <p>Dependencies: <code>LoggerFactory.setup</code></p>
@@ -2226,13 +2226,25 @@ title: arlogi Class Hierarchy
 ---
 classDiagram
     namespace core {
-        class TraceLogger {
+        class LoggerFactory {
+            -_initialized: bool
             -_global_logger: TraceLogger | None
-            +setup(level, module_levels, json_file_name, json_file_only, use_syslog, syslog_address, show_time, show_level, show_path)
+            +setup(level, ...)
+            +_apply_configuration(config)
             +get_logger(name, level)
             +get_json_logger(name, json_file_name)
             +get_syslog_logger(name, address)
             +get_global_logger()
+        }
+        class TraceLogger {
+            +trace(msg, ...)
+            +debug(msg, ...)
+            +info(msg, ...)
+            +warning(msg, ...)
+            +error(msg, ...)
+            +critical(msg, ...)
+            +exception(msg, ...)
+            +log(level, msg, ...)
         }
         class LoggingConfig {
             +level: int | str
@@ -2244,12 +2256,12 @@ classDiagram
             +show_time: bool
             +show_level: bool
             +show_path: bool
-            +resolved_level
-            +show_console
-            +has_json_output
-            +resolve_module_level(name, level)
-            +to_dict()
-            +from_kwargs(**kwargs)
+            +resolved_level: int
+            +show_console: bool
+            +has_json_output: bool
+            +resolve_module_level(name, level) int
+            +to_dict() dict
+            +from_kwargs(**kwargs) LoggingConfig
         }
     }
 
@@ -2386,14 +2398,16 @@ flowchart TD
 <li><strong>Strategy Pattern</strong>: Different formatting and output strategies</li>
 <li><strong>Protocol Pattern</strong>: LoggerProtocol for type-safe interfaces</li>
 </ol>
-<p>Key architectural features include:
-- Caller attribution with stack inspection
-- Custom TRACE logging level
-- Graceful fallback for syslog on unsupported systems
-- Rich-colored console output with project root detection
-- Structured JSON logging with extra field support
-- Test mode detection and default level adjustment
-- Immutable configuration with validation</p>
+<p>Key architectural features include:</p>
+<ul>
+<li>Caller attribution with stack inspection</li>
+<li>Custom TRACE logging level</li>
+<li>Graceful fallback for syslog on unsupported systems</li>
+<li>Rich-colored console output with project root detection</li>
+<li>Structured JSON logging with extra field support</li>
+<li>Test mode detection and default level adjustment</li>
+<li>Immutable configuration with validation</li>
+</ul>
 <p>All code elements are fully documented with their signatures, locations, and dependencies, forming the foundation for understanding the arlogi library's implementation.</p>
 
 

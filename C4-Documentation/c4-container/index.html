@@ -288,7 +288,7 @@
   <span class="md-ellipsis">
     
   
-    API Reference
+    Reference
   
 
     
@@ -2370,7 +2370,8 @@
 <li>Logger Factory (LoggerFactory, TraceLogger)</li>
 <li>Handler Implementations (ColoredConsoleHandler, JSONHandler, JSONFileHandler, ArlogiSyslogHandler)</li>
 <li>Type Definitions (LoggerProtocol, custom TRACE level)</li>
-<li>Public API Functions (setup_logging, get_logger, get_json_logger, get_syslog_logger)</li>
+<li>Public API Functions (get_logger, get_json_logger, get_syslog_logger)</li>
+<li>Legacy Helpers (setup_logging)</li>
 </ul>
 <h4 id="interfaces">Interfaces</h4>
 <h5 id="python-module-api">Python Module API</h5>
@@ -2379,12 +2380,12 @@
 <strong>Specification</strong>: <a href="../apis/arlogi-api.yaml">apis/arlogi-api.yaml</a></p>
 <p><strong>Endpoints</strong>:</p>
 <ul>
-<li><code>arlogi.setup_logging(**kwargs)</code> - Configure global logging</li>
+<li><code>arlogi.LoggingConfig</code> - Configuration dataclass</li>
+<li><code>arlogi.LoggerFactory</code> - Logger factory class</li>
 <li><code>arlogi.get_logger(name, level=None)</code> - Get standard logger</li>
 <li><code>arlogi.get_json_logger(name, json_file_name=None)</code> - Get JSON-only logger</li>
 <li><code>arlogi.get_syslog_logger(name, address="/dev/log")</code> - Get syslog-only logger</li>
-<li><code>arlogi.LoggingConfig</code> - Configuration dataclass</li>
-<li><code>arlogi.LoggerFactory</code> - Logger factory class</li>
+<li><code>arlogi.setup_logging(**kwargs)</code> - Legacy configuration helper</li>
 <li><code>arlogi.HandlerFactory</code> - Handler factory class</li>
 <li><code>arlogi.TRACE</code> - Custom TRACE log level constant</li>
 </ul>

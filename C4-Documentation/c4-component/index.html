@@ -288,7 +288,7 @@
   <span class="md-ellipsis">
     
   
-    API Reference
+    Reference
   
 
     
@@ -1665,10 +1665,12 @@
 - Caller attribution and stack inspection
 - TRACE level logging support</p>
 <p><strong>Public APIs</strong>:
-- <code>setup_logging()</code> - Configure root logging system
+- <code>LoggingConfig</code> - Configuration dataclass (Recommended)
+- <code>LoggerFactory._apply_configuration()</code> - Apply configuration (Recommended)
 - <code>get_logger()</code> - Get standard logger with caller attribution
 - <code>get_json_logger()</code> - Get dedicated JSON-only logger
-- <code>get_syslog_logger()</code> - Get dedicated syslog-only logger</p>
+- <code>get_syslog_logger()</code> - Get dedicated syslog-only logger
+- <code>setup_logging()</code> - Legacy configuration helper</p>
 <hr />
 <h3 id="test-suite">Test Suite</h3>
 <ul>
@@ -1799,8 +1801,8 @@
 - <strong>Core → Docs</strong>: Provide source code for documentation generation</p>
 <h3 id="test-suite-interactions">Test Suite Interactions</h3>
 <p><strong>With Core Logging Library</strong>:
-- Tests all public functions: <code>setup_logging()</code>, <code>get_logger()</code>, <code>get_json_logger()</code>, <code>get_syslog_logger()</code>
-- Validates configuration classes and their methods
+- Tests all public functions: <code>get_logger()</code>, <code>get_json_logger()</code>, <code>get_syslog_logger()</code>, <code>setup_logging()</code> (legacy)
+- Validates configuration classes (<code>LoggingConfig</code>, <code>LoggerFactory</code>)
 - Verifies protocol compliance and type safety
 - Tests handler implementations (ColoredConsole, JSON, Syslog)
 - Validates custom TRACE level functionality</p>

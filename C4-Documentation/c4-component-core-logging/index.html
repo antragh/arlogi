@@ -288,7 +288,7 @@
   <span class="md-ellipsis">
     
   
-    API Reference
+    Reference
   
 
     
@@ -2447,13 +2447,11 @@
 <p><strong>Protocol</strong>: Python class with static and instance methods
 <strong>Description</strong>: Factory for creating and configuring loggers</p>
 <p><strong>Operations</strong>:</p>
-<div class="language-python highlight"><pre><span></span><code><span id="__span-17-1"><a id="__codelineno-17-1" name="__codelineno-17-1" href="#__codelineno-17-1"></a><span class="n">LoggerFactory</span><span class="o">.</span><span class="n">setup</span><span class="p">(</span><span class="n">level</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">INFO</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-17-1"><a id="__codelineno-17-1" name="__codelineno-17-1" href="#__codelineno-17-1"></a><span class="n">LoggerFactory</span><span class="o">.</span><span class="n">_apply_configuration</span><span class="p">(</span><span class="n">config</span><span class="p">:</span> <span class="n">LoggingConfig</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span>
 </span></code></pre></div>
 <ul>
-<li><strong>Description</strong>: Configure the root logging system</li>
-<li><strong>Parameters</strong>:</li>
-<li><code>level</code>: Global logging level</li>
-<li><code>**kwargs</code>: Additional configuration options</li>
+<li><strong>Description</strong>: Configure the root logging system using a configuration object (Recommended)</li>
+<li><strong>Parameters</strong>: <code>config</code>: LoggingConfig instance</li>
 <li><strong>Returns</strong>: None</li>
 <li><strong>Side Effects</strong>: Modulates root logger configuration</li>
 </ul>

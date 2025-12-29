@@ -288,7 +288,7 @@
   <span class="md-ellipsis">
     
   
-    API Reference
+    Reference
   
 
     
@@ -2081,7 +2081,7 @@
 <h3 id="short-description">Short Description</h3>
 <p>Arlogi is a robust, type-safe Python logging library that provides enhanced colored console output, structured JSON logging, syslog integration, and advanced caller attribution capabilities for modern application development.</p>
 <h3 id="long-description">Long Description</h3>
-<p>Arlogi extends Python's standard logging module with modern features designed to solve the problem of inadequate logging capabilities in production applications. The system provides a custom TRACE log level (level 5) for ultra-detailed debugging, premium colored console output using the Rich library, structured JSON logging for log aggregation systems, and enterprise-grade syslog integration. The library's unique caller attribution feature allows developers to trace log calls across function boundaries using depth parameters (from_, from_caller, or **{"from": depth}), making it easier to understand the flow of complex applications. Arlogi is designed as a drop-in replacement for the standard logging module while maintaining full backward compatibility, supporting both simple helper functions (setup_logging) and modern type-safe configuration objects (LoggingConfig). The system ensures test-mode awareness for seamless pytest integration and follows SOLID principles for maintainability and clear separation of concerns.</p>
+<p>Arlogi extends Python's standard logging module with modern features designed to solve the problem of inadequate logging capabilities in production applications. The system provides a custom TRACE log level (level 5) for ultra-detailed debugging, premium colored console output using the Rich library, structured JSON logging for log aggregation systems, and enterprise-grade syslog integration. The library's unique caller attribution feature allows developers to trace log calls across function boundaries using depth parameters (from_, from_caller, or **{"from": depth}), making it easier to understand the flow of complex applications. Arlogi is designed as a drop-in replacement for the standard logging module while maintaining full backward compatibility, prioritizing modern type-safe configuration objects (LoggingConfig) and provides legacy support for simple helper functions (setup_logging). The system ensures test-mode awareness for seamless pytest integration and follows SOLID principles for maintainability and clear separation of concerns.</p>
 <hr />
 <h2 id="personas">Personas</h2>
 <h3 id="application-developer">Application Developer</h3>
@@ -2097,13 +2097,13 @@
 <li>Integrate with enterprise syslog infrastructure</li>
 <li>Maintain backward compatibility with existing logging code</li>
 <li><strong>Key Features Used</strong>:</li>
-<li>setup_logging() for quick configuration</li>
+<li>LoggingConfig for type-safe configuration (Primary)</li>
 <li>get_logger() for standard logging with caller attribution</li>
 <li>get_json_logger() for structured JSON output</li>
 <li>get_syslog_logger() for enterprise integration</li>
 <li>Module-specific log levels</li>
 <li>Custom TRACE log level</li>
-<li>LoggingConfig for type-safe configuration</li>
+<li>setup_logging() for legacy configuration support</li>
 </ul>
 <h3 id="library-developer">Library Developer</h3>
 <ul>
@@ -2219,15 +2219,16 @@
 <p>System: PyPI Package Repository → Python Package</p>
 </li>
 <li>
-<p><strong>Import and Setup</strong>: Developer imports arlogi and configures logging</p>
+<p><strong>Import and Setup</strong>: Developer imports arlogi and configures logging using the modern configuration pattern</p>
 </li>
 </ol>
-<div class="language-python highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="kn">from</span><span class="w"> </span><span class="nn">arlogi</span><span class="w"> </span><span class="kn">import</span> <span class="n">setup_logging</span><span class="p">,</span> <span class="n">get_logger</span>
-</span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a><span class="n">setup_logging</span><span class="p">(</span><span class="n">level</span><span class="o">=</span><span class="s2">&quot;INFO&quot;</span><span class="p">)</span>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="kn">from</span><span class="w"> </span><span class="nn">arlogi</span><span class="w"> </span><span class="kn">import</span> <span class="n">LoggingConfig</span><span class="p">,</span> <span class="n">LoggerFactory</span><span class="p">,</span> <span class="n">get_logger</span>
+</span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a><span class="n">config</span> <span class="o">=</span> <span class="n">LoggingConfig</span><span class="p">(</span><span class="n">level</span><span class="o">=</span><span class="s2">&quot;INFO&quot;</span><span class="p">)</span>
+</span><span id="__span-0-3"><a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a><span class="n">LoggerFactory</span><span class="o">.</span><span class="n">_apply_configuration</span><span class="p">(</span><span class="n">config</span><span class="p">)</span>
 </span></code></pre></div>
 <ul>
 <li>
-<p>System: Python Package (setup_logging function)</p>
+<p>System: Python Package (LoggingConfig, LoggerFactory)</p>
 </li>
 <li>
 <p><strong>Create Logger</strong>: Developer obtains a logger instance</p>
@@ -2442,7 +2443,7 @@
 <h3 id="application-developer-advanced-configuration-journey">Application Developer - Advanced Configuration Journey</h3>
 <p><strong>Persona</strong>: Application Developer, Contributor</p>
 <ol>
-<li><strong>Modern Configuration Pattern</strong>: Developer uses LoggingConfig dataclass for type safety</li>
+<li><strong>Modern Configuration Pattern</strong>: Developer uses LoggingConfig dataclass for type safety (Recommended)</li>
 </ol>
 <div class="language-python highlight"><pre><span></span><code><span id="__span-17-1"><a id="__codelineno-17-1" name="__codelineno-17-1" href="#__codelineno-17-1"></a><span class="kn">from</span><span class="w"> </span><span class="nn">arlogi</span><span class="w"> </span><span class="kn">import</span> <span class="n">LoggingConfig</span><span class="p">,</span> <span class="n">LoggerFactory</span>
 </span><span id="__span-17-2"><a id="__codelineno-17-2" name="__codelineno-17-2" href="#__codelineno-17-2"></a>
