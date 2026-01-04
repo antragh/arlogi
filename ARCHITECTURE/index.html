@@ -978,6 +978,34 @@
   
   
     <li class="md-nav__item">
+      <a href="../reference/arlogi/config_builder/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Config builder
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
       <a href="../reference/arlogi/factory/" class="md-nav__link">
         
   
@@ -2208,7 +2236,7 @@
     App-&gt;&gt;Factory: _apply_configuration(config)
     Factory-&gt;&gt;Logger: Root Logger level set
     Factory-&gt;&gt;Handler: Handlers created/added
-    App-&gt;&gt;Logger: logger.info("msg", from_=1)
+    App-&gt;&gt;Logger: logger.info("msg", caller_depth=1)
     Logger-&gt;&gt;Logger: _process_params (attribution)
     Logger-&gt;&gt;Handler: emit(record)
     Handler-&gt;&gt;Rich: _log_render(...)
@@ -2251,8 +2279,9 @@
         +get_logger(name, level) LoggerProtocol
         +get_json_logger(name, file) LoggerProtocol
         +get_syslog_logger(name, addr) LoggerProtocol
+        +cleanup_json_logger(name) None
+        +cleanup_syslog_logger(name) None
         +is_test_mode() bool
-        +setup(**kwargs) None (Legacy)
         -_initialize_trace_level() None
         -_configure_root_logger(config) None
         -_clear_and_add_handlers(config) None
@@ -2416,36 +2445,28 @@
 <div class="language-text highlight"><pre><span></span><code><span id="__span-4-1"><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a>src/arlogi/
 </span><span id="__span-4-2"><a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a>├── __init__.py              # Public API exports
 </span><span id="__span-4-3"><a id="__codelineno-4-3" name="__codelineno-4-3" href="#__codelineno-4-3"></a>├── config.py                # LoggingConfig dataclass
-</span><span id="__span-4-4"><a id="__codelineno-4-4" name="__codelineno-4-4" href="#__codelineno-4-4"></a>├── factory.py               # LoggerFactory, TraceLogger
-</span><span id="__span-4-5"><a id="__codelineno-4-5" name="__codelineno-4-5" href="#__codelineno-4-5"></a>├── handler_factory.py       # HandlerFactory
-</span><span id="__span-4-6"><a id="__codelineno-4-6" name="__codelineno-4-6" href="#__codelineno-4-6"></a>├── handlers.py              # All handler classes
-</span><span id="__span-4-7"><a id="__codelineno-4-7" name="__codelineno-4-7" href="#__codelineno-4-7"></a>├── levels.py                # TRACE level registration
-</span><span id="__span-4-8"><a id="__codelineno-4-8" name="__codelineno-4-8" href="#__codelineno-4-8"></a>└── types.py                 # LoggerProtocol
+</span><span id="__span-4-4"><a id="__codelineno-4-4" name="__codelineno-4-4" href="#__codelineno-4-4"></a>├── config_builder.py        # Configuration builder utilities (if present)
+</span><span id="__span-4-5"><a id="__codelineno-4-5" name="__codelineno-4-5" href="#__codelineno-4-5"></a>├── factory.py               # LoggerFactory, TraceLogger
+</span><span id="__span-4-6"><a id="__codelineno-4-6" name="__codelineno-4-6" href="#__codelineno-4-6"></a>├── handler_factory.py       # HandlerFactory
+</span><span id="__span-4-7"><a id="__codelineno-4-7" name="__codelineno-4-7" href="#__codelineno-4-7"></a>├── handlers.py              # All handler classes
+</span><span id="__span-4-8"><a id="__codelineno-4-8" name="__codelineno-4-8" href="#__codelineno-4-8"></a>├── levels.py                # TRACE level registration
+</span><span id="__span-4-9"><a id="__codelineno-4-9" name="__codelineno-4-9" href="#__codelineno-4-9"></a>└── types.py                 # LoggerProtocol
 </span></code></pre></div>
 <hr />
 <h2 id="data-flow">Data Flow</h2>
 <h3 id="initialization-flow">Initialization Flow</h3>
-<p>The system supports two initialization paths: the modern <code>LoggingConfig</code> path (recommended) and the standard <code>setup_logging</code> helper (legacy).</p>
+<p>The initialization process uses the <code>LoggingConfig</code> pattern for type-safe configuration:</p>
 <pre class="mermaid"><code>graph TD
-    subgraph "Legacy Helper"
-        A[setup_logging] --&gt; B["LoggingConfig.from_kwargs"]
-    end
+    A[LoggingConfig init] --&gt; B["LoggerFactory._apply_configuration"]
 
-    subgraph "Modern Path (Recommended)"
-        Direct[LoggingConfig init]
-    end
-
-    B --&gt; C["LoggerFactory._apply_configuration"]
-    Direct --&gt; C
-
-    C --&gt; D[_initialize_trace_level]
-    C --&gt; E[_configure_root_logger]
-    C --&gt; F[is_test_mode?]
-    F --&gt;|No| G[_clear_and_add_handlers]
-    F --&gt;|Yes| H[Skip - use pytest handlers]
-    G --&gt; I[HandlerFactory.create_handlers]
-    I --&gt; J[Add handlers to root]
-    C --&gt; K[_configure_module_levels]</code></pre>
+    B --&gt; C[_initialize_trace_level]
+    B --&gt; D[_configure_root_logger]
+    B --&gt; E[is_test_mode?]
+    E --&gt;|No| F[_clear_and_add_handlers]
+    E --&gt;|Yes| G[Skip - use pytest handlers]
+    F --&gt; H[HandlerFactory.create_handlers]
+    H --&gt; I[Add handlers to root]
+    B --&gt; J[_configure_module_levels]</code></pre>
 <h3 id="logging-call-flow">Logging Call Flow</h3>
 <pre class="mermaid"><code>graph TD
     A[logger.info] --&gt; B[_process_params]
@@ -2530,7 +2551,7 @@
 <td>No attribution</td>
 </tr>
 <tr>
-<td>Log with <code>from_=</code></td>
+<td>Log with <code>caller_depth=</code></td>
 <td>~1.5μs</td>
 <td>Stack frame inspection</td>
 </tr>
@@ -2640,7 +2661,7 @@
 <tbody>
 <tr>
 <td>3.13+</td>
-<td>0.512+</td>
+<td>0.601+</td>
 <td>Supported</td>
 </tr>
 <tr>
