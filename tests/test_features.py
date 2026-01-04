@@ -57,11 +57,11 @@ def test_caller_attribution(caplog):
     logger = get_logger("test.attribution")
 
     def inner_func():
-        logger.info("message", from_caller=0)
+        logger.info("message", caller_depth=0)
 
     def outer_func():
         inner_func()
-        logger.info("outer message", from_caller=1)
+        logger.info("outer message", caller_depth=1)
 
     inner_func()
     assert "message" in caplog.text

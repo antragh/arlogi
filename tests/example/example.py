@@ -37,8 +37,8 @@ def main():
     logger.trace("Main app TRACE example")
     logger.debug("Main app DEBUG example")
     logger.info("Main app INFO example")
-    logger.info("Main app INFO example\nmultiline.", **{"from": 0})
-    logger.warning("Main app WARNING example", from_=0)
+    logger.info("Main app INFO example\nmultiline.", caller_depth=0)
+    logger.warning("Main app WARNING example", caller_depth=0)
     logger.error("Main app ERROR example\n\n")
 
     # 4. Demonstrate module-specific levels
@@ -70,16 +70,16 @@ def main():
     syslog_logger = get_syslog_logger("security")
     syslog_logger.warning("Unauthorized access attempt detected")
 
-    # 6. Demonstrate Caller Attribution (from_caller or from_)
+    # 6. Demonstrate Caller Attribution using caller_depth
     print("\n--- Caller Attribution ---")
 
     def worker_function():
-        # from=0 shows this function name [worker_function]
-        logger.info("Worker processing started", **{"from": 0})
-        # from=1 shows where this was called from [main]
-        logger.debug("Processing details", **{"from": 1})
-        # from=1 shows caller of main [unknown or module level]
-        logger.trace("Deep trace", from_=1)
+        # caller_depth=0 shows this function name [worker_function]
+        logger.info("Worker processing started", caller_depth=0)
+        # caller_depth=1 shows where this was called from [main]
+        logger.debug("Processing details", **{"caller_depth": 1})
+        # caller_depth=1 shows caller of main [unknown or module level]
+        logger.trace("Deep trace", caller_depth=1)
 
         # depth 1 in worker: [from __main__.main()]
         worker.do_work(depth=1)

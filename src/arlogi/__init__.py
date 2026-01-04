@@ -1,6 +1,8 @@
 from .config import LoggingConfig, get_default_level, is_test_mode
 from .factory import (
     LoggerFactory,
+    cleanup_json_logger,
+    cleanup_syslog_logger,
     get_json_logger,
     get_logger,
     get_syslog_logger,
@@ -15,6 +17,8 @@ __all__ = [
     "get_logger",
     "get_json_logger",
     "get_syslog_logger",
+    "cleanup_json_logger",
+    "cleanup_syslog_logger",
     "setup_logging",
     "TRACE",
     # Advanced / Internal API

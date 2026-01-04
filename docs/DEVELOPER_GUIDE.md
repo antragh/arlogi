@@ -19,7 +19,7 @@ This guide is for contributors and maintainers of the arlogi library.
 
 ### Prerequisites
 
-- Python 3.13 or higher
+- Python 3.13 or higher (required by project configuration)
 - [uv](https://github.com/astral-sh/uv) package manager
 - Git
 
@@ -55,8 +55,8 @@ uv run ruff check src/arlogi tests
 # Format code
 uv run ruff format src/arlogi tests
 
-# Check type hints (if mypy is added)
-uv run mypy src/arlogi
+# Check with radon (complexity analysis)
+uv run radon cc src/arlogi -a -nb
 ```
 
 ---
@@ -69,6 +69,7 @@ arlogi/
 │   └── arlogi/
 │       ├── __init__.py              # Public API exports
 │       ├── config.py                # LoggingConfig dataclass
+│       ├── config_builder.py        # Configuration builder utilities
 │       ├── factory.py               # LoggerFactory, TraceLogger
 │       ├── handler_factory.py       # HandlerFactory
 │       ├── handlers.py              # Handler implementations
@@ -77,15 +78,20 @@ arlogi/
 ├── tests/
 │   ├── test_core.py                 # Core functionality tests
 │   ├── test_features.py             # Feature tests
+│   ├── test_resource_management.py  # Resource cleanup tests
+│   ├── test_thread_safety.py        # Thread safety tests
 │   └── example/
 │       └── example.py               # Example usage
 ├── docs/
 │   ├── API_REFERENCE.md             # Complete API documentation
 │   ├── ARCHITECTURE.md              # Architecture diagrams
 │   ├── USER_GUIDE.md                # User guide
+│   ├── CONFIGURATION_GUIDE.md       # Configuration reference
+│   ├── CALLER_ATTRIBUTION_EXAMPLES.md # Caller attribution examples
+│   ├── index.md                     # Documentation index
 │   └── DEVELOPER_GUIDE.md           # This file
 ├── pyproject.toml                   # Project configuration
-├── ty.toml                          # Type checking configuration
+├── uv.lock                          # Dependency lock file
 ├── .ruff.toml                       # Ruff linter configuration
 └── README.md                        # Project README
 ```
@@ -171,7 +177,7 @@ Test end-to-end functionality.
 def test_caller_attribution():
     """Test that caller attribution shows correct function."""
     logger = get_logger("test")
-    logger.info("Test message", from_=1)
+    logger.info("Test message", caller_depth=1)
     # Verify output contains parent function name
 ```
 
@@ -181,7 +187,7 @@ def test_caller_attribution():
 
 ```python
 import pytest
-from arlogi import setup_logging, get_logger
+from arlogi import LoggingConfig, LoggerFactory, get_logger
 
 class TestLoggerFactory:
     """Tests for LoggerFactory class."""
@@ -526,7 +532,7 @@ Follow [Conventional Commits](https://www.conventionalcommits.org/):
 ```text
 feat(factory): add LoggingConfig support
 
-BREAKING CHANGE: `setup_logging()` is deprecated in favor of `LoggingConfig`
+feat(factory): add cleanup_json_logger and cleanup_syslog_logger
 
 fix(handlers): resolve unused variable warning
 

@@ -21,8 +21,10 @@ Complete user guide for the arlogi logging library. Learn how to install, config
 
 ### Requirements
 
-- Python 3.13 or higher
-- Optional: `rich` for enhanced console output
+- Python 3.13 or higher (required)
+- `rich` >= 14.2.0 (automatically installed)
+
+Arlogi requires Python 3.13+ as specified in the project configuration.
 
 ### Using pip
 
@@ -82,10 +84,10 @@ from arlogi import get_logger, TRACE
 logger = get_logger(__name__)
 
 # Ultra-detailed debugging
-logger.trace("Variable value: x = %s", x, from_=0)
+logger.trace("Variable value: x = %s", x, caller_depth=0)
 
 # Detailed information for troubleshooting
-logger.debug("SQL query: %s", query, from_=1)
+logger.debug("SQL query: %s", query, caller_depth=1)
 
 # General information about application flow
 logger.info("User logged in successfully", user_id=123)
@@ -139,9 +141,9 @@ logger.info(
 
 ## Configuration
 
-### Modern Architecture: LoggingConfig
+### Basic Configuration
 
-The preferred way to configure `arlogi` in modern applications is using the `LoggingConfig` pattern. This approach clearly separates configuration data from initialization logic and provides a type-safe interface.
+Configure `arlogi` using the `LoggingConfig` pattern. This approach clearly separates configuration data from initialization logic and provides a type-safe interface.
 
 ```python
 from arlogi import LoggingConfig, LoggerFactory
@@ -160,24 +162,6 @@ LoggerFactory._apply_configuration(config)
 
 > [!TIP]
 > This pattern is highly recommended for production applications, especially when configuration is sourced from complex environment logic or external files.
-
----
-
-### Legacy Helper: `setup_logging()` (Deprecated)
-
-> [!WARNING]
-> `setup_logging()` is now considered a legacy helper and is deprecated in favor of the `LoggingConfig` pattern. It remains available for backward compatibility and simple scripts but may be removed in a future major version.
-
-```python
-from arlogi import setup_logging
-
-setup_logging(
-    level="INFO",
-    show_time=True,
-    show_level=True,
-    show_path=True
-)
-```
 
 ---
 
@@ -286,18 +270,18 @@ from arlogi import get_logger
 logger = get_logger(__name__)
 
 def main():
-    logger.info("Main entry point", from_=0)  # Shows: main()
+    logger.info("Main entry point", caller_depth=0)  # Shows: main()
     process_data()
 
 def process_data():
-    logger.info("Processing", from_=0)        # Shows: process_data()
-    logger.info("Called from main", from_=1)  # Shows: main()
+    logger.info("Processing", caller_depth=0)        # Shows: process_data()
+    logger.info("Called from main", caller_depth=1)  # Shows: main()
     validate()
 
 def validate():
-    logger.info("Validating", from_=0)        # Shows: validate()
-    logger.info("From process", from_=1)      # Shows: process_data()
-    logger.info("From main", from_=2)         # Shows: main()
+    logger.info("Validating", caller_depth=0)        # Shows: validate()
+    logger.info("From process", caller_depth=1)      # Shows: process_data()
+    logger.info("From main", caller_depth=2)         # Shows: main()
 ```
 
 ### Cross-Module Attribution
@@ -309,7 +293,7 @@ from arlogi import get_logger
 logger = get_logger(__name__)
 
 def fetch_user(user_id):
-    logger.info("Fetching user", from_=1)  # Shows caller
+    logger.info("Fetching user", caller_depth=1)  # Shows caller
     # ... fetch logic
     return user
 
@@ -320,18 +304,18 @@ from app.utils import fetch_user
 logger = get_logger(__name__)
 
 def handle_request(user_id):
-    logger.info("Request received", from_=0)
+    logger.info("Request received", caller_depth=0)
     user = fetch_user(user_id)  # utils.py shows: handle_request()
-    logger.info("Request complete", from_=0)
+    logger.info("Request complete", caller_depth=0)
 ```
 
 ### Best Practices
 
-| Use Case                | Recommended `from_`               |
+| Use Case                | Recommended `caller_depth`        |
 | ----------------------- | --------------------------------- |
-| Library/Utility code    | `from_=1` (show caller)           |
-| Application code        | `from_=0` (show current function) |
-| Debugging complex flows | `from_=2+` (show deeper context)  |
+| Library/Utility code    | `caller_depth=1` (show caller)           |
+| Application code        | `caller_depth=0` (show current function) |
+| Debugging complex flows | `caller_depth=2+` (show deeper context)  |
 
 ---
 
@@ -436,7 +420,7 @@ def handle_request(request):
 
     logger.info(
         "Request received",
-        from_=1,
+        caller_depth=1,
         request_id=request_id,
         method=request.method,
         path=request.path
@@ -448,7 +432,7 @@ def handle_request(request):
 
         logger.info(
             "Request completed",
-            from_=1,
+            caller_depth=1,
             request_id=request_id,
             status_code=200,
             duration_ms=round(duration, 2)
@@ -460,7 +444,7 @@ def handle_request(request):
 
         logger.exception(
             "Request failed",
-            from_=1,
+            caller_depth=1,
             request_id=request_id,
             error=str(e),
             duration_ms=round(duration, 2)
@@ -481,7 +465,7 @@ def execute_query(query, params=None):
 
     logger.trace(
         "Executing query",
-        from_=1,
+        caller_depth=1,
         query=query,
         params=params
     )
@@ -492,7 +476,7 @@ def execute_query(query, params=None):
 
         logger.debug(
             "Query executed successfully",
-            from_=1,
+            caller_depth=1,
             query=truncate(query, 100),
             duration_ms=round(duration, 2),
             rows_affected=result.rowcount
@@ -505,7 +489,7 @@ def execute_query(query, params=None):
 
         logger.error(
             "Query execution failed",
-            from_=1,
+            caller_depth=1,
             query=query,
             duration_ms=round(duration, 2),
             error=str(e)
@@ -524,7 +508,7 @@ logger = get_logger("app.tasks")
 async def process_task(task_id, data):
     logger.info(
         "Task started",
-        from_=1,
+        caller_depth=1,
         task_id=task_id,
         data_size=len(data)
     )
@@ -535,7 +519,7 @@ async def process_task(task_id, data):
 
         logger.info(
             "Task completed",
-            from_=1,
+            caller_depth=1,
             task_id=task_id,
             result_size=len(result)
         )
@@ -544,7 +528,7 @@ async def process_task(task_id, data):
     except Exception as e:
         logger.exception(
             "Task failed",
-            from_=1,
+            caller_depth=1,
             task_id=task_id,
             error=str(e)
         )
@@ -613,9 +597,9 @@ logger.propagate = False  # Disable if needed
 1. Adjust the `from_` depth
 
 ```python
-logger.info("Message", from_=0)  # Current function
-logger.info("Message", from_=1)  # Caller
-logger.info("Message", from_=2)  # Caller's caller
+logger.info("Message", caller_depth=0)  # Current function
+logger.info("Message", caller_depth=1)  # Caller
+logger.info("Message", caller_depth=2)  # Caller's caller
 ```
 
 2. Check for wrapper functions
@@ -626,7 +610,7 @@ logger.info("Message", from_=2)  # Caller's caller
 def my_function():
     pass
 
-# Use from_=2 to skip the decorator
+# Use caller_depth=2 to skip the decorator
 ```
 
 ### Issue: Rich Colors Not Working
@@ -723,7 +707,7 @@ logger = get_logger(__name__)
 
 @contextmanager
 def log_context(operation_name):
-    logger.info("Starting: %s", operation_name, from_=1)
+    logger.info("Starting: %s", operation_name, caller_depth=1)
     start_time = time.time()
     try:
         yield
@@ -732,7 +716,7 @@ def log_context(operation_name):
         logger.info(
             "Completed: %s",
             operation_name,
-            from_=1,
+            caller_depth=1,
             duration_ms=round(duration * 1000, 2)
         )
 
@@ -762,7 +746,7 @@ logger.debug(lambda: expensive_debug_info())
 - Include context (request IDs, user IDs, etc.)
 - Use appropriate log levels
 - Log exceptions with `logger.exception()`
-- Use `from_=1` in library/utility code
+- Use `caller_depth=1` in library/utility code
 
 ### DON'T
 

@@ -154,7 +154,7 @@ sequenceDiagram
     App->>Factory: _apply_configuration(config)
     Factory->>Logger: Root Logger level set
     Factory->>Handler: Handlers created/added
-    App->>Logger: logger.info("msg", from_=1)
+    App->>Logger: logger.info("msg", caller_depth=1)
     Logger->>Logger: _process_params (attribution)
     Logger->>Handler: emit(record)
     Handler->>Rich: _log_render(...)
@@ -201,8 +201,9 @@ classDiagram
         +get_logger(name, level) LoggerProtocol
         +get_json_logger(name, file) LoggerProtocol
         +get_syslog_logger(name, addr) LoggerProtocol
+        +cleanup_json_logger(name) None
+        +cleanup_syslog_logger(name) None
         +is_test_mode() bool
-        +setup(**kwargs) None (Legacy)
         -_initialize_trace_level() None
         -_configure_root_logger(config) None
         -_clear_and_add_handlers(config) None
@@ -359,6 +360,7 @@ syslog = ArlogiSyslogHandler()
 src/arlogi/
 ├── __init__.py              # Public API exports
 ├── config.py                # LoggingConfig dataclass
+├── config_builder.py        # Configuration builder utilities (if present)
 ├── factory.py               # LoggerFactory, TraceLogger
 ├── handler_factory.py       # HandlerFactory
 ├── handlers.py              # All handler classes
@@ -372,29 +374,20 @@ src/arlogi/
 
 ### Initialization Flow
 
-The system supports two initialization paths: the modern `LoggingConfig` path (recommended) and the standard `setup_logging` helper (legacy).
+The initialization process uses the `LoggingConfig` pattern for type-safe configuration:
 
 ```mermaid
 graph TD
-    subgraph "Legacy Helper"
-        A[setup_logging] --> B["LoggingConfig.from_kwargs"]
-    end
+    A[LoggingConfig init] --> B["LoggerFactory._apply_configuration"]
 
-    subgraph "Modern Path (Recommended)"
-        Direct[LoggingConfig init]
-    end
-
-    B --> C["LoggerFactory._apply_configuration"]
-    Direct --> C
-
-    C --> D[_initialize_trace_level]
-    C --> E[_configure_root_logger]
-    C --> F[is_test_mode?]
-    F -->|No| G[_clear_and_add_handlers]
-    F -->|Yes| H[Skip - use pytest handlers]
-    G --> I[HandlerFactory.create_handlers]
-    I --> J[Add handlers to root]
-    C --> K[_configure_module_levels]
+    B --> C[_initialize_trace_level]
+    B --> D[_configure_root_logger]
+    B --> E[is_test_mode?]
+    E -->|No| F[_clear_and_add_handlers]
+    E -->|Yes| G[Skip - use pytest handlers]
+    F --> H[HandlerFactory.create_handlers]
+    H --> I[Add handlers to root]
+    B --> J[_configure_module_levels]
 ```
 
 ### Logging Call Flow
@@ -487,7 +480,7 @@ config = config_from_yaml("logging_config.yaml")
 | Operation            | Time   | Notes                  |
 | -------------------- | ------ | ---------------------- |
 | Standard log call    | ~0.5μs | No attribution         |
-| Log with `from_=`    | ~1.5μs | Stack frame inspection |
+| Log with `caller_depth=`    | ~1.5μs | Stack frame inspection |
 | Deep stack (depth=5) | ~3μs   | Multiple frame walks   |
 
 **Optimization Tip:** Use `from_` only in development/debug builds.
@@ -554,7 +547,7 @@ In test mode:
 
 | Python | arlogi | Status              |
 | ------ | ------ | ------------------- |
-| 3.13+  | 0.512+ | Supported           |
+| 3.13+  | 0.601+ | Supported           |
 | 3.12   | 0.512+ | Supported (with uv) |
 | 3.11   | 0.512+ | Supported (with uv) |
 | <3.11  | -      | Not supported       |

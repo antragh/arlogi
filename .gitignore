@@ -21,6 +21,7 @@ wheels/
 .agebt/
 .claude/
 docs/.Notes/
+docs/_Notes_/
 docs/C4-Documentation-Old/
 docs/scripts/
 site/

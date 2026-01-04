@@ -20,7 +20,7 @@ class TraceLogger(logging.Logger):
 
     This logger extends the standard Python Logger with:
     - A custom TRACE level (below DEBUG)
-    - Caller attribution via from_/from_caller parameters
+    - Caller attribution via caller_depth parameter
     - Automatic extra field handling from unknown kwargs
     """
 
@@ -56,21 +56,19 @@ class TraceLogger(logging.Logger):
 
         Args:
             msg: The log message
-            kwargs: Keyword arguments including optional from_/from_caller
+            kwargs: Keyword arguments including optional caller_depth
 
         Returns:
             Tuple of (processed_message, processed_kwargs)
         """
         # 1. Handle caller attribution
-        from_val = kwargs.pop(
-            "from", kwargs.pop("from_caller", kwargs.pop("from_", None))
-        )
+        caller_depth_val = kwargs.pop("caller_depth", None)
 
-        if from_val is not None:
+        if caller_depth_val is not None:
             try:
                 from rich.markup import escape
 
-                depth = int(from_val)
+                depth = int(caller_depth_val)
                 m0, _ = self._get_caller_info(0)
                 mN, nN = self._get_caller_info(depth)
 
@@ -124,7 +122,7 @@ class TraceLogger(logging.Logger):
         Args:
             msg: The message to log
             *args: Format arguments for the message
-            **kwargs: Optional from_/from_caller for caller attribution
+            **kwargs: Optional caller_depth for caller attribution
         """
         msg, kwargs = self._process_params(msg, kwargs)
         if self.isEnabledFor(TRACE_LEVEL_NUM):
@@ -330,10 +328,15 @@ class LoggerFactory:
         logger = logging.getLogger(f"arlogi.json.{name}")
         logger.propagate = False
 
+        # Close existing handlers to prevent resource leaks
+        for handler in logger.handlers[:]:
+            handler.close()
+            logger.removeHandler(handler)
+
         if json_file_name:
-            logger.handlers = [JSONFileHandler(json_file_name)]
+            logger.addHandler(JSONFileHandler(json_file_name))
         else:
-            logger.handlers = [JSONHandler()]
+            logger.addHandler(JSONHandler())
 
         logger.setLevel(logging.DEBUG)
         return logger  # type: ignore
@@ -353,9 +356,57 @@ class LoggerFactory:
         """
         logger = logging.getLogger(f"arlogi.syslog.{name}")
         logger.propagate = False
-        logger.handlers = [ArlogiSyslogHandler(address=address)]
+
+        # Close existing handlers to prevent resource leaks
+        for handler in logger.handlers[:]:
+            handler.close()
+            logger.removeHandler(handler)
+
+        logger.addHandler(ArlogiSyslogHandler(address=address))
         logger.setLevel(logging.DEBUG)
         return logger  # type: ignore
+
+    @classmethod
+    def cleanup_json_logger(cls, name: str = "json") -> None:
+        """Clean up handlers for a JSON logger to free resources.
+
+        This method closes all handlers associated with the named JSON logger
+        and removes them from the logger. Use this to explicitly release file
+        handles and other resources when you're done with a logger.
+
+        Args:
+            name: Logger name suffix (must match the name used in get_json_logger)
+
+        Example:
+            >>> logger = get_json_logger("temp", "logs/temp.json")
+            >>> logger.info("Done logging")
+            >>> cleanup_json_logger("temp")  # Close the file handle
+        """
+        logger_name = f"arlogi.json.{name}"
+        logger = logging.getLogger(logger_name)
+
+        for handler in logger.handlers[:]:
+            handler.close()
+            logger.removeHandler(handler)
+
+    @classmethod
+    def cleanup_syslog_logger(cls, name: str = "syslog") -> None:
+        """Clean up handlers for a syslog logger to free resources.
+
+        Args:
+            name: Logger name suffix
+
+        Example:
+            >>> logger = get_syslog_logger("temp")
+            >>> logger.info("Done logging")
+            >>> cleanup_syslog_logger("temp")  # Close the socket
+        """
+        logger_name = f"arlogi.syslog.{name}"
+        logger = logging.getLogger(logger_name)
+
+        for handler in logger.handlers[:]:
+            handler.close()
+            logger.removeHandler(handler)
 
     @classmethod
     def get_global_logger(cls) -> LoggerProtocol:
@@ -451,3 +502,35 @@ def get_syslog_logger(
         A syslog-only logger instance
     """
     return LoggerFactory.get_syslog_logger(name, address)
+
+
+def cleanup_json_logger(name: str = "json") -> None:
+    """Clean up handlers for a JSON logger to free resources.
+
+    This function closes all handlers associated with the named JSON logger
+    and removes them from the logger. Use this to explicitly release file
+    handles and other resources when you're done with a logger.
+
+    Args:
+        name: Logger name suffix (must match the name used in get_json_logger)
+
+    Example:
+        >>> logger = get_json_logger("temp", "logs/temp.json")
+        >>> logger.info("Done logging")
+        >>> cleanup_json_logger("temp")  # Close the file handle
+    """
+    LoggerFactory.cleanup_json_logger(name)
+
+
+def cleanup_syslog_logger(name: str = "syslog") -> None:
+    """Clean up handlers for a syslog logger to free resources.
+
+    Args:
+        name: Logger name suffix
+
+    Example:
+        >>> logger = get_syslog_logger("temp")
+        >>> logger.info("Done logging")
+        >>> cleanup_syslog_logger("temp")  # Close the socket
+    """
+    LoggerFactory.cleanup_syslog_logger(name)

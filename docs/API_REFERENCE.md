@@ -1,6 +1,6 @@
 # Arlogi API Reference
 
-Complete API reference for the arlogi logging library v0.512.28.
+Complete API reference for the arlogi logging library v0.601.04.
 
 ---
 
@@ -79,39 +79,6 @@ level_int = config.resolve_module_level("app.db", "DEBUG")
 
 ## Public API Functions
 
-### `setup_logging(**kwargs)` (Deprecated)
-
-> [!WARNING]
-> This function is considered legacy and is deprecated in favor of the `LoggingConfig` pattern. It internally creates a `LoggingConfig` and applies it for you.
-
-Configure application-wide logging with arlogi.
-
-```python
-from arlogi import setup_logging
-
-setup_logging(
-    level="INFO",
-    module_levels={"app.db": "DEBUG"},
-    json_file_name="logs/app.jsonl"
-)
-```
-
-**Parameters:**
-
-| Parameter        | Type                    | Default      | Description                   |
-| ---------------- | ----------------------- | ------------ | ----------------------------- |
-| `level`          | `int \| str`            | `"INFO"`     | Global root log level         |
-| `module_levels`  | `Dict[str, str \| int]` | `None`       | Per-module level overrides    |
-| `json_file_name` | `str \| None`           | `None`       | Path to JSON log file         |
-| `json_file_only` | `bool`                  | `False`      | Only output JSON (no console) |
-| `use_syslog`     | `bool`                  | `False`      | Enable syslog output          |
-| `syslog_address` | `str \| tuple`          | `"/dev/log"` | Syslog server address         |
-| `show_time`      | `bool`                  | `False`      | Show timestamps in console    |
-| `show_level`     | `bool`                  | `True`       | Show log levels in console    |
-| `show_path`      | `bool`                  | `True`       | Show file paths in console    |
-
----
-
 ### `get_logger(name, level=None)`
 
 Get a logger instance with caller attribution support.
@@ -120,7 +87,7 @@ Get a logger instance with caller attribution support.
 from arlogi import get_logger
 
 logger = get_logger("my_app.module")
-logger.info("Application started", from_=1)
+logger.info("Application started", caller_depth=1)
 ```
 
 **Parameters:**
@@ -178,6 +145,46 @@ syslog_logger.warning("Unauthorized access attempt")
 
 ---
 
+### `cleanup_json_logger(name)`
+
+Clean up handlers for a JSON logger to free resources.
+
+```python
+from arlogi import get_json_logger, cleanup_json_logger
+
+logger = get_json_logger("temp", "logs/temp.json")
+logger.info("Done logging")
+cleanup_json_logger("temp")  # Close the file handle
+```
+
+**Parameters:**
+
+| Parameter | Type     | Default   | Description                           |
+| --------- | -------- | --------- | ------------------------------------- |
+| `name`    | `str`    | `"json"`  | Logger name suffix (must match name used in get_json_logger) |
+
+---
+
+### `cleanup_syslog_logger(name)`
+
+Clean up handlers for a syslog logger to free resources.
+
+```python
+from arlogi import get_syslog_logger, cleanup_syslog_logger
+
+logger = get_syslog_logger("temp")
+logger.info("Done logging")
+cleanup_syslog_logger("temp")  # Close the socket
+```
+
+**Parameters:**
+
+| Parameter | Type     | Default      | Description                           |
+| --------- | -------- | ------------ | ------------------------------------- |
+| `name`    | `str`    | `"syslog"`   | Logger name suffix                    |
+
+---
+
 ## Logger Protocol
 
 ### `LoggerProtocol`
@@ -188,26 +195,24 @@ Protocol defining the interface for arlogi loggers.
 
 #### Standard Logging Methods
 
-All methods support caller attribution via `from_`, `from_caller`, or `**{"from": N}`.
+All methods support caller attribution via the `caller_depth` parameter.
 
 ```python
-logger.trace(msg, *args, from_=0, **kwargs)
-logger.debug(msg, *args, from_=0, **kwargs)
-logger.info(msg, *args, from_=0, **kwargs)
-logger.warning(msg, *args, from_=0, **kwargs)
-logger.error(msg, *args, from_=0, **kwargs)
-logger.critical(msg, *args, from_=0, **kwargs)
-logger.exception(msg, *args, from_=0, **kwargs)
-logger.log(level, msg, *args, from_=0, **kwargs)
+logger.trace(msg, *args, caller_depth=0, **kwargs)
+logger.debug(msg, *args, caller_depth=0, **kwargs)
+logger.info(msg, *args, caller_depth=0, **kwargs)
+logger.warning(msg, *args, caller_depth=0, **kwargs)
+logger.error(msg, *args, caller_depth=0, **kwargs)
+logger.critical(msg, *args, caller_depth=0, **kwargs)
+logger.exception(msg, *args, caller_depth=0, **kwargs)
+logger.log(level, msg, *args, caller_depth=0, **kwargs)
 ```
 
-**Caller Attribution Parameters:**
+**Caller Attribution Parameter:**
 
 | Parameter     | Type          | Description                                  |
 | ------------- | ------------- | -------------------------------------------- |
-| `from_`       | `int \| None` | Stack depth (0=current, 1=caller, 2+=deeper) |
-| `from_caller` | `int \| None` | Alternative to `from_`                       |
-| `from`        | `int`         | Via dict syntax: `**{"from": 0}`             |
+| `caller_depth` | `int \| None` | Stack depth (0=current, 1=caller, 2+=deeper) |
 
 #### Level Management
 
@@ -407,19 +412,22 @@ syslog_logger = LoggerFactory.get_syslog_logger("security")
 
 **Class Methods:**
 
-| Method                          | Description                  |
-| ------------------------------- | ---------------------------- |
-| `setup(**kwargs)`               | Configure logging            |
-| `get_logger(name, level)`       | Get a logger                 |
-| `get_json_logger(name, file)`   | Get JSON-only logger         |
-| `get_syslog_logger(name, addr)` | Get syslog-only logger       |
-| `is_test_mode()`                | Check if in test environment |
+| Method                               | Description                      |
+| ------------------------------------ | -------------------------------- |
+| `setup(**kwargs)`                    | Configure logging                |
+| `_apply_configuration(config)`       | Apply LoggingConfig              |
+| `get_logger(name, level)`            | Get a logger                     |
+| `get_json_logger(name, file)`        | Get JSON-only logger             |
+| `get_syslog_logger(name, addr)`      | Get syslog-only logger           |
+| `cleanup_json_logger(name)`          | Clean up JSON logger handlers    |
+| `cleanup_syslog_logger(name)`        | Clean up syslog logger handlers  |
+| `is_test_mode()`                     | Check if in test environment     |
+| `get_global_logger()`                | Get global application logger    |
 
 **Internal Methods:**
 
 | Method                             | Description           |
 | ---------------------------------- | --------------------- |
-| `_apply_configuration(config)`     | Apply LoggingConfig   |
 | `_initialize_trace_level()`        | Register TRACE level  |
 | `_configure_root_logger(config)`   | Set root logger level |
 | `_clear_and_add_handlers(config)`  | Configure handlers    |
@@ -498,24 +506,15 @@ from typing import Protocol, Any
 
 @runtime_checkable
 class LoggerProtocol(Protocol):
-    def trace(self, msg: Any, *args: Any, from_: int | None = None,
-              from_caller: int | None = None, **kwargs: Any) -> None: ...
-    def debug(self, msg: Any, *args: Any, from_: int | None = None,
-              from_caller: int | None = None, **kwargs: Any) -> None: ...
-    def info(self, msg: Any, *args: Any, from_: int | None = None,
-             from_caller: int | None = None, **kwargs: Any) -> None: ...
-    def warning(self, msg: Any, *args: Any, from_: int | None = None,
-                from_caller: int | None = None, **kwargs: Any) -> None: ...
-    def error(self, msg: Any, *args: Any, from_: int | None = None,
-              from_caller: int | None = None, **kwargs: Any) -> None: ...
-    def critical(self, msg: Any, *args: Any, from_: int | None = None,
-                 from_caller: int | None = None, **kwargs: Any) -> None: ...
-    def fatal(self, msg: Any, *args: Any, from_: int | None = None,
-              from_caller: int | None = None, **kwargs: Any) -> None: ...
-    def exception(self, msg: Any, *args: Any, from_: int | None = None,
-                   from_caller: int | None = None, **kwargs: Any) -> None: ...
-    def log(self, level: int, msg: Any, *args: Any, from_: int | None = None,
-            from_caller: int | None = None, **kwargs: Any) -> None: ...
+    def trace(self, msg: Any, *args: Any, caller_depth: int | None = None, **kwargs: Any) -> None: ...
+    def debug(self, msg: Any, *args: Any, caller_depth: int | None = None, **kwargs: Any) -> None: ...
+    def info(self, msg: Any, *args: Any, caller_depth: int | None = None, **kwargs: Any) -> None: ...
+    def warning(self, msg: Any, *args: Any, caller_depth: int | None = None, **kwargs: Any) -> None: ...
+    def error(self, msg: Any, *args: Any, caller_depth: int | None = None, **kwargs: Any) -> None: ...
+    def critical(self, msg: Any, *args: Any, caller_depth: int | None = None, **kwargs: Any) -> None: ...
+    def fatal(self, msg: Any, *args: Any, caller_depth: int | None = None, **kwargs: Any) -> None: ...
+    def exception(self, msg: Any, *args: Any, caller_depth: int | None = None, **kwargs: Any) -> None: ...
+    def log(self, level: int, msg: Any, *args: Any, caller_depth: int | None = None, **kwargs: Any) -> None: ...
     def setLevel(self, level: int | str) -> None: ...
     def isEnabledFor(self, level: int) -> bool: ...
     def getEffectiveLevel(self) -> int: ...
@@ -543,11 +542,11 @@ logger.info("Application started")
 
 ```python
 def outer_function():
-    logger.info("Processing data", from_=1)
+    logger.info("Processing data", caller_depth=1)
 
 def inner_function():
-    logger.debug("Step 1", from_=0)  # Shows inner_function
-    logger.debug("Step 2", from_=1)  # Shows outer_function
+    logger.debug("Step 1", caller_depth=0)  # Shows inner_function
+    logger.debug("Step 2", caller_depth=1)  # Shows outer_function
 ```
 
 ### Advanced Module Configuration
@@ -613,11 +612,13 @@ All arlogi functions handle errors gracefully:
 
 ## Version History
 
-| Version  | Changes                                                 |
-| -------- | ------------------------------------------------------- |
-| 0.512.21 | Added LoggingConfig, HandlerFactory, reduced complexity |
-| 0.512.20 | Initial caller attribution support                      |
-| 0.512.0  | First stable release                                    |
+| Version  | Changes                                                           |
+| -------- | ----------------------------------------------------------------- |
+| 0.601.04 | Enhanced resource cleanup, improved test mode detection          |
+| 0.601.00 | Added cleanup_json_logger, cleanup_syslog_logger                 |
+| 0.512.28 | Added LoggingConfig, HandlerFactory, reduced complexity           |
+| 0.512.20 | Initial caller attribution support                               |
+| 0.512.0  | First stable release                                              |
 
 ---
 

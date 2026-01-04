@@ -22,11 +22,14 @@ class ColoredConsoleHandler(RichHandler):
     """A logging handler that uses rich for colored console output.
 
     Features:
-    - Automatic project root detection for relative file paths
+    - Automatic project root detection for relative file paths (cached)
     - Customizable color schemes per log level
     - Rich traceback support
     - Compact single-character level indicators (T, D, I, W, E, C)
     """
+
+    # Class-level cache for project root to avoid repeated filesystem operations
+    _project_root_cache: str | None = None
 
     def __init__(
         self,
@@ -80,7 +83,7 @@ class ColoredConsoleHandler(RichHandler):
         # Set level styles after initialization (for compatibility with older rich versions)
         self.level_styles = default_styles
 
-        # Store project root for relative path calculation
+        # Store project root for relative path calculation (use cache if available)
         self.project_root = project_root or self._find_project_root()
 
     def _find_project_root(self) -> str:
@@ -89,9 +92,15 @@ class ColoredConsoleHandler(RichHandler):
         Searches upward from the current directory for files like
         .git, pyproject.toml, setup.py, etc.
 
+        Result is cached at class level to avoid repeated filesystem operations.
+
         Returns:
             The absolute path to the project root, or current directory if not found
         """
+        # Return cached value if available
+        if ColoredConsoleHandler._project_root_cache is not None:
+            return ColoredConsoleHandler._project_root_cache
+
         current = os.getcwd()
 
         # Common project root indicators
@@ -111,11 +120,13 @@ class ColoredConsoleHandler(RichHandler):
         while current != os.path.dirname(current):  # Stop at filesystem root
             for indicator in indicators:
                 if os.path.exists(os.path.join(current, indicator)):
-                    return os.path.abspath(current)
+                    ColoredConsoleHandler._project_root_cache = os.path.abspath(current)
+                    return ColoredConsoleHandler._project_root_cache
             current = os.path.dirname(current)
 
         # If no indicators found, fall back to current working directory
-        return os.getcwd()
+        ColoredConsoleHandler._project_root_cache = os.getcwd()
+        return ColoredConsoleHandler._project_root_cache
 
     def render(
         self,
@@ -205,6 +216,8 @@ class JSONFormatter(logging.Formatter):
 
     Outputs log records as JSON with standard fields plus any extra
     fields added via the `extra` parameter.
+
+    Includes robust error handling for JSON serialization failures.
     """
 
     def format(self, record: logging.LogRecord) -> str:
@@ -215,6 +228,10 @@ class JSONFormatter(logging.Formatter):
 
         Returns:
             JSON string representation of the log record
+
+        Note:
+            If JSON serialization fails, falls back to a basic format
+            with error information to prevent logging crashes.
         """
         log_data = {
             "timestamp": datetime.fromtimestamp(record.created).isoformat(),
@@ -242,13 +259,29 @@ class JSONFormatter(logging.Formatter):
             if key not in standard_attrs and not key.startswith("_"):
                 log_data[key] = value
 
-        return json.dumps(log_data, default=str)
+        # Try to serialize with error handling
+        try:
+            return json.dumps(log_data, default=str)
+        except (TypeError, ValueError) as e:
+            # Fallback to basic format on serialization failure
+            return json.dumps({
+                "timestamp": log_data.get("timestamp"),
+                "level": log_data.get("level"),
+                "logger_name": log_data.get("logger_name"),
+                "message": str(log_data.get("message", "")),
+                "module": log_data.get("module"),
+                "function": log_data.get("function"),
+                "line_number": log_data.get("line_number"),
+                "error": f"JSON serialization failed: {e}"
+            })
 
 
 class JSONHandler(logging.StreamHandler):
     """A logging handler that outputs log records as JSON to a stream.
 
     Defaults to stderr for compatibility with log aggregation tools.
+
+    Properly manages custom streams to prevent resource leaks.
     """
 
     def __init__(self, stream: Any = None):
@@ -256,9 +289,33 @@ class JSONHandler(logging.StreamHandler):
 
         Args:
             stream: The stream to write to (defaults to sys.stderr if None)
+
+        Note:
+            Custom streams are tracked and closed when the handler is closed.
+            System streams (sys.stderr, sys.stdout) are not closed.
         """
+        # Track whether we own the stream for cleanup purposes
+        self._owns_stream = stream is not None
         super().__init__(stream)
         self.setFormatter(JSONFormatter())
+
+    def close(self):
+        """Close the handler and the stream if we own it.
+
+        Only closes custom streams, not system streams like sys.stderr.
+        """
+        try:
+            # Flush before closing
+            self.flush()
+
+            # Close custom stream if we own it
+            if self._owns_stream and self.stream and hasattr(self.stream, 'close'):
+                # Don't close system streams
+                if self.stream not in (sys.stderr, sys.stdout):
+                    self.stream.close()
+        finally:
+            # Always call parent close
+            super().close()
 
 
 class JSONFileHandler(logging.FileHandler):
@@ -281,10 +338,16 @@ class JSONFileHandler(logging.FileHandler):
             mode: File open mode (default: "a" for append)
             encoding: File encoding (default: None for system default)
             delay: Whether to delay file opening until first emit
+
+        Note:
+            Thread-safe: Uses exist_ok=True to safely handle concurrent
+            directory creation from multiple threads.
         """
         # Ensure parent directory exists
+        # Thread-safe: exist_ok=True handles race conditions where multiple
+        # threads might try to create the same directory
         parent_dir = os.path.dirname(os.path.abspath(filename))
-        if parent_dir and not os.path.exists(parent_dir):
+        if parent_dir:
             os.makedirs(parent_dir, exist_ok=True)
 
         super().__init__(filename, mode, encoding, delay)

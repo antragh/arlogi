@@ -4,9 +4,9 @@ Complete guide to configuring arlogi logging for your applications, including gl
 
 ## Quick Configuration
 
-### Modern Architecture: Direct `LoggingConfig` (Recommended)
+### Basic Setup
 
-The preferred way to configure `arlogi` is using the `LoggingConfig` pattern. This approach clearly separates configuration data from initialization logic and provides a type-safe interface.
+Configure `arlogi` using the `LoggingConfig` pattern. This approach clearly separates configuration data from initialization logic and provides a type-safe interface.
 
 ```python
 from arlogi import LoggingConfig, LoggerFactory, get_logger
@@ -24,18 +24,6 @@ LoggerFactory._apply_configuration(config)
 # 3. Use loggers
 logger = get_logger("my_app")
 logger.info("Application started using LoggingConfig")
-```
-
-### Legacy Helper: `setup_logging()` (Deprecated)
-
-> [!WARNING]
-> `setup_logging()` is now considered a legacy helper and is deprecated in favor of the `LoggingConfig` pattern. It remains available for backward compatibility and simple scripts.
-
-```python
-from arlogi import setup_logging
-
-# Basic configuration (helper)
-setup_logging(level="INFO")
 ```
 
 ### Complete Production Setup
@@ -211,7 +199,7 @@ LoggerFactory._apply_configuration(config)
   "module": "main",
   "function": "handle_login",
   "line": 42,
-  "from_caller": "auth.authenticate",
+  "caller": "auth.authenticate",
   "user_id": 12345,
   "session_id": "sess_abc123"
 }
@@ -750,11 +738,15 @@ logger.debug("Technical details")
 ### Validate Configuration
 
 ```python
-from arlogi import setup_logging, get_logger
+from arlogi import LoggingConfig, LoggerFactory, get_logger
 import logging
 
 def validate_logging_config():
     """Validate and test logging configuration"""
+
+    # Configure logging
+    config = LoggingConfig(level="DEBUG")
+    LoggerFactory._apply_configuration(config)
 
     try:
         # Test basic logging
@@ -769,7 +761,7 @@ def validate_logging_config():
         logger.error("ERROR level test")
 
         # Test caller attribution
-        logger.info("Caller attribution test", from_=0)
+        logger.info("Caller attribution test", caller_depth=0)
 
         # Test structured logging
         logger.info("Structured data test", key="value", number=42)
@@ -799,23 +791,24 @@ else:
 ### High-Performance Configuration
 
 ```python
-from arlogi import setup_logging
+from arlogi import LoggingConfig, LoggerFactory
 
 def configure_high_performance():
     """Optimize for high-performance applications"""
 
-    setup_logging(
+    config = LoggingConfig(
         level="WARNING",  # Minimal logging
         json_file_name="logs/perf.jsonl",
         show_time=False,  # Fast console output
         show_level=False,
         show_path=False
     )
+    LoggerFactory._apply_configuration(config)
 
 def configure_balanced():
     """Balance between performance and observability"""
 
-    setup_logging(
+    config = LoggingConfig(
         level="INFO",
         module_levels={
             "app.critical": "DEBUG",  # Only critical modules verbose
@@ -825,29 +818,32 @@ def configure_balanced():
         show_level=True,
         show_path=False
     )
+    LoggerFactory._apply_configuration(config)
 ```
 
 ### Conditional Logging
 
 ```python
 import os
-from arlogi import setup_logging
+from arlogi import LoggingConfig, LoggerFactory
 
 DEBUG_MODE = os.getenv("DEBUG", "false").lower() == "true"
 
 if DEBUG_MODE:
     # Development configuration
-    setup_logging(
+    config = LoggingConfig(
         level="DEBUG",
         show_time=True,
         show_path=True
     )
 else:
     # Production configuration
-    setup_logging(
+    config = LoggingConfig(
         level="INFO",
         json_file_name="logs/production.jsonl"
     )
+
+LoggerFactory._apply_configuration(config)
 
 # Usage in code
 from arlogi import get_logger
@@ -856,14 +852,14 @@ logger = get_logger("performance")
 
 def expensive_operation():
     if DEBUG_MODE:
-        logger.debug("Starting expensive operation", from_=1,
+        logger.debug("Starting expensive operation", caller_depth=1,
                     debug_data=get_debug_info())
 
     # Expensive operation here
     result = perform_calculation()
 
     if DEBUG_MODE:
-        logger.debug("Expensive operation completed", from_=1,
+        logger.debug("Expensive operation completed", caller_depth=1,
                     result=result)
 
     return result

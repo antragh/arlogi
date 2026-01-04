@@ -60,16 +60,20 @@ class LoggingConfig:
             ValueError: If level is invalid
         """
         if isinstance(level, str):
+            # Check for custom TRACE level (valid but not in logging module)
+            if level.upper() == "TRACE":
+                return
+
             try:
                 getattr(logging, level.upper())
             except AttributeError as e:
                 valid = ", ".join(
                     name for name in dir(logging)
-                    if name.isupper() and name not in ("NOTSET", "NOTSET")
+                    if name.isupper() and name not in ("NOTSET",)
                 )
                 raise ValueError(
                     f"Invalid log level: {level!r}. "
-                    f"Valid levels: {valid}"
+                    f"Valid levels: TRACE, {valid}"
                 ) from e
         elif not isinstance(level, int):
             raise ValueError(
@@ -116,7 +120,13 @@ class LoggingConfig:
             The level as an integer
         """
         if isinstance(level, str):
-            return getattr(logging, level.upper())
+            upper_level = level.upper()
+            # Handle custom TRACE level
+            if upper_level == "TRACE":
+                from .levels import TRACE_LEVEL_NUM
+                return TRACE_LEVEL_NUM
+            return getattr(logging, upper_level)
+        # level is already an int
         return level
 
     def to_dict(self) -> dict[str, Any]:
@@ -150,6 +160,9 @@ class LoggingConfig:
         Returns:
             A new LoggingConfig instance
 
+        Raises:
+            TypeError: If unknown keyword arguments are provided
+
         Example:
             >>> config = LoggingConfig.from_kwargs(
             ...     level="INFO",
@@ -157,13 +170,20 @@ class LoggingConfig:
             ...     json_file_name="logs/app.jsonl"
             ... )
         """
-        # Filter to only known attributes
         valid_keys = {
             "level", "module_levels", "json_file_name", "json_file_only",
             "use_syslog", "syslog_address", "show_time", "show_level", "show_path"
         }
-        filtered = {k: v for k, v in kwargs.items() if k in valid_keys}
-        return cls(**filtered)
+
+        # Check for unknown keys to catch typos early
+        unknown = set(kwargs.keys()) - valid_keys
+        if unknown:
+            raise TypeError(
+                f"LoggingConfig() got unknown keyword argument(s): {', '.join(sorted(unknown))}. "
+                f"Valid arguments: {', '.join(sorted(valid_keys))}"
+            )
+
+        return cls(**kwargs)
 
 
 def is_test_mode() -> bool:

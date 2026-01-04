@@ -1,7 +1,8 @@
 site_name: arlogi docs
 exclude_docs: |
-  docs/.Notes/*
-  docs/scripts/*
+  .Notes/*
+  _Notes_/*
+  scripts/*
 theme:
   # name: "readthedocs"
   name: "material"
@@ -59,6 +60,7 @@ nav:
   - API Reference: API_REFERENCE.md
   - Code Reference:
       - Config: reference/arlogi/config.md
+      - Config builder: reference/arlogi/config_builder.md
       - Factory: reference/arlogi/factory.md
       - Handler factory: reference/arlogi/handler_factory.md
       - Handlers: reference/arlogi/handlers.md
