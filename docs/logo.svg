@@ -1,0 +1,22 @@
+<svg width="400" height="200" viewBox="0 0 400 200" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="grad1" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" style="stop-color:#00B4DB;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#00D2FF;stop-opacity:1" />
+    </linearGradient>
+    <linearGradient id="grad2" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" style="stop-color:#3E5EAB;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#5E90F2;stop-opacity:1" />
+    </linearGradient>
+    <linearGradient id="grad3" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" style="stop-color:#4B108B;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#7226D1;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+
+  <rect x="55" y="30" width="110" height="35" rx="17.5" fill="url(#grad1)" transform="rotate(-15 110 47)" />
+  <rect x="35" y="85" width="130" height="38" rx="19" fill="url(#grad2)" transform="rotate(-15 100 104)" />
+  <rect x="20" y="145" width="150" height="42" rx="21" fill="url(#grad3)" transform="rotate(-15 95 166)" />
+
+  <text x="210" y="115" font-family="Arial, sans-serif" font-weight="bold" font-size="72" fill="#444444" letter-spacing="-2">arlogi</text>
+</svg>

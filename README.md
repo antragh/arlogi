@@ -1,3 +1,7 @@
+<p align="center">
+  <img src="https://raw.githubusercontent.com/Antra/arlogi/master/docs/logo.svg" width="200" alt="arlogi logo" loading="lazy">
+</p>
+
 # `arlogi` - Advanced Logging Library
 
 `arlogi` is a robust, type-safe logging library for Python that extends the standard logging module with modern features and premium aesthetics.
