@@ -1,7 +1,9 @@
 # Arlogi Library Documentation
 
 **Version:** 0.601.04
+
 **Python:** 3.13+
+
 **License:** MIT
 
 Comprehensive documentation for the arlogi logging library - a robust, type-safe, and highly configurable logging solution for Python applications.
@@ -55,6 +57,7 @@ INFO    Hello, Arlogi!        [module()]
 ### 📖 User Documentation
 
 1. **[User Guide](USER_GUIDE.md)**
+
    - Installation and setup
    - Basic usage patterns
    - Configuration options
@@ -63,6 +66,7 @@ INFO    Hello, Arlogi!        [module()]
    - Troubleshooting tips
 
 2. **[Configuration Guide](CONFIGURATION_GUIDE.md)**
+
    - Modern `LoggingConfig` architecture
    - Global configuration patterns
    - Per-module level overrides
@@ -71,6 +75,7 @@ INFO    Hello, Arlogi!        [module()]
    - Dynamic configuration
 
 3. **[Caller Attribution Examples](CALLER_ATTRIBUTION_EXAMPLES.md)**
+
    - Basic depth usage (`caller_depth=0`, `caller_depth=1`)
    - Cross-module attribution
    - Real-world patterns (web APIs, databases, background jobs)
@@ -80,6 +85,7 @@ INFO    Hello, Arlogi!        [module()]
 ### 🔧 Developer Documentation
 
 4. **[Developer Guide](DEVELOPER_GUIDE.md)**
+
    - Development setup
    - Project structure
    - Testing strategies
@@ -88,6 +94,7 @@ INFO    Hello, Arlogi!        [module()]
    - Contributing guidelines
 
 5. **[Architecture Documentation](ARCHITECTURE.md)**
+
    - System design overview
    - Architecture diagrams (C4 model)
    - Design patterns
@@ -98,6 +105,7 @@ INFO    Hello, Arlogi!        [module()]
 ### 📚 API Reference
 
 6. **[API Reference](API_REFERENCE.md)**
+
    - Public API functions
    - `LoggingConfig` reference
    - `LoggerProtocol` interface
