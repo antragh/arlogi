@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="https://raw.githubusercontent.com/Antra/arlogi/master/docs/logo.svg" width="200" alt="arlogi logo" loading="lazy">
+  <img src="https://raw.githubusercontent.com/antragh/arlogi/master/docs/logo.svg" width="200" alt="arlogi logo" loading="lazy">
 </p>
 
 # `arlogi` - Advanced Logging Library
