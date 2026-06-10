@@ -15,7 +15,8 @@
     "titleBar.activeBackground": "#038380",
     "titleBar.activeForeground": "#ffffff",
     "titleBar.border": "#038380",
-    "statusBar.background": "#038380"
+    "statusBar.background": "#038380",
+    "statusBar.foreground": "#ffffff"
   },
   "python.envFile": "${workspaceFolder}/.env",
   // ========================
