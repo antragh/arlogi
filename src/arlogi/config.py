@@ -8,7 +8,9 @@ import logging
 import os
 import sys
 from dataclasses import dataclass
-from typing import Any
+from typing import Any, Literal
+
+RotateSchedule = Literal["hour", "day", "week", "month"]
 
 
 @dataclass(frozen=True)
@@ -22,6 +24,8 @@ class LoggingConfig:
         json_file_only: If True, only output to JSON (no console)
         use_syslog: Enable syslog output
         syslog_address: Syslog server address (default: "/dev/log")
+        rotate_schedule: Optional time-window schedule for file rotation
+        rotate_retention_count: Optional retention count for rotated files
         show_time: Show timestamps in console output
         show_level: Show log levels in console output
         show_path: Show file paths in console output
@@ -33,6 +37,8 @@ class LoggingConfig:
     json_file_only: bool = False
     use_syslog: bool = False
     syslog_address: str | tuple[str, int] = "/dev/log"
+    rotate_schedule: RotateSchedule | None = None
+    rotate_retention_count: int | None = None
     show_time: bool = False
     show_level: bool = True
     show_path: bool = True
@@ -48,6 +54,19 @@ class LoggingConfig:
                 if not isinstance(name, str) or not name:
                     raise ValueError(f"Invalid module name: {name!r}")
                 self._validate_level(m_level)
+
+        # Validate rotation schedule
+        if self.rotate_schedule is not None:
+            valid_schedules = {"hour", "day", "week", "month"}
+            if self.rotate_schedule not in valid_schedules:
+                raise ValueError(
+                    f"Invalid rotate_schedule: {self.rotate_schedule!r}. "
+                    f"Valid values: {', '.join(sorted(valid_schedules))}"
+                )
+
+        # Validate rotation retention count
+        if self.rotate_retention_count is not None and self.rotate_retention_count < 1:
+            raise ValueError("rotate_retention_count must be >= 1 when provided")
 
     @staticmethod
     def _validate_level(level: int | str) -> None:
@@ -68,17 +87,13 @@ class LoggingConfig:
                 getattr(logging, level.upper())
             except AttributeError as e:
                 valid = ", ".join(
-                    name for name in dir(logging)
-                    if name.isupper() and name not in ("NOTSET",)
+                    name for name in dir(logging) if name.isupper() and name not in ("NOTSET",)
                 )
                 raise ValueError(
-                    f"Invalid log level: {level!r}. "
-                    f"Valid levels: TRACE, {valid}"
+                    f"Invalid log level: {level!r}. Valid levels: TRACE, {valid}"
                 ) from e
         elif not isinstance(level, int):
-            raise ValueError(
-                f"Log level must be int or str, got {type(level).__name__}"
-            )
+            raise ValueError(f"Log level must be int or str, got {type(level).__name__}")
 
     @property
     def resolved_level(self) -> int:
@@ -124,6 +139,7 @@ class LoggingConfig:
             # Handle custom TRACE level
             if upper_level == "TRACE":
                 from .levels import TRACE_LEVEL_NUM
+
                 return TRACE_LEVEL_NUM
             return getattr(logging, upper_level)
         # level is already an int
@@ -142,6 +158,8 @@ class LoggingConfig:
             "json_file_only": self.json_file_only,
             "use_syslog": self.use_syslog,
             "syslog_address": self.syslog_address,
+            "rotate_schedule": self.rotate_schedule,
+            "rotate_retention_count": self.rotate_retention_count,
             "show_time": self.show_time,
             "show_level": self.show_level,
             "show_path": self.show_path,
@@ -165,14 +183,21 @@ class LoggingConfig:
 
         Example:
             >>> config = LoggingConfig.from_kwargs(
-            ...     level="INFO",
-            ...     module_levels={"app.db": "DEBUG"},
-            ...     json_file_name="logs/app.jsonl"
+            ...     level="INFO", module_levels={"app.db": "DEBUG"}, json_file_name="logs/app.jsonl"
             ... )
         """
         valid_keys = {
-            "level", "module_levels", "json_file_name", "json_file_only",
-            "use_syslog", "syslog_address", "show_time", "show_level", "show_path"
+            "level",
+            "module_levels",
+            "json_file_name",
+            "json_file_only",
+            "use_syslog",
+            "syslog_address",
+            "rotate_schedule",
+            "rotate_retention_count",
+            "show_time",
+            "show_level",
+            "show_path",
         }
 
         # Check for unknown keys to catch typos early

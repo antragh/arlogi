@@ -17,11 +17,13 @@ class LoggingConfigBuilder:
     and harder to use incorrectly.
 
     Example:
-        >>> config = (LoggingConfigBuilder()
+        >>> config = (
+        ...     LoggingConfigBuilder()
         ...     .with_level("INFO")
         ...     .with_json_file("logs/app.jsonl")
         ...     .with_syslog()
-        ...     .build())
+        ...     .build()
+        ... )
     """
 
     def __init__(self) -> None:
@@ -32,6 +34,8 @@ class LoggingConfigBuilder:
         self._json_file_only = False
         self._use_syslog = False
         self._syslog_address: str | tuple[str, int] = "/dev/log"
+        self._rotate_schedule: str | None = None
+        self._rotate_retention_count: int | None = None
         self._show_time = False
         self._show_level = True
         self._show_path = True
@@ -51,9 +55,7 @@ class LoggingConfigBuilder:
         self._level = level
         return self
 
-    def with_module_levels(
-        self, levels: dict[str, str | int]
-    ) -> "LoggingConfigBuilder":
+    def with_module_levels(self, levels: dict[str, str | int]) -> "LoggingConfigBuilder":
         """Set per-module level overrides.
 
         Allows fine-grained control over logging levels for specific modules.
@@ -66,17 +68,12 @@ class LoggingConfigBuilder:
             Self for method chaining
 
         Example:
-            >>> builder.with_module_levels({
-            ...     "app.database": "DEBUG",
-            ...     "external_api": "WARNING"
-            ... })
+            >>> builder.with_module_levels({"app.database": "DEBUG", "external_api": "WARNING"})
         """
         self._module_levels = levels
         return self
 
-    def with_json_file(
-        self, file_name: str, console_also: bool = True
-    ) -> "LoggingConfigBuilder":
+    def with_json_file(self, file_name: str, console_also: bool = True) -> "LoggingConfigBuilder":
         """Configure JSON file logging.
 
         Args:
@@ -110,9 +107,7 @@ class LoggingConfigBuilder:
         self._json_file_only = True
         return self
 
-    def with_syslog(
-        self, address: str | tuple[str, int] = "/dev/log"
-    ) -> "LoggingConfigBuilder":
+    def with_syslog(self, address: str | tuple[str, int] = "/dev/log") -> "LoggingConfigBuilder":
         """Enable syslog output.
 
         Args:
@@ -133,8 +128,7 @@ class LoggingConfigBuilder:
         return self
 
     def with_console_format(
-        self, show_time: bool = False, show_level: bool = True,
-        show_path: bool = True
+        self, show_time: bool = False, show_level: bool = True, show_path: bool = True
     ) -> "LoggingConfigBuilder":
         """Configure console output format.
 
@@ -147,15 +141,30 @@ class LoggingConfigBuilder:
             Self for method chaining
 
         Example:
-            >>> builder.with_console_format(
-            ...     show_time=True,
-            ...     show_level=True,
-            ...     show_path=False
-            ... )
+            >>> builder.with_console_format(show_time=True, show_level=True, show_path=False)
         """
         self._show_time = show_time
         self._show_level = show_level
         self._show_path = show_path
+        return self
+
+    def with_rotation(
+        self, schedule: str, retention_count: int | None = None
+    ) -> "LoggingConfigBuilder":
+        """Configure optional time-window file rotation.
+
+        Args:
+            schedule: Rotation schedule (hour, day, week, month)
+            retention_count: Optional number of rotated files to retain
+
+        Returns:
+            Self for method chaining
+
+        Example:
+            >>> builder.with_rotation("day", retention_count=7)
+        """
+        self._rotate_schedule = schedule
+        self._rotate_retention_count = retention_count
         return self
 
     def build(self) -> LoggingConfig:
@@ -177,6 +186,8 @@ class LoggingConfigBuilder:
             json_file_only=self._json_file_only,
             use_syslog=self._use_syslog,
             syslog_address=self._syslog_address,
+            rotate_schedule=self._rotate_schedule,
+            rotate_retention_count=self._rotate_retention_count,
             show_time=self._show_time,
             show_level=self._show_level,
             show_path=self._show_path,

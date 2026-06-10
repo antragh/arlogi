@@ -284,7 +284,7 @@ class TestMultipleConfigurationChanges:
             log_file = os.path.join(tmpdir, "test.json")
 
             # Setup multiple times
-            for i in range(5):
+            for _i in range(5):
                 setup_logging(
                     level=logging.INFO,
                     json_file_name=log_file,
@@ -294,8 +294,9 @@ class TestMultipleConfigurationChanges:
 
             # Should only have handlers from last setup (Console + JSON)
             # Note: pytest may add LogCaptureHandler during tests
-            arlogi_handlers = [h for h in root.handlers
-                             if not h.__class__.__name__.startswith('LogCapture')]
+            arlogi_handlers = [
+                h for h in root.handlers if not h.__class__.__name__.startswith("LogCapture")
+            ]
             assert len(arlogi_handlers) <= 2  # Console + JSON
 
     def test_json_logger_reconfiguration(self):
@@ -322,7 +323,6 @@ class TestResourceLeakDetection:
 
     def test_no_file_descriptor_leaks(self):
         """Test that creating/destroying loggers doesn't leak file descriptors."""
-        import os
 
         psutil = __import__("psutil")
         process = psutil.Process()
@@ -359,4 +359,6 @@ class TestResourceLeakDetection:
 
             # Should not have leaked file descriptors
             # Allow some overhead for temp directory operations
-            assert final_fds <= initial_fds + 20, f"Leaked {final_fds - initial_fds} file descriptors"
+            assert final_fds <= initial_fds + 20, (
+                f"Leaked {final_fds - initial_fds} file descriptors"
+            )
