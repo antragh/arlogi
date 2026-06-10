@@ -3,7 +3,7 @@ requires-python = ">=3.13"
 
 [[package]]
 name = "arlogi"
-version = "0.601.4"
+version = "0.606.10"
 source = { editable = "." }
 dependencies = [
     { name = "rich" },

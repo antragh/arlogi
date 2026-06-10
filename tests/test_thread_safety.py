@@ -11,11 +11,9 @@ import threading
 import time
 from concurrent.futures import ThreadPoolExecutor, as_completed
 
-import pytest
-
 from arlogi import (
-    get_logger,
     get_json_logger,
+    get_logger,
     setup_logging,
 )
 from arlogi.factory import LoggerFactory

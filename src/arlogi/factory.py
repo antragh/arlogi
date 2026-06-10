@@ -49,9 +49,7 @@ class TraceLogger(logging.Logger):
         except (ValueError, AttributeError):
             return "unknown", "unknown"
 
-    def _process_params(
-        self, msg: Any, kwargs: dict[str, Any]
-    ) -> tuple[Any, dict[str, Any]]:
+    def _process_params(self, msg: Any, kwargs: dict[str, Any]) -> tuple[Any, dict[str, Any]]:
         """Process caller attribution and move arbitrary kwargs to 'extra'.
 
         Args:
@@ -183,6 +181,8 @@ class LoggerFactory:
         json_file_only: bool = False,
         use_syslog: bool = False,
         syslog_address: str | tuple[str, int] = "/dev/log",
+        rotate_schedule: str | None = None,
+        rotate_retention_count: int | None = None,
         show_time: bool = False,
         show_level: bool = True,
         show_path: bool = True,
@@ -199,6 +199,8 @@ class LoggerFactory:
             json_file_only: If True, only output JSON (no console)
             use_syslog: Enable syslog output
             syslog_address: Syslog server address
+            rotate_schedule: Optional rotation schedule for JSON file logging
+            rotate_retention_count: Optional number of rotated files to retain
             show_time: Show timestamps in console output
             show_level: Show log levels in console output
             show_path: Show file paths in console output
@@ -210,6 +212,8 @@ class LoggerFactory:
             json_file_only=json_file_only,
             use_syslog=use_syslog,
             syslog_address=syslog_address,
+            rotate_schedule=rotate_schedule,
+            rotate_retention_count=rotate_retention_count,
             show_time=show_time,
             show_level=show_level,
             show_path=show_path,
@@ -422,6 +426,7 @@ class LoggerFactory:
 
 # Public API helper functions
 
+
 def setup_logging(
     level: int | str = logging.INFO,
     module_levels: dict[str, str | int] | None = None,
@@ -429,6 +434,8 @@ def setup_logging(
     json_file_only: bool = False,
     use_syslog: bool = False,
     syslog_address: str | tuple[str, int] = "/dev/log",
+    rotate_schedule: str | None = None,
+    rotate_retention_count: int | None = None,
     show_time: bool = False,
     show_level: bool = True,
     show_path: bool = True,
@@ -444,6 +451,8 @@ def setup_logging(
         json_file_only: If True, only output JSON (no console)
         use_syslog: Enable syslog output
         syslog_address: Syslog server address
+        rotate_schedule: Optional rotation schedule for JSON file logging
+        rotate_retention_count: Optional number of rotated files to retain
         show_time: Show timestamps in console output
         show_level: Show log levels in console output
         show_path: Show file paths in console output
@@ -455,6 +464,8 @@ def setup_logging(
         json_file_only=json_file_only,
         use_syslog=use_syslog,
         syslog_address=syslog_address,
+        rotate_schedule=rotate_schedule,
+        rotate_retention_count=rotate_retention_count,
         show_time=show_time,
         show_level=show_level,
         show_path=show_path,
@@ -474,9 +485,7 @@ def get_logger(name: str, level: int | str | None = None) -> LoggerProtocol:
     return LoggerFactory.get_logger(name, level)
 
 
-def get_json_logger(
-    name: str = "json", json_file_name: str | None = None
-) -> LoggerProtocol:
+def get_json_logger(name: str = "json", json_file_name: str | None = None) -> LoggerProtocol:
     """Get a dedicated JSON-only logger.
 
     Args:
@@ -487,6 +496,26 @@ def get_json_logger(
         A JSON-only logger instance
     """
     return LoggerFactory.get_json_logger(name, json_file_name=json_file_name)
+
+
+def rotate_json_logger(name: str = "json") -> int:
+    """Rotate JSON file handlers attached to the named JSON logger.
+
+    Args:
+        name: Logger name suffix (must match get_json_logger usage)
+
+    Returns:
+        Number of handlers successfully rotated
+    """
+    logger_name = f"arlogi.json.{name}"
+    logger = logging.getLogger(logger_name)
+    rotated = 0
+
+    for handler in logger.handlers:
+        if isinstance(handler, JSONFileHandler) and handler.rotate_now():
+            rotated += 1
+
+    return rotated
 
 
 def get_syslog_logger(

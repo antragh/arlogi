@@ -12,6 +12,7 @@ import logging.handlers
 import os
 import sys
 from datetime import datetime
+from glob import glob
 from typing import Any
 
 from rich.console import Console
@@ -113,7 +114,7 @@ class ColoredConsoleHandler(RichHandler):
             "Pipfile",
             "poetry.lock",
             ".hg",
-            ".svn"
+            ".svn",
         ]
 
         # Walk up the directory tree looking for indicators
@@ -158,6 +159,7 @@ class ColoredConsoleHandler(RichHandler):
         level = self.get_level_text(record)
         time_format = None if self.formatter is None else self.formatter.datefmt
         from datetime import datetime
+
         log_time = datetime.fromtimestamp(record.created)
 
         log_renderable = self._log_render(
@@ -249,10 +251,27 @@ class JSONFormatter(logging.Formatter):
 
         # Add extra fields from the record (excluding standard logging attributes)
         standard_attrs = {
-            "name", "msg", "args", "levelname", "levelno", "pathname", "filename",
-            "module", "exc_info", "exc_text", "stack_info", "lineno", "funcName",
-            "created", "msecs", "relativeCreated", "thread", "threadName",
-            "processName", "process", "message"
+            "name",
+            "msg",
+            "args",
+            "levelname",
+            "levelno",
+            "pathname",
+            "filename",
+            "module",
+            "exc_info",
+            "exc_text",
+            "stack_info",
+            "lineno",
+            "funcName",
+            "created",
+            "msecs",
+            "relativeCreated",
+            "thread",
+            "threadName",
+            "processName",
+            "process",
+            "message",
         }
 
         for key, value in record.__dict__.items():
@@ -264,16 +283,18 @@ class JSONFormatter(logging.Formatter):
             return json.dumps(log_data, default=str)
         except (TypeError, ValueError) as e:
             # Fallback to basic format on serialization failure
-            return json.dumps({
-                "timestamp": log_data.get("timestamp"),
-                "level": log_data.get("level"),
-                "logger_name": log_data.get("logger_name"),
-                "message": str(log_data.get("message", "")),
-                "module": log_data.get("module"),
-                "function": log_data.get("function"),
-                "line_number": log_data.get("line_number"),
-                "error": f"JSON serialization failed: {e}"
-            })
+            return json.dumps(
+                {
+                    "timestamp": log_data.get("timestamp"),
+                    "level": log_data.get("level"),
+                    "logger_name": log_data.get("logger_name"),
+                    "message": str(log_data.get("message", "")),
+                    "module": log_data.get("module"),
+                    "function": log_data.get("function"),
+                    "line_number": log_data.get("line_number"),
+                    "error": f"JSON serialization failed: {e}",
+                }
+            )
 
 
 class JSONHandler(logging.StreamHandler):
@@ -309,7 +330,7 @@ class JSONHandler(logging.StreamHandler):
             self.flush()
 
             # Close custom stream if we own it
-            if self._owns_stream and self.stream and hasattr(self.stream, 'close'):
+            if self._owns_stream and self.stream and hasattr(self.stream, "close"):
                 # Don't close system streams
                 if self.stream not in (sys.stderr, sys.stdout):
                     self.stream.close()
@@ -329,7 +350,9 @@ class JSONFileHandler(logging.FileHandler):
         filename: str,
         mode: str = "a",
         encoding: str | None = None,
-        delay: bool = False
+        delay: bool = False,
+        rotate_schedule: str | None = None,
+        rotate_retention_count: int | None = None,
     ):
         """Initialize the JSON file handler.
 
@@ -338,6 +361,8 @@ class JSONFileHandler(logging.FileHandler):
             mode: File open mode (default: "a" for append)
             encoding: File encoding (default: None for system default)
             delay: Whether to delay file opening until first emit
+            rotate_schedule: Optional rotation schedule (hour/day/week/month)
+            rotate_retention_count: Optional retention count for rotated files
 
         Note:
             Thread-safe: Uses exist_ok=True to safely handle concurrent
@@ -351,7 +376,166 @@ class JSONFileHandler(logging.FileHandler):
             os.makedirs(parent_dir, exist_ok=True)
 
         super().__init__(filename, mode, encoding, delay)
+        self.rotate_schedule = rotate_schedule
+        # Retention default is only applied when schedule is enabled.
+        self.rotate_retention_count = (
+            rotate_retention_count
+            if rotate_retention_count is not None
+            else (7 if rotate_schedule else None)
+        )
+        self._active_period_key = (
+            self._compute_period_key(self._now_local()) if self.rotate_schedule else None
+        )
         self.setFormatter(JSONFormatter())
+
+    def _now_local(self) -> datetime:
+        """Get current local datetime.
+
+        This indirection keeps schedule checks testable.
+        """
+        return datetime.now()
+
+    def _compute_period_key(self, now_local: datetime) -> str:
+        """Compute the period key for the configured schedule."""
+        if self.rotate_schedule == "hour":
+            return now_local.strftime("%Y-%m-%d-%H")
+        if self.rotate_schedule == "day":
+            return now_local.strftime("%Y-%m-%d")
+        if self.rotate_schedule == "week":
+            # %U is Sunday-based week number with Sunday as week boundary.
+            return now_local.strftime("%Y-W%U")
+        if self.rotate_schedule == "month":
+            return now_local.strftime("%Y-%m")
+        raise ValueError(f"Unsupported rotate_schedule: {self.rotate_schedule!r}")
+
+    def _build_rotated_path(self, period_key: str) -> str:
+        """Build target path for a rotated file."""
+        root, ext = os.path.splitext(self.baseFilename)
+        return f"{root}-{period_key}{ext}"
+
+    def _build_collision_safe_path(self, base_target: str) -> str:
+        """Return a unique rotated path by appending numeric suffixes when needed."""
+        if not os.path.exists(base_target):
+            return base_target
+
+        root, ext = os.path.splitext(base_target)
+        suffix = 1
+        while True:
+            candidate = f"{root}.{suffix}{ext}"
+            if not os.path.exists(candidate):
+                return candidate
+            suffix += 1
+
+    def _prune_rotated_files(self) -> None:
+        """Prune old rotated files based on retention count."""
+        if self.rotate_retention_count is None:
+            return
+
+        root, ext = os.path.splitext(self.baseFilename)
+        rotated_files = [
+            path
+            for path in glob(f"{root}-*{ext}")
+            if os.path.abspath(path) != os.path.abspath(self.baseFilename)
+        ]
+
+        if len(rotated_files) <= self.rotate_retention_count:
+            return
+
+        rotated_files.sort(key=os.path.getmtime, reverse=True)
+        for old_path in rotated_files[self.rotate_retention_count :]:
+            try:
+                os.remove(old_path)
+            except OSError:
+                # Pruning failures should never fail application logging.
+                continue
+
+    def _rotation_key_for_emit(self) -> str | None:
+        """Return the new period key when an emit should trigger rotation."""
+        if not self.rotate_schedule:
+            return None
+
+        current_key = self._compute_period_key(self._now_local())
+        if self._active_period_key is None:
+            self._active_period_key = current_key
+            return None
+        if current_key != self._active_period_key:
+            return current_key
+        return None
+
+    def _ensure_stream_open(self) -> None:
+        """Ensure file stream is available for writing."""
+        if self.stream is None:
+            self.stream = self._open()
+
+    def _has_rotatable_content(self) -> bool:
+        """Return True when base file has content that can be rotated."""
+        return os.path.exists(self.baseFilename) and os.path.getsize(self.baseFilename) > 0
+
+    def _rotate_now_locked(self, period_key: str | None = None) -> bool:
+        """Rotate current file under lock. Returns True on successful rotation."""
+        if period_key is None:
+            if self.rotate_schedule:
+                period_key = self._compute_period_key(self._now_local())
+            elif self._active_period_key:
+                period_key = self._active_period_key
+            else:
+                period_key = self._now_local().strftime("%Y-%m-%d-%H")
+
+        if not self._has_rotatable_content():
+            self._active_period_key = period_key
+            self._ensure_stream_open()
+            return False
+
+        target = self._build_collision_safe_path(self._build_rotated_path(period_key))
+
+        try:
+            self.flush()
+            if self.stream is not None:
+                self.stream.close()
+                self.stream = None
+
+            os.replace(self.baseFilename, target)
+            self.stream = self._open()
+            self._active_period_key = period_key
+            self._prune_rotated_files()
+            return True
+        except Exception:
+            # Keep logging alive by restoring stream best-effort.
+            self._ensure_stream_open()
+            self.handleError(
+                logging.LogRecord(
+                    name=__name__,
+                    level=logging.ERROR,
+                    pathname=__file__,
+                    lineno=0,
+                    msg="JSONFileHandler rotation failed",
+                    args=(),
+                    exc_info=sys.exc_info(),
+                )
+            )
+            return False
+
+    def rotate_now(self) -> bool:
+        """Force immediate file rotation.
+
+        Returns:
+            True if rotation completed, False for no-op/failure.
+        """
+        self.acquire()
+        try:
+            return self._rotate_now_locked()
+        finally:
+            self.release()
+
+    def emit(self, record: logging.LogRecord) -> None:
+        """Emit a log record, rotating first when schedule boundary changed."""
+        try:
+            rotation_key = self._rotation_key_for_emit()
+            if rotation_key is not None:
+                self._rotate_now_locked(period_key=rotation_key)
+            super().emit(record)
+        except Exception:
+            self.handleError(record)
 
 
 class ArlogiSyslogHandler(logging.handlers.SysLogHandler):
@@ -387,9 +571,7 @@ class ArlogiSyslogHandler(logging.handlers.SysLogHandler):
                 # Try UDP on localhost as a last resort
                 try:
                     super().__init__(
-                        address=("localhost", 514),
-                        facility=facility,
-                        socktype=socktype
+                        address=("localhost", 514), facility=facility, socktype=socktype
                     )
                 except Exception:
                     # If everything fails, silently continue - don't crash

@@ -6,6 +6,7 @@ from .factory import (
     get_json_logger,
     get_logger,
     get_syslog_logger,
+    rotate_json_logger,
     setup_logging,
 )
 from .handler_factory import HandlerFactory
@@ -19,6 +20,7 @@ __all__ = [
     "get_syslog_logger",
     "cleanup_json_logger",
     "cleanup_syslog_logger",
+    "rotate_json_logger",
     "setup_logging",
     "TRACE",
     # Advanced / Internal API

@@ -76,7 +76,11 @@ class HandlerFactory:
         if not config.json_file_name:
             raise ValueError("json_file_name must be set in config")
 
-        return JSONFileHandler(config.json_file_name)
+        return JSONFileHandler(
+            config.json_file_name,
+            rotate_schedule=config.rotate_schedule,
+            rotate_retention_count=config.rotate_retention_count,
+        )
 
     @staticmethod
     def create_json_handler(config: LoggingConfig) -> logging.Handler:
@@ -115,18 +119,13 @@ class HandlerFactory:
             An ArlogiSyslogHandler instance
 
         Example:
-            >>> config = LoggingConfig(
-            ...     use_syslog=True,
-            ...     syslog_address="/dev/log"
-            ... )
+            >>> config = LoggingConfig(use_syslog=True, syslog_address="/dev/log")
             >>> handler = HandlerFactory.create_syslog(config)
         """
         return ArlogiSyslogHandler(address=config.syslog_address)
 
     @classmethod
-    def create_handlers(
-        cls, config: LoggingConfig
-    ) -> list[logging.Handler]:
+    def create_handlers(cls, config: LoggingConfig) -> list[logging.Handler]:
         """Create all handlers based on configuration.
 
         This is the main factory method that orchestrates the creation
@@ -139,10 +138,7 @@ class HandlerFactory:
             List of configured handler instances
 
         Example:
-            >>> config = LoggingConfig(
-            ...     json_file_name="logs/app.jsonl",
-            ...     use_syslog=True
-            ... )
+            >>> config = LoggingConfig(json_file_name="logs/app.jsonl", use_syslog=True)
             >>> handlers = HandlerFactory.create_handlers(config)
             >>> for handler in handlers:
             ...     logger.addHandler(handler)

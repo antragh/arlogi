@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 """Simple test to verify relative path functionality."""
 
-from arlogi import setup_logging, get_logger
+from arlogi import get_logger, setup_logging
 
 # Setup logging to show paths
 setup_logging(

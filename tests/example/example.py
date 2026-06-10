@@ -2,7 +2,7 @@ import os
 
 import worker
 
-from arlogi import LoggingConfig, LoggerFactory, get_json_logger, get_logger, get_syslog_logger
+from arlogi import LoggerFactory, LoggingConfig, get_json_logger, get_logger, get_syslog_logger
 
 
 def main():
