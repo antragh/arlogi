@@ -499,6 +499,11 @@ class JSONFileHandler(logging.FileHandler):
             self._active_period_key = period_key
             self._prune_rotated_files()
             return True
+        except PermissionError:
+            # Windows: OS briefly holds the file after close (antivirus, open reader).
+            # Rotation skipped this cycle; will retry on the next emit boundary.
+            self._ensure_stream_open()
+            return False
         except Exception:
             # Keep logging alive by restoring stream best-effort.
             self._ensure_stream_open()

@@ -1,6 +1,6 @@
 [project]
 name = "arlogi"
-version = "0.606.10"
+version = "0.606.22"
 description = "Robust, type-safe and highly configurable logging library for Python"
 readme = "README.md"
 authors = [
