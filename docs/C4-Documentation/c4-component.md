@@ -21,14 +21,12 @@ The arlogi logging library consists of three main components that work together 
 - Caller attribution and stack inspection
 - TRACE level logging support
 
-**Public APIs**:
-
-- `LoggingConfig` - Configuration dataclass (Recommended)
-- `LoggerFactory._apply_configuration()` - Apply configuration (Recommended)
+- `LoggingConfig` - Configuration dataclass
+- `setup_logging()` - Centralized configuration setup (Recommended)
+- `LoggerFactory.setup()` - Direct factory configuration API
 - `get_logger()` - Get standard logger with caller attribution
 - `get_json_logger()` - Get dedicated JSON-only logger
 - `get_syslog_logger()` - Get dedicated syslog-only logger
-- `setup_logging()` - Legacy configuration helper (Deprecated)
 
 ---
 

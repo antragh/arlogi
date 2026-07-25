@@ -4,63 +4,73 @@
 
 # `arlogi` - Advanced Logging Library
 
-`arlogi` is a robust, type-safe logging library for Python that extends the standard logging module with modern features and premium aesthetics.
+`arlogi` is a robust, type-safe logging library for Python that extends the standard logging module with modern features, caller attribution, file rotation, and premium aesthetics.
 
 **[Full Documentation](https://antragh.github.io/arlogi/)**
 
 ## Features
 
+- **Caller Attribution**: Track log calls across function boundaries using `caller_depth`.
 - **Custom TRACE Level**: Level 5 logging for ultra-detailed debugging.
 - **Premium Colored Output**: Uses `rich` for beautiful, readable console logs with automatic traceback support.
-- **Structured JSON Logging**: Out-of-the-box support for JSON logging, perfect for log aggregation systems.
+- **Structured JSON Logging**: Out-of-the-box support for JSON logging, file rotation, and log retention.
 - **Module-Specific Configuration**: Easily set different log levels for different parts of your application.
 - **Dedicated Destination Loggers**: Log specific events only to JSON or Syslog without cluttering the console.
 - **Type Safety**: Fully type-checked with `LoggerProtocol` and supports modern Python types.
-- **SOLID Principles**: Focused on maintainability and clear separation of concerns.
+
+## Installation
+
+```bash
+# Using uv (recommended)
+uv add arlogi
+
+# Or using pip
+pip install arlogi
+```
 
 ## Usage
 
 ### Basic Setup
 
 ```python
-from arlogi import LoggingConfig, LoggerFactory, get_logger
+from arlogi import setup_logging, get_logger
 
-# 1. Initialize using the modern architecture
-config = LoggingConfig(level="INFO")
-LoggerFactory._apply_configuration(config)
+# 1. Initialize logging
+setup_logging(level="INFO")
 
 # 2. Get a logger
 logger = get_logger("my_app")
-logger.info("Application started")
+logger.info("Application started", caller_depth=0)
 logger.trace("This won't be visible because level is INFO")
 ```
 
 ### Module-Specific Levels
 
 ```python
-from arlogi import LoggingConfig, LoggerFactory, TRACE
+from arlogi import setup_logging, TRACE
 
-config = LoggingConfig(
+setup_logging(
     level="INFO",
     module_levels={
         "my_app.db": "DEBUG",
         "my_app.network": TRACE
     }
 )
-LoggerFactory._apply_configuration(config)
 ```
 
-### JSON and Syslog
+### JSON File Rotation and Syslog
 
 ```python
-from arlogi import LoggingConfig, LoggerFactory
+from arlogi import setup_logging
 
-config = LoggingConfig(
-    use_json=True,
+setup_logging(
+    level="INFO",
+    json_file_name="logs/app.jsonl",
+    rotate_schedule="day",
+    rotate_retention_count=7,
     use_syslog=True,
     syslog_address="/dev/log"
 )
-LoggerFactory._apply_configuration(config)
 ```
 
 ### Dedicated Loggers
@@ -68,13 +78,18 @@ LoggerFactory._apply_configuration(config)
 Sometimes you want to log specific data ONLY to a file or a remote system:
 
 ```python
+from arlogi import get_json_logger, get_syslog_logger, cleanup_json_logger
+
 # Logs only to JSON, not to console
-audit_logger = get_json_logger("audit")
-audit_logger.info("User logged in", extra={"user_id": 123})
+audit_logger = get_json_logger("audit", "logs/audit.jsonl")
+audit_logger.info("User logged in", user_id=123)
 
 # Logs only to Syslog
 syslog_logger = get_syslog_logger("security")
 syslog_logger.warning("Failed login attempt")
+
+# Resource cleanup when done
+cleanup_json_logger("audit")
 ```
 
 ## Integration with Other Libraries
@@ -92,11 +107,11 @@ logging.basicConfig(level=logging.INFO)
 
 ### Overriding the level when you _do_ use `arlogi`
 
-Initialize `arlogi` with a `LoggingConfig` object early in your program (or set the `ARLOGI_LEVEL` environment variable). The configuration object allows for fine-grained control over levels and handlers.
+Initialize `arlogi` with `setup_logging()` early in your program. `setup_logging()` allows fine-grained control over levels and handlers.
 
 ### Making third‑party libraries respect the chosen level
 
-All libraries that obtain a logger via `logging.getLogger(name)` inherit the level from the nearest ancestor – usually the root logger configured via `LoggingConfig`. If a library forces its own level, reset it:
+All libraries that obtain a logger via `logging.getLogger(name)` inherit the level from the nearest ancestor – usually the root logger configured via `setup_logging()`. If a library forces its own level, reset it:
 
 ```python
 import logging
@@ -107,14 +122,13 @@ logging.getLogger("some_lib").setLevel(logging.NOTSET)  # inherit from root
 
 ```python
 # bootstrap.py
-import os, logging, arlogi
-from arlogi import LoggingConfig, LoggerFactory
+import os, logging
+from arlogi import setup_logging
 
 def configure_logging():
     if os.getenv("USE_ARLOGI", "0") == "1":
         level = os.getenv("ARLOGI_LEVEL", "INFO").upper()
-        config = LoggingConfig(level=level)
-        LoggerFactory._apply_configuration(config)
+        setup_logging(level=level)
     else:
         logging.basicConfig(level=logging.INFO)
 
@@ -138,7 +152,6 @@ If you are developing a library and want to use the **TRACE** level:
 
    ```python
    import logging
-   # You can import TRACE from arlogi, or just define TRACE=5
    try:
        from arlogi import TRACE
    except ImportError:
@@ -151,7 +164,7 @@ If you are developing a library and want to use the **TRACE** level:
    ```
 
 2. **The method way**: `logger.trace(...)`
-   This **only** works if `arlogi` is configured before your library creates its logger instance. If your library is imported before setup, you will get an `AttributeError`.
+   This **only** works if `arlogi` is configured before your library creates its logger instance.
 
 ### Lazy Initialization (Safe Use of .trace)
 
@@ -160,44 +173,21 @@ If you _must_ use `.trace()` in your library but aren't sure if `arlogi` is setu
 ```python
 from arlogi import LoggerProtocol, get_logger
 
-# Use LoggerProtocol for type hinting
 _logger: LoggerProtocol | None = None
 
 def log() -> LoggerProtocol:
     """Get or create the logger for this module lazily."""
     global _logger
     if _logger is None:
-        # get_logger() returns LoggerProtocol
         _logger = get_logger("my_lib.cache")
     return _logger
 ```
 
 ## Advanced Configuration
 
-### New Configuration Architecture
+### Centralized Logging Setup
 
-For more control and type safety, you can use `LoggingConfig` and `LoggerFactory` directly. This is the recommended way for advanced users.
-
-```python
-from arlogi import LoggingConfig, LoggerFactory
-
-# Create a configuration object
-config = LoggingConfig(
-    level="INFO",
-    module_levels={"app.db": "DEBUG"},
-    json_file_name="logs/app.jsonl"
-)
-
-# Apply it globally
-LoggerFactory._apply_configuration(config)
-```
-
-### Legacy Setup (Deprecated)
-
-> [!WARNING]
-> `setup_logging()` is now considered a legacy helper and is deprecated in favor of the `LoggingConfig` pattern. It remains available for backward compatibility but may be removed in a future major version.
-
-The `setup_logging()` helper is still available and internally uses the new architecture:
+For full control over console output, file paths, and remote handlers:
 
 ```python
 from arlogi import setup_logging
@@ -205,37 +195,34 @@ from arlogi import setup_logging
 setup_logging(
     level="INFO",
     module_levels={"app.db": "DEBUG"},
-    json_file_name="logs/app.jsonl"
+    json_file_name="logs/app.jsonl",
+    show_time=True,
+    show_level=True,
+    show_path=False
 )
 ```
 
-### Console Styling
+### Direct Factory API
 
-By default, `arlogi` uses a clean, modern style for console output. You can further customize this:
+Alternatively, `LoggerFactory.setup(...)` provides the exact same functionality via the factory class:
 
 ```python
-from arlogi import LoggingConfig, LoggerFactory
+from arlogi import LoggerFactory
 
-config = LoggingConfig(
-    show_time=True,       # Enable/disable timestamp
-    show_level=True,      # Enable/disable level name
-    show_path=False,      # Enable/disable source file path
+LoggerFactory.setup(
+    level="INFO",
+    module_levels={"app.db": "DEBUG"}
 )
-LoggerFactory._apply_configuration(config)
 ```
-
-To make logs start from the very beginning of the line, `arlogi` defaults `show_time` to `False`.
 
 ### Color Schemes
 
 `arlogi` comes with a refined default color scheme:
 
-- **TRACE / DEBUG**: Grey
-- **INFO**: Bright White
+- **TRACE / DEBUG**: Grey / Cyan
+- **INFO**: Green
 - **WARNING**: Yellow
 - **ERROR / CRITICAL**: Red
-
-You can customize these by instantiating `ColoredConsoleHandler` with a `level_styles` dictionary, or by modifying the default behavior in `setup_logging` (coming soon as a direct parameter).
 
 ## Development
 
@@ -245,8 +232,18 @@ Run tests with pytest:
 uv run pytest
 ```
 
-Check types:
+Check code formatting and linting:
 
 ```bash
-uv run ty check src/
+uv run ruff check .
 ```
+
+Build local documentation:
+
+```bash
+uv run mkdocs build
+```
+
+## License
+
+MIT License - see [LICENSE](LICENSE) file for details.

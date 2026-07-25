@@ -1,6 +1,6 @@
 # Arlogi API Reference
 
-Complete API reference for the arlogi logging library v0.601.04.
+Complete API reference for the arlogi logging library v0.606.22.
 
 ---
 
@@ -19,20 +19,17 @@ Complete API reference for the arlogi logging library v0.601.04.
 
 ### `LoggingConfig`
 
-The primary way to configure `arlogi` is using the `LoggingConfig` dataclass applied via `LoggerFactory._apply_configuration()`.
+The primary way to configure `arlogi` is using `setup_logging(...)` or `LoggerFactory.setup()`, which construct and apply a `LoggingConfig` dataclass.
 
 ```python
-from arlogi import LoggingConfig, LoggerFactory
+from arlogi import setup_logging
 
-# 1. Define configuration
-config = LoggingConfig(
+# Apply configuration
+setup_logging(
     level="INFO",
     module_levels={"app.db": "DEBUG"},
     json_file_name="logs/app.jsonl"
 )
-
-# 2. Apply configuration
-LoggerFactory._apply_configuration(config)
 ```
 
 **Attributes:**
@@ -44,7 +41,9 @@ LoggerFactory._apply_configuration(config)
 | `json_file_name` | `str \| None`                   | `None`         | JSON log file path    |
 | `json_file_only` | `bool`                          | `False`        | Only JSON output      |
 | `use_syslog`     | `bool`                          | `False`        | Enable syslog         |
-| `syslog_address` | `str \| tuple`                  | `"/dev/log"`   | Syslog address        |
+| `syslog_address` | `str \| tuple[str, int]`        | `"/dev/log"`   | Syslog address        |
+| `rotate_schedule` | `"hour" \| "day" \| "week" \| "month" \| None` | `None` | Rotation schedule |
+| `rotate_retention_count` | `int \| None`           | `None`         | Number of rotated log files to retain |
 | `show_time`      | `bool`                          | `False`        | Show timestamps       |
 | `show_level`     | `bool`                          | `True`         | Show levels           |
 | `show_path`      | `bool`                          | `True`         | Show paths            |
@@ -414,8 +413,7 @@ syslog_logger = LoggerFactory.get_syslog_logger("security")
 
 | Method                               | Description                      |
 | ------------------------------------ | -------------------------------- |
-| `setup(**kwargs)`                    | Configure logging                |
-| `_apply_configuration(config)`       | Apply LoggingConfig              |
+| `setup(**kwargs)`                    | Configure logging (public entry) |
 | `get_logger(name, level)`            | Get a logger                     |
 | `get_json_logger(name, file)`        | Get JSON-only logger             |
 | `get_syslog_logger(name, addr)`      | Get syslog-only logger           |
@@ -529,10 +527,9 @@ class LoggerProtocol(Protocol):
 ### Modern Basic Usage
 
 ```python
-from arlogi import LoggingConfig, LoggerFactory, get_logger
+from arlogi import setup_logging, get_logger
 
-config = LoggingConfig(level="INFO")
-LoggerFactory._apply_configuration(config)
+setup_logging(level="INFO")
 
 logger = get_logger("my_app")
 logger.info("Application started")
@@ -552,9 +549,9 @@ def inner_function():
 ### Advanced Module Configuration
 
 ```python
-from arlogi import LoggingConfig, LoggerFactory
+from arlogi import setup_logging
 
-config = LoggingConfig(
+setup_logging(
     level="INFO",
     module_levels={
         "app.database": "DEBUG",
@@ -562,21 +559,18 @@ config = LoggingConfig(
         "app.security": "WARNING"
     }
 )
-LoggerFactory._apply_configuration(config)
 ```
 
 ### JSON Logging
 
 ```python
-from arlogi import LoggingConfig, LoggerFactory, get_json_logger
+from arlogi import setup_logging, get_json_logger
 
 # With console + JSON file
-config = LoggingConfig(json_file_name="logs/app.jsonl")
-LoggerFactory._apply_configuration(config)
+setup_logging(json_file_name="logs/app.jsonl")
 
 # JSON only to console
-config = LoggingConfig(json_file_only=True)
-LoggerFactory._apply_configuration(config)
+setup_logging(json_file_only=True)
 
 # Dedicated JSON logger
 audit = get_json_logger("audit", "logs/audit.jsonl")
@@ -586,11 +580,10 @@ audit.info("User action", extra={"user_id": 123})
 ### Syslog
 
 ```python
-from arlogi import LoggingConfig, LoggerFactory, get_syslog_logger
+from arlogi import setup_logging, get_syslog_logger
 
 # Add syslog to root logger
-config = LoggingConfig(use_syslog=True)
-LoggerFactory._apply_configuration(config)
+setup_logging(use_syslog=True)
 
 # Dedicated syslog logger
 syslog = get_syslog_logger("security")
@@ -614,6 +607,7 @@ All arlogi functions handle errors gracefully:
 
 | Version  | Changes                                                           |
 | -------- | ----------------------------------------------------------------- |
+| 0.606.22 | Current stable version: rotation, syslog, and resource cleanup    |
 | 0.601.04 | Enhanced resource cleanup, improved test mode detection          |
 | 0.601.00 | Added cleanup_json_logger, cleanup_syslog_logger                 |
 | 0.512.28 | Added LoggingConfig, HandlerFactory, reduced complexity           |

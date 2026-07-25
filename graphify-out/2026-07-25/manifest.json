@@ -1,0 +1,282 @@
+{
+  "coverage.json": {
+    "mtime": 1784632483.586399,
+    "ast_hash": "98db2785042e16133a4250715e4ea797",
+    "semantic_hash": ""
+  },
+  "pyproject.toml": {
+    "mtime": 1784977064.1362388,
+    "ast_hash": "31d123f0ba3ec5755331885136ecc0ec",
+    "semantic_hash": ""
+  },
+  "src/arlogi/__init__.py": {
+    "mtime": 1784632483.5927694,
+    "ast_hash": "d2690f312b7ce85b372f4e4397ece470",
+    "semantic_hash": ""
+  },
+  "src/arlogi/config.py": {
+    "mtime": 1784632483.5928702,
+    "ast_hash": "00bb8e4e509cdca929ac9301d2b06370",
+    "semantic_hash": ""
+  },
+  "src/arlogi/config_builder.py": {
+    "mtime": 1784632483.592958,
+    "ast_hash": "38b26ce08e14628605930617a7b79bff",
+    "semantic_hash": ""
+  },
+  "src/arlogi/factory.py": {
+    "mtime": 1784632483.5930746,
+    "ast_hash": "f7c91001885613b1632608c6e743ef04",
+    "semantic_hash": ""
+  },
+  "src/arlogi/handler_factory.py": {
+    "mtime": 1784632483.5931692,
+    "ast_hash": "e985657786c4c1fae1c8254809eb3b07",
+    "semantic_hash": ""
+  },
+  "src/arlogi/handlers.py": {
+    "mtime": 1784632483.5932994,
+    "ast_hash": "149dc7b4ba971d229aaf0f74f4f073ec",
+    "semantic_hash": ""
+  },
+  "src/arlogi/levels.py": {
+    "mtime": 1784632483.5933945,
+    "ast_hash": "26eb21976ad7e0f663f4e12ca42600e4",
+    "semantic_hash": ""
+  },
+  "src/arlogi/types.py": {
+    "mtime": 1784632483.593507,
+    "ast_hash": "88bb89d276123355e039996303db0cb7",
+    "semantic_hash": ""
+  },
+  "test_relative_path.py": {
+    "mtime": 1784632483.5935786,
+    "ast_hash": "e26018a9c6a1b304145eea488c373611",
+    "semantic_hash": ""
+  },
+  "tests/example/__init__.py": {
+    "mtime": 1784632483.5936873,
+    "ast_hash": "d41d8cd98f00b204e9800998ecf8427e",
+    "semantic_hash": ""
+  },
+  "tests/example/example.py": {
+    "mtime": 1784632483.5937772,
+    "ast_hash": "c0add81e3172bc37ed041ea9e77701cf",
+    "semantic_hash": ""
+  },
+  "tests/example/worker.py": {
+    "mtime": 1784632483.5938592,
+    "ast_hash": "ca2a241ed4568b4b2eccbdc306046f51",
+    "semantic_hash": ""
+  },
+  "tests/test_core.py": {
+    "mtime": 1784632483.593942,
+    "ast_hash": "e4a65412a14fb6d9699710945ef37075",
+    "semantic_hash": ""
+  },
+  "tests/test_features.py": {
+    "mtime": 1784632483.594017,
+    "ast_hash": "2ba1a38768f94771dda88254a832c124",
+    "semantic_hash": ""
+  },
+  "tests/test_file_rotation.py": {
+    "mtime": 1784632483.594081,
+    "ast_hash": "dae629eaee6c99faeda4800fb86b06c9",
+    "semantic_hash": ""
+  },
+  "tests/test_resource_management.py": {
+    "mtime": 1784632483.59417,
+    "ast_hash": "3bb21546557a354a83ebab8f01ab9cae",
+    "semantic_hash": ""
+  },
+  "tests/test_rotation_config.py": {
+    "mtime": 1784632483.5942304,
+    "ast_hash": "a5d88237617a88ed054ec98dfae47715",
+    "semantic_hash": ""
+  },
+  "tests/test_thread_safety.py": {
+    "mtime": 1784632483.594333,
+    "ast_hash": "ada50afec7d808b6180be1b86ac2577f",
+    "semantic_hash": ""
+  },
+  ".github/workflows/deploy-docs.yml": {
+    "mtime": 1784632483.5854995,
+    "ast_hash": "db29a37d4635f18110ebdf5e0bf6ab05",
+    "semantic_hash": ""
+  },
+  ".markdownlint.yaml": {
+    "mtime": 1784632483.5857613,
+    "ast_hash": "092455bba89f342f7e210fbe18d7a84c",
+    "semantic_hash": ""
+  },
+  "CLAUDE.md": {
+    "mtime": 1784632483.586101,
+    "ast_hash": "2b5f8a7c7a6e0aaf0cd919cf979c75e8",
+    "semantic_hash": ""
+  },
+  "README.md": {
+    "mtime": 1784632483.586286,
+    "ast_hash": "434f0d5fa31f85c323c7d16b96238f40",
+    "semantic_hash": ""
+  },
+  "docs/API_REFERENCE.md": {
+    "mtime": 1784632483.5865986,
+    "ast_hash": "cb91756f77199792ae4010b01411e0a9",
+    "semantic_hash": ""
+  },
+  "docs/ARCHITECTURE.md": {
+    "mtime": 1784632483.5867546,
+    "ast_hash": "2be8167624fde0606cfa9494d1143a4a",
+    "semantic_hash": ""
+  },
+  "docs/C4-Documentation/README.md": {
+    "mtime": 1784632483.586893,
+    "ast_hash": "3575b8196688968d812e3046bdbde6c3",
+    "semantic_hash": ""
+  },
+  "docs/C4-Documentation/apis/arlogi-api.yaml": {
+    "mtime": 1784632483.5870361,
+    "ast_hash": "6853c78ece67a0079c0d68c9872d9f95",
+    "semantic_hash": ""
+  },
+  "docs/C4-Documentation/c4-code-docs-reference.md": {
+    "mtime": 1784632483.587143,
+    "ast_hash": "af77e42933b900893a276d6c3352a007",
+    "semantic_hash": ""
+  },
+  "docs/C4-Documentation/c4-code-docs-scripts.md": {
+    "mtime": 1784632483.5872345,
+    "ast_hash": "0490f73057546b8834cdd18d65214706",
+    "semantic_hash": ""
+  },
+  "docs/C4-Documentation/c4-code-src-arlogi.md": {
+    "mtime": 1784632483.5873365,
+    "ast_hash": "327933d0d2030c5422f47e60e3b06dc9",
+    "semantic_hash": ""
+  },
+  "docs/C4-Documentation/c4-code-subdir.md": {
+    "mtime": 1784632483.5874276,
+    "ast_hash": "c41293bda07ebd46858a0123c63fa68e",
+    "semantic_hash": ""
+  },
+  "docs/C4-Documentation/c4-code-tests-example.md": {
+    "mtime": 1784632483.5875134,
+    "ast_hash": "34f85cd2c4465fa0e3183c13ba4ef0b9",
+    "semantic_hash": ""
+  },
+  "docs/C4-Documentation/c4-code-tests.md": {
+    "mtime": 1784632483.5876212,
+    "ast_hash": "d2c5117d03436207401dfdfba36f9a05",
+    "semantic_hash": ""
+  },
+  "docs/C4-Documentation/c4-component-core-logging.md": {
+    "mtime": 1784632483.5877507,
+    "ast_hash": "6b0bb3a31d2dddc7b84c02d985271c12",
+    "semantic_hash": ""
+  },
+  "docs/C4-Documentation/c4-component-documentation.md": {
+    "mtime": 1784632483.5878537,
+    "ast_hash": "b45b8d47d45dc9d03cf443d500d11491",
+    "semantic_hash": ""
+  },
+  "docs/C4-Documentation/c4-component-test-suite.md": {
+    "mtime": 1784632483.5879536,
+    "ast_hash": "645c2e713c6f59c2979873bc6b19fc7c",
+    "semantic_hash": ""
+  },
+  "docs/C4-Documentation/c4-component.md": {
+    "mtime": 1784632483.5880423,
+    "ast_hash": "3b4bcf1934e70b837241fe5000f7fd25",
+    "semantic_hash": ""
+  },
+  "docs/C4-Documentation/c4-container.md": {
+    "mtime": 1784632483.5881455,
+    "ast_hash": "025bc068c53b5d424e5ee2e2fd80809f",
+    "semantic_hash": ""
+  },
+  "docs/C4-Documentation/c4-context.md": {
+    "mtime": 1784632483.588262,
+    "ast_hash": "353df79619913a13e855e245767d1d61",
+    "semantic_hash": ""
+  },
+  "docs/CALLER_ATTRIBUTION_EXAMPLES.md": {
+    "mtime": 1784632483.5883617,
+    "ast_hash": "3a2012cb11ed8d4a019163445e296c13",
+    "semantic_hash": ""
+  },
+  "docs/CONFIGURATION_GUIDE.md": {
+    "mtime": 1784632483.5884585,
+    "ast_hash": "637e4a15c88247a54ee03c89761432db",
+    "semantic_hash": ""
+  },
+  "docs/DEVELOPER_GUIDE.md": {
+    "mtime": 1784632483.58857,
+    "ast_hash": "7493cbbec084fae1301dd71fcf1e5f50",
+    "semantic_hash": ""
+  },
+  "docs/USER_GUIDE.md": {
+    "mtime": 1784632483.5886672,
+    "ast_hash": "0088c31727a4765f9e826defbf0757de",
+    "semantic_hash": ""
+  },
+  "docs/index.md": {
+    "mtime": 1784632483.588823,
+    "ast_hash": "2e5aab587ee34a3ac26f5ecd9fbee8fe",
+    "semantic_hash": ""
+  },
+  "docs/reference/arlogi/config.md": {
+    "mtime": 1784632483.5890195,
+    "ast_hash": "6964da6f9a26ce1cb2617a58c8a13e74",
+    "semantic_hash": ""
+  },
+  "docs/reference/arlogi/config_builder.md": {
+    "mtime": 1784632483.5890656,
+    "ast_hash": "6914485bb9997d1c611ee09c89fb3868",
+    "semantic_hash": ""
+  },
+  "docs/reference/arlogi/factory.md": {
+    "mtime": 1784632483.5891044,
+    "ast_hash": "a2cb19b6cacade5cc344849be0ccb271",
+    "semantic_hash": ""
+  },
+  "docs/reference/arlogi/handler_factory.md": {
+    "mtime": 1784632483.5891488,
+    "ast_hash": "7a8d3bf310aa819d9db861078aa8deb1",
+    "semantic_hash": ""
+  },
+  "docs/reference/arlogi/handlers.md": {
+    "mtime": 1784632483.5891948,
+    "ast_hash": "acfaa4600d79461fc8ded73de24f60e8",
+    "semantic_hash": ""
+  },
+  "docs/reference/arlogi/levels.md": {
+    "mtime": 1784632483.5892391,
+    "ast_hash": "14f25a0964861ae31fa8777d79828c0d",
+    "semantic_hash": ""
+  },
+  "docs/reference/arlogi/types.md": {
+    "mtime": 1784632483.5892777,
+    "ast_hash": "8fad20dcb7a40e57fec68429605b28de",
+    "semantic_hash": ""
+  },
+  "docs/superpowers/plans/2026-06-10-file-logging-rotation-implementation-plan.md": {
+    "mtime": 1784632483.5893936,
+    "ast_hash": "ef29c04eaf9cfe701f71398cdc567923",
+    "semantic_hash": ""
+  },
+  "docs/superpowers/specs/2026-06-10-file-logging-rotation-design.md": {
+    "mtime": 1784632483.5895143,
+    "ast_hash": "93fd7626c573f7ff6c08dc010b2c22bb",
+    "semantic_hash": ""
+  },
+  "mkdocs.yml": {
+    "mtime": 1784632483.5925453,
+    "ast_hash": "65397271511abca694d59e85649255e2",
+    "semantic_hash": ""
+  },
+  "docs/logo.svg": {
+    "mtime": 1784632483.5888946,
+    "ast_hash": "f9ffeb0370e9ba8060d14a84ac67e68b",
+    "semantic_hash": ""
+  }
+}

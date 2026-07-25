@@ -51,12 +51,12 @@ class TestConcurrentInitialization:
         # Should have reasonable number of handlers, not N*50
         root = logging.getLogger()
         # Filter out pytest handlers
-        arlogi_handlers = [h for h in root.handlers
-                          if not h.__class__.__name__.startswith('LogCapture')]
+        arlogi_handlers = [h for h in root.handlers if not h.__class__.__name__.startswith("LogCapture")]
         assert len(arlogi_handlers) <= 2, f"Too many handlers: {len(arlogi_handlers)}"
 
     def test_concurrent_get_logger_initializes_once(self):
         """Test that concurrent get_logger() calls initialize successfully."""
+
         def get_logger_thread(i):
             logger = get_logger(f"test_{i}")
             logger.info(f"Message {i}")
@@ -90,8 +90,7 @@ class TestConcurrentInitialization:
             t.join()
 
         # All loggers should be the same instance
-        assert all(logger is loggers[0] for logger in loggers), \
-            "Not all loggers are the same instance"
+        assert all(logger is loggers[0] for logger in loggers), "Not all loggers are the same instance"
 
 
 class TestConcurrentLoggerCreation:
@@ -177,6 +176,7 @@ class TestTraceRegistrationThreadSafety:
         def register_trace(i):
             try:
                 from arlogi.levels import register_trace_level
+
                 register_trace_level()
                 time.sleep(0.0001)
             except Exception as e:
@@ -190,7 +190,7 @@ class TestTraceRegistrationThreadSafety:
         assert len(errors) == 0, f"Errors occurred: {errors}"
 
         # TRACE should be registered
-        assert hasattr(logging, 'TRACE'), "TRACE level not registered"
+        assert hasattr(logging, "TRACE"), "TRACE level not registered"
 
     def test_trace_idempotency(self):
         """Test that multiple TRACE registrations are safe."""
@@ -204,7 +204,7 @@ class TestTraceRegistrationThreadSafety:
                 errors.append((i, e))
 
         assert len(errors) == 0, f"Errors occurred: {errors}"
-        assert hasattr(logging, 'TRACE'), "TRACE level not registered"
+        assert hasattr(logging, "TRACE"), "TRACE level not registered"
 
 
 class TestConcurrentLogging:

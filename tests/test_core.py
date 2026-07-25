@@ -8,13 +8,17 @@ def test_trace_level_registered():
     assert hasattr(logger, "trace")
     assert logging.getLevelName(TRACE) == "TRACE"
 
+
 def test_protocol_compliance():
     logger = get_logger("test_protocol")
     assert isinstance(logger, LoggerProtocol)
 
+
 def test_test_mode_detection():
     from arlogi.factory import LoggerFactory
+
     assert LoggerFactory.is_test_mode() is True
+
 
 def test_logging_calls(caplog):
     caplog.set_level(TRACE)

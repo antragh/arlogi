@@ -6,13 +6,7 @@ from arlogi import TRACE, get_json_logger, get_logger, setup_logging
 
 def test_module_specific_levels():
     # Setup specific levels for submodules
-    setup_logging(
-        level=logging.INFO,
-        module_levels={
-            "app.db": logging.DEBUG,
-            "app.net": TRACE
-        }
-    )
+    setup_logging(level=logging.INFO, module_levels={"app.db": logging.DEBUG, "app.net": TRACE})
 
     db_logger = get_logger("app.db")
     net_logger = get_logger("app.net")
@@ -23,6 +17,7 @@ def test_module_specific_levels():
     assert net_logger.isEnabledFor(TRACE) is True
     assert root_logger.isEnabledFor(logging.DEBUG) is False
     assert root_logger.isEnabledFor(logging.INFO) is True
+
 
 def test_json_logger(capsys):
     # Dedicated JSON logger should output to its own handler
@@ -43,6 +38,7 @@ def test_json_logger(capsys):
     assert data["level"] == "INFO"
     assert data["key"] == "value"
 
+
 def test_trace_stacklevel(caplog):
     caplog.set_level(TRACE)
     logger = get_logger("test_stack")
@@ -51,6 +47,7 @@ def test_trace_stacklevel(caplog):
     record = caplog.records[0]
     # Check if funcName is correct (it should be test_trace_stacklevel, not trace)
     assert record.funcName == "test_trace_stacklevel"
+
 
 def test_caller_attribution(caplog):
     caplog.set_level(logging.DEBUG)

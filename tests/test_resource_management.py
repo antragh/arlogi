@@ -294,9 +294,7 @@ class TestMultipleConfigurationChanges:
 
             # Should only have handlers from last setup (Console + JSON)
             # Note: pytest may add LogCaptureHandler during tests
-            arlogi_handlers = [
-                h for h in root.handlers if not h.__class__.__name__.startswith("LogCapture")
-            ]
+            arlogi_handlers = [h for h in root.handlers if not h.__class__.__name__.startswith("LogCapture")]
             assert len(arlogi_handlers) <= 2  # Console + JSON
 
     def test_json_logger_reconfiguration(self):
@@ -359,6 +357,4 @@ class TestResourceLeakDetection:
 
             # Should not have leaked file descriptors
             # Allow some overhead for temp directory operations
-            assert final_fds <= initial_fds + 20, (
-                f"Leaked {final_fds - initial_fds} file descriptors"
-            )
+            assert final_fds <= initial_fds + 20, f"Leaked {final_fds - initial_fds} file descriptors"

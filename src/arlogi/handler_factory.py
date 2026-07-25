@@ -34,9 +34,7 @@ class HandlerFactory:
             A configured ColoredConsoleHandler instance
 
         Example:
-            >>> handler = HandlerFactory.create_console(
-            ...     LoggingConfig(show_time=True, show_level=True)
-            ... )
+            >>> handler = HandlerFactory.create_console(LoggingConfig(show_time=True, show_level=True))
         """
         return ColoredConsoleHandler(
             show_time=config.show_time,

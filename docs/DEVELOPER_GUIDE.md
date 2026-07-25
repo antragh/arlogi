@@ -163,8 +163,7 @@ Test interactions between components.
 ```python
 def test_setup_with_json_file():
     """Test that configuration creates JSON file handler."""
-    config = LoggingConfig(json_file_name="logs/test.jsonl")
-    LoggerFactory._apply_configuration(config)
+    LoggerFactory.setup(json_file_name="logs/test.jsonl")
     root = logging.getLogger()
     assert any(isinstance(h, JSONFileHandler) for h in root.handlers)
 ```
@@ -208,8 +207,7 @@ class TestLoggerFactory:
     @pytest.mark.parametrize("level", ["DEBUG", "INFO", "WARNING"])
     def test_logger_respects_level(self, level):
         """Test that logger respects configured level."""
-        config = LoggingConfig(level=level)
-        LoggerFactory._apply_configuration(config)
+        LoggerFactory.setup(level=level)
         logger = get_logger("test")
         assert logger.getEffectiveLevel() == getattr(logging, level)
 ```
@@ -225,11 +223,10 @@ def temp_log_file(tmp_path):
 @pytest.fixture
 def configured_logger(temp_log_file):
     """Create a logger configured for testing."""
-    config = LoggingConfig(
+    LoggerFactory.setup(
         level="DEBUG",
         json_file_name=str(temp_log_file)
     )
-    LoggerFactory._apply_configuration(config)
     return get_logger("test")
 ```
 

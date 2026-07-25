@@ -86,12 +86,8 @@ class LoggingConfig:
             try:
                 getattr(logging, level.upper())
             except AttributeError as e:
-                valid = ", ".join(
-                    name for name in dir(logging) if name.isupper() and name not in ("NOTSET",)
-                )
-                raise ValueError(
-                    f"Invalid log level: {level!r}. Valid levels: TRACE, {valid}"
-                ) from e
+                valid = ", ".join(name for name in dir(logging) if name.isupper() and name not in ("NOTSET",))
+                raise ValueError(f"Invalid log level: {level!r}. Valid levels: TRACE, {valid}") from e
         elif not isinstance(level, int):
             raise ValueError(f"Log level must be int or str, got {type(level).__name__}")
 
@@ -220,11 +216,7 @@ def is_test_mode() -> bool:
     Returns:
         True if running in a test environment
     """
-    return (
-        "pytest" in sys.modules
-        or "unittest" in sys.modules
-        or os.environ.get("PYTEST_CURRENT_TEST") is not None
-    )
+    return "pytest" in sys.modules or "unittest" in sys.modules or os.environ.get("PYTEST_CURRENT_TEST") is not None
 
 
 def get_default_level() -> int:

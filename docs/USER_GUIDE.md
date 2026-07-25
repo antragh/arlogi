@@ -53,11 +53,10 @@ pip install -e .
 ### Minimal Setup
 
 ```python
-from arlogi import LoggingConfig, LoggerFactory, get_logger
+from arlogi import setup_logging, get_logger
 
-# 1. Configure logging using the modern architecture
-config = LoggingConfig(level="INFO")
-LoggerFactory._apply_configuration(config)
+# 1. Configure logging
+setup_logging(level="INFO")
 
 # 2. Get a logger
 logger = get_logger(__name__)
@@ -148,16 +147,15 @@ Configure `arlogi` using the `LoggingConfig` pattern. This approach clearly sepa
 ```python
 from arlogi import LoggingConfig, LoggerFactory
 
-# 1. Create the configuration object
-config = LoggingConfig(
+from arlogi import setup_logging
+
+# Configure logging globally
+setup_logging(
     level="INFO",
     module_levels={"app.db": "DEBUG"},
     json_file_name="logs/app.jsonl",
     show_time=True
 )
-
-# 2. Apply it globally
-LoggerFactory._apply_configuration(config)
 ```
 
 > [!TIP]
@@ -168,9 +166,9 @@ LoggerFactory._apply_configuration(config)
 ### Per-Module Levels
 
 ```python
-from arlogi import LoggingConfig, LoggerFactory
+from arlogi import setup_logging
 
-config = LoggingConfig(
+setup_logging(
     level="INFO",
     module_levels={
         "app.database": "DEBUG",      # Verbose database logging
@@ -179,20 +177,18 @@ config = LoggingConfig(
         "app.performance": "ERROR"    # Only performance errors
     }
 )
-LoggerFactory._apply_configuration(config)
 ```
 
 ### JSON File Logging
 
 ```python
-from arlogi import LoggingConfig, LoggerFactory
+from arlogi import setup_logging
 
 # Console + JSON file
-config = LoggingConfig(
+setup_logging(
     level="INFO",
     json_file_name="logs/app.jsonl"
 )
-LoggerFactory._apply_configuration(config)
 ```
 
 **JSON Output Format:**
@@ -212,36 +208,34 @@ LoggerFactory._apply_configuration(config)
 ### JSON-Only Output
 
 ```python
-from arlogi import LoggingConfig, LoggerFactory
+from arlogi import setup_logging
 
 # JSON output only (no console)
-config = LoggingConfig(
+setup_logging(
     level="INFO",
     json_file_only=True
 )
-LoggerFactory._apply_configuration(config)
 ```
 
 ### Syslog Integration
 
 ```python
-from arlogi import LoggingConfig, LoggerFactory
+from arlogi import setup_logging
 
 # Add syslog to root logger
-config = LoggingConfig(
+setup_logging(
     level="INFO",
     use_syslog=True,
     syslog_address="/dev/log"  # or ("localhost", 514)
 )
-LoggerFactory._apply_configuration(config)
 ```
 
 ### Complete Configuration
 
 ```python
-from arlogi import LoggingConfig, LoggerFactory
+from arlogi import setup_logging
 
-config = LoggingConfig(
+setup_logging(
     level="INFO",
     module_levels={
         "app.db": "DEBUG",
@@ -253,7 +247,6 @@ config = LoggingConfig(
     show_level=True,
     show_path=True
 )
-LoggerFactory._apply_configuration(config)
 ```
 
 ---
@@ -379,11 +372,11 @@ security_logger.warning("Brute force attempt", extra={"ip": "192.168.1.1"})
 ### Application Startup
 
 ```python
-from arlogi import LoggingConfig, LoggerFactory, get_logger
+from arlogi import setup_logging, get_logger
 
 def main():
-    # 1. Configure logging first using modern architecture
-    config = LoggingConfig(
+    # 1. Configure logging first
+    setup_logging(
         level="INFO",
         module_levels={
             "app.database": "DEBUG",
@@ -391,7 +384,6 @@ def main():
         },
         json_file_name="logs/app.jsonl"
     )
-    LoggerFactory._apply_configuration(config)
 
     logger = get_logger("app.main")
     logger.info("Application starting up")
@@ -548,9 +540,8 @@ async def process_task(task_id, data):
 1. Check configuration is applied correctly
 
 ```python
-from arlogi import LoggingConfig, LoggerFactory
-config = LoggingConfig(level="DEBUG")  # Show all logs
-LoggerFactory._apply_configuration(config)
+from arlogi import setup_logging
+setup_logging(level="DEBUG")  # Show all logs
 ```
 
 2. Verify logger name matches module levels
@@ -577,8 +568,7 @@ print(f"Test mode: {is_test_mode()}")
 
 ```python
 # Only apply configuration once at startup
-config = LoggingConfig(level="INFO")
-LoggerFactory._apply_configuration(config)
+setup_logging(level="INFO")
 ```
 
 2. Check logger propagation
@@ -649,8 +639,7 @@ chmod 755 logs
 2. Use absolute path
 
 ```python
-config = LoggingConfig(json_file_name="/var/log/myapp/app.jsonl")
-LoggerFactory._apply_configuration(config)
+setup_logging(json_file_name="/var/log/myapp/app.jsonl")
 ```
 
 ### Issue: Syslog Not Working
@@ -663,12 +652,10 @@ LoggerFactory._apply_configuration(config)
 
 ```python
 # For Unix socket
-config = LoggingConfig(syslog_address="/dev/log", use_syslog=True)
-LoggerFactory._apply_configuration(config)
+setup_logging(syslog_address="/dev/log", use_syslog=True)
 
 # For network syslog
-config = LoggingConfig(syslog_address=("localhost", 514), use_syslog=True)
-LoggerFactory._apply_configuration(config)
+setup_logging(syslog_address=("localhost", 514), use_syslog=True)
 ```
 
 2. Check syslog is running

@@ -17,13 +17,7 @@ class LoggingConfigBuilder:
     and harder to use incorrectly.
 
     Example:
-        >>> config = (
-        ...     LoggingConfigBuilder()
-        ...     .with_level("INFO")
-        ...     .with_json_file("logs/app.jsonl")
-        ...     .with_syslog()
-        ...     .build()
-        ... )
+        >>> config = LoggingConfigBuilder().with_level("INFO").with_json_file("logs/app.jsonl").with_syslog().build()
     """
 
     def __init__(self) -> None:
@@ -148,9 +142,7 @@ class LoggingConfigBuilder:
         self._show_path = show_path
         return self
 
-    def with_rotation(
-        self, schedule: str, retention_count: int | None = None
-    ) -> "LoggingConfigBuilder":
+    def with_rotation(self, schedule: str, retention_count: int | None = None) -> "LoggingConfigBuilder":
         """Configure optional time-window file rotation.
 
         Args:

@@ -1,6 +1,6 @@
 [project]
 name = "arlogi"
-version = "0.606.22"
+version = "0.607.24"
 description = "Robust, type-safe and highly configurable logging library for Python"
 readme = "README.md"
 authors = [
@@ -8,6 +8,7 @@ authors = [
 ]
 requires-python = ">=3.13"
 dependencies = [
+    "graphifyy",
     "rich>=14.2.0",
 ]
 
@@ -17,6 +18,7 @@ build-backend = "hatchling.build"
 
 [dependency-groups]
 dev = [
+    "commitizen>=4.0.0",
     "pytest>=9.0.2",
     "pytest-cov>=7.0.0",
     "radon>=6.0.1",
@@ -29,3 +31,24 @@ dev = [
     "pymdown-extensions>=10.19.1",
     "psutil>=7.2.1",
 ]
+
+[tool.commitizen]
+name = "cz_conventional_commits"
+tag_format = "v$version"
+version_scheme = "pep440"
+version_provider = "pep621"
+version_files = ["pyproject.toml"]
+update_changelog_on_bump = true
+changelog_file = "CHANGELOG.md"
+
+[tool.uv.sources]
+graphifyy = { git = "https://github.com/Graphify-Labs/graphify" }
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["src"]
+addopts = "--cov=src/arlogi --cov-report=term-missing --cov-report=json"
+
+[tool.coverage.run]
+source = ["src/arlogi"]
+branch = true

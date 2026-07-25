@@ -3,6 +3,8 @@ exclude_docs: |
   .Notes/*
   _Notes_/*
   scripts/*
+  superpowers/*
+  NotebookLM/*
 theme:
   # name: "readthedocs"
   name: "material"

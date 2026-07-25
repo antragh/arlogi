@@ -317,9 +317,7 @@ class LoggerFactory:
         return logger  # type: ignore
 
     @classmethod
-    def get_json_logger(
-        cls, name: str = "json", json_file_name: str | None = None
-    ) -> LoggerProtocol:
+    def get_json_logger(cls, name: str = "json", json_file_name: str | None = None) -> LoggerProtocol:
         """Get a logger that only outputs to JSON, bypassing root handlers.
 
         Args:
@@ -346,9 +344,7 @@ class LoggerFactory:
         return logger  # type: ignore
 
     @classmethod
-    def get_syslog_logger(
-        cls, name: str = "syslog", address: str | tuple[str, int] = "/dev/log"
-    ) -> LoggerProtocol:
+    def get_syslog_logger(cls, name: str = "syslog", address: str | tuple[str, int] = "/dev/log") -> LoggerProtocol:
         """Get a logger that only outputs to Syslog, bypassing root handlers.
 
         Args:
@@ -518,9 +514,7 @@ def rotate_json_logger(name: str = "json") -> int:
     return rotated
 
 
-def get_syslog_logger(
-    name: str = "syslog", address: str | tuple[str, int] = "/dev/log"
-) -> LoggerProtocol:
+def get_syslog_logger(name: str = "syslog", address: str | tuple[str, int] = "/dev/log") -> LoggerProtocol:
     """Get a dedicated syslog-only logger.
 
     Args:

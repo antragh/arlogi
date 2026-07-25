@@ -1,6 +1,6 @@
 # Arlogi Library Documentation
 
-**Version:** 0.601.04
+**Version:** 0.606.22
 
 **Python:** 3.13+
 
@@ -26,11 +26,10 @@ Comprehensive documentation for the arlogi logging library - a robust, type-safe
 ## Quick Start
 
 ```python
-from arlogi import LoggingConfig, LoggerFactory, get_logger
+from arlogi import setup_logging, get_logger
 
 # Configure logging using modern architecture
-config = LoggingConfig(level="INFO")
-LoggerFactory._apply_configuration(config)
+setup_logging(level="INFO")
 
 # Get logger and log
 logger = get_logger(__name__)
@@ -163,11 +162,10 @@ INFO    Hello, Arlogi!        [module()]
 ### Basic Setup
 
 ```python
-from arlogi import LoggingConfig, LoggerFactory, get_logger
+from arlogi import setup_logging, get_logger
 
 # Configure
-config = LoggingConfig(level="INFO")
-LoggerFactory._apply_configuration(config)
+setup_logging(level="INFO")
 
 # Use
 logger = get_logger(__name__)
@@ -177,24 +175,26 @@ logger.info("Application started", caller_depth=0)
 ### With JSON Logging
 
 ```python
-config = LoggingConfig(
+from arlogi import setup_logging
+
+setup_logging(
     level="INFO",
     json_file_name="logs/app.jsonl"
 )
-LoggerFactory._apply_configuration(config)
 ```
 
 ### Per-Module Levels
 
 ```python
-config = LoggingConfig(
+from arlogi import setup_logging
+
+setup_logging(
     level="INFO",
     module_levels={
         "app.database": "DEBUG",
         "app.network": "TRACE"
     }
 )
-LoggerFactory._apply_configuration(config)
 ```
 
 ### Dedicated JSON Logger

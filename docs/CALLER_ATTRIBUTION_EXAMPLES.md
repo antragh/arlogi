@@ -7,11 +7,10 @@ Comprehensive examples demonstrating arlogi's caller attribution feature using t
 Before using caller attribution, ensure arlogi is configured using the `LoggingConfig` pattern:
 
 ```python
-from arlogi import LoggingConfig, LoggerFactory, get_logger
+from arlogi import setup_logging, get_logger
 
 # Configure arlogi
-config = LoggingConfig(level="INFO")
-LoggerFactory._apply_configuration(config)
+setup_logging(level="INFO")
 
 # Get logger
 logger = get_logger("example")

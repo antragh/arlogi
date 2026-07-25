@@ -16,10 +16,10 @@ def main():
             "app.network": "TRACE",
             "app.database": "DEBUG",
         },
-        show_time=False,    # Default is False for clean "start of line" look
-        show_path=True,     # Show where the log came from
+        show_time=False,  # Default is False for clean "start of line" look
+        show_path=True,  # Show where the log came from
         json_file_name="logs/root_test.jsonl",
-        json_file_only=False, # Default: keep console output too
+        json_file_only=False,  # Default: keep console output too
     )
 
     # Apply configuration via factory
@@ -97,6 +97,7 @@ def main():
     worker.do_work(depth=1)
 
     print("\n--- Done ---\n")
+
 
 if __name__ == "__main__":
     main()

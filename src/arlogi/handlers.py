@@ -379,13 +379,9 @@ class JSONFileHandler(logging.FileHandler):
         self.rotate_schedule = rotate_schedule
         # Retention default is only applied when schedule is enabled.
         self.rotate_retention_count = (
-            rotate_retention_count
-            if rotate_retention_count is not None
-            else (7 if rotate_schedule else None)
+            rotate_retention_count if rotate_retention_count is not None else (7 if rotate_schedule else None)
         )
-        self._active_period_key = (
-            self._compute_period_key(self._now_local()) if self.rotate_schedule else None
-        )
+        self._active_period_key = self._compute_period_key(self._now_local()) if self.rotate_schedule else None
         self.setFormatter(JSONFormatter())
 
     def _now_local(self) -> datetime:
@@ -433,9 +429,7 @@ class JSONFileHandler(logging.FileHandler):
 
         root, ext = os.path.splitext(self.baseFilename)
         rotated_files = [
-            path
-            for path in glob(f"{root}-*{ext}")
-            if os.path.abspath(path) != os.path.abspath(self.baseFilename)
+            path for path in glob(f"{root}-*{ext}") if os.path.abspath(path) != os.path.abspath(self.baseFilename)
         ]
 
         if len(rotated_files) <= self.rotate_retention_count:
@@ -567,17 +561,13 @@ class ArlogiSyslogHandler(logging.handlers.SysLogHandler):
         """
         try:
             super().__init__(address=address, facility=facility, socktype=socktype)
-            self.setFormatter(
-                logging.Formatter("%(name)s[%(process)d]: %(levelname)s: %(message)s")
-            )
+            self.setFormatter(logging.Formatter("%(name)s[%(process)d]: %(levelname)s: %(message)s"))
         except Exception as e:
             # Fallback for systems without /dev/log (e.g., macOS or some containers)
             if address == "/dev/log":
                 # Try UDP on localhost as a last resort
                 try:
-                    super().__init__(
-                        address=("localhost", 514), facility=facility, socktype=socktype
-                    )
+                    super().__init__(address=("localhost", 514), facility=facility, socktype=socktype)
                 except Exception:
                     # If everything fails, silently continue - don't crash
                     # the application just because logging setup failed

@@ -155,12 +155,11 @@ Arlogi extends Python's standard logging module with modern features designed to
 2. **Import and Setup**: Developer imports arlogi and configures logging using the modern configuration pattern
 
    ```python
-   from arlogi import LoggingConfig, LoggerFactory, get_logger
-   config = LoggingConfig(level="INFO")
-   LoggerFactory._apply_configuration(config)
+   from arlogi import setup_logging, get_logger
+   setup_logging(level="INFO")
    ```
 
-   - System: Python Package (LoggingConfig, LoggerFactory)
+   - System: Python Package (setup_logging function)
 
 3. **Create Logger**: Developer obtains a logger instance
 
@@ -189,11 +188,10 @@ Arlogi extends Python's standard logging module with modern features designed to
 1. **Setup with JSON**: Developer configures logging with JSON file output
 
    ```python
-   config = LoggingConfig(
+   setup_logging(
        level="INFO",
        json_file_name="logs/app.jsonl"
    )
-   LoggerFactory._apply_configuration(config)
    ```
 
    - System: Python Package → JSONFileHandler → JSON Log Files
