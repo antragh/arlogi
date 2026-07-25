@@ -1692,16 +1692,17 @@
 <li>Logger creation and lifecycle management</li>
 <li>Custom handler implementations (ColoredConsole, JSON, Syslog)</li>
 <li>Caller attribution and stack inspection</li>
-<li>TRACE level logging support</li>
-</ul>
-<p><strong>Public APIs</strong>:</p>
-<ul>
-<li><code>LoggingConfig</code> - Configuration dataclass (Recommended)</li>
-<li><code>LoggerFactory._apply_configuration()</code> - Apply configuration (Recommended)</li>
+<li>
+<p>TRACE level logging support</p>
+</li>
+<li>
+<p><code>LoggingConfig</code> - Configuration dataclass</p>
+</li>
+<li><code>setup_logging()</code> - Centralized configuration setup (Recommended)</li>
+<li><code>LoggerFactory.setup()</code> - Direct factory configuration API</li>
 <li><code>get_logger()</code> - Get standard logger with caller attribution</li>
 <li><code>get_json_logger()</code> - Get dedicated JSON-only logger</li>
 <li><code>get_syslog_logger()</code> - Get dedicated syslog-only logger</li>
-<li><code>setup_logging()</code> - Legacy configuration helper (Deprecated)</li>
 </ul>
 <hr />
 <h3 id="test-suite">Test Suite</h3>

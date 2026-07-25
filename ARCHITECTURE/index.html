@@ -2142,7 +2142,6 @@
     end
 
     subgraph "arlogi"
-    subgraph "arlogi"
         API[Public API&lt;br/&gt;LoggingConfig, get_logger]
         Logger[LoggerFactory&lt;br/&gt;TraceLogger]
         Handlers[Handlers&lt;br/&gt;Console, JSON, Syslog]
@@ -2232,8 +2231,9 @@
     participant Rich as RichHandler
     participant Console as Terminal
 
-    App-&gt;&gt;Config: LoggingConfig(level="INFO")
-    App-&gt;&gt;Factory: _apply_configuration(config)
+    App-&gt;&gt;Factory: setup(level="INFO")
+    Factory-&gt;&gt;Config: from_kwargs(...)
+    Factory-&gt;&gt;Factory: _apply_configuration(config)
     Factory-&gt;&gt;Logger: Root Logger level set
     Factory-&gt;&gt;Handler: Handlers created/added
     App-&gt;&gt;Logger: logger.info("msg", caller_depth=1)
@@ -2275,13 +2275,14 @@
         &lt;&lt;factory&gt;&gt;
         _initialized: bool
         _global_logger: TraceLogger|None
-        +_apply_configuration(config) None
+        +setup(level, module_levels, ...) None
         +get_logger(name, level) LoggerProtocol
         +get_json_logger(name, file) LoggerProtocol
         +get_syslog_logger(name, addr) LoggerProtocol
         +cleanup_json_logger(name) None
         +cleanup_syslog_logger(name) None
         +is_test_mode() bool
+        -_apply_configuration(config) None
         -_initialize_trace_level() None
         -_configure_root_logger(config) None
         -_clear_and_add_handlers(config) None
@@ -2367,12 +2368,11 @@
 </ul>
 <h3 id="builder-pattern">Builder Pattern</h3>
 <p><strong>LoggingConfig.from_kwargs()</strong> provides flexible configuration:</p>
-<div class="language-python highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="c1"># Build configuration from multiple sources</span>
-</span><span id="__span-1-2"><a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a><span class="n">config</span> <span class="o">=</span> <span class="n">LoggingConfig</span><span class="o">.</span><span class="n">from_kwargs</span><span class="p">(</span>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="c1"># Build configuration via public setup</span>
+</span><span id="__span-1-2"><a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a><span class="n">setup_logging</span><span class="p">(</span>
 </span><span id="__span-1-3"><a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a>    <span class="n">level</span><span class="o">=</span><span class="s2">&quot;INFO&quot;</span><span class="p">,</span>
 </span><span id="__span-1-4"><a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a>    <span class="n">module_levels</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;app.db&quot;</span><span class="p">:</span> <span class="s2">&quot;DEBUG&quot;</span><span class="p">}</span>
 </span><span id="__span-1-5"><a id="__codelineno-1-5" name="__codelineno-1-5" href="#__codelineno-1-5"></a><span class="p">)</span>
-</span><span id="__span-1-6"><a id="__codelineno-1-6" name="__codelineno-1-6" href="#__codelineno-1-6"></a><span class="n">LoggerFactory</span><span class="o">.</span><span class="n">_apply_configuration</span><span class="p">(</span><span class="n">config</span><span class="p">)</span>
 </span></code></pre></div>
 <h3 id="protocol-pattern">Protocol Pattern</h3>
 <p><strong>LoggerProtocol</strong> defines the logger interface:</p>
@@ -2457,16 +2457,16 @@
 <h3 id="initialization-flow">Initialization Flow</h3>
 <p>The initialization process uses the <code>LoggingConfig</code> pattern for type-safe configuration:</p>
 <pre class="mermaid"><code>graph TD
-    A[LoggingConfig init] --&gt; B["LoggerFactory._apply_configuration"]
-
-    B --&gt; C[_initialize_trace_level]
-    B --&gt; D[_configure_root_logger]
-    B --&gt; E[is_test_mode?]
-    E --&gt;|No| F[_clear_and_add_handlers]
-    E --&gt;|Yes| G[Skip - use pytest handlers]
-    F --&gt; H[HandlerFactory.create_handlers]
-    H --&gt; I[Add handlers to root]
-    B --&gt; J[_configure_module_levels]</code></pre>
+    A[setup_logging / LoggerFactory.setup] --&gt; B[LoggingConfig.from_kwargs]
+    B --&gt; C["_apply_configuration"]
+    C --&gt; D[_initialize_trace_level]
+    C --&gt; E[_configure_root_logger]
+    C --&gt; F[is_test_mode?]
+    F --&gt;|No| G[_clear_and_add_handlers]
+    F --&gt;|Yes| H[Skip - use pytest handlers]
+    G --&gt; I[HandlerFactory.create_handlers]
+    I --&gt; J[Add handlers to root]
+    C --&gt; K[_configure_module_levels]</code></pre>
 <h3 id="logging-call-flow">Logging Call Flow</h3>
 <pre class="mermaid"><code>graph TD
     A[logger.info] --&gt; B[_process_params]
