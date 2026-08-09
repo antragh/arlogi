@@ -87,3 +87,50 @@ def install_log_correlation() -> None:
 
         factory._arlogi_otel_correlation = True  # type: ignore[attr-defined]
         logging.setLogRecordFactory(factory)
+
+
+def setup_metrics(
+    service_name: str,
+    service_version: str | None = None,
+    *,
+    file_dir: str | Path,
+    file_prefix: str = "metrics",
+    rotate_hours: int = 24,
+    retention_count: int = 20,
+    otlp_endpoint: str | None = None,
+    export_interval_millis: int = 60_000,
+) -> "MeterProvider":
+    """Create and register the global MeterProvider. Idempotent."""
+    global _meter_provider
+    with _lock:
+        if _meter_provider is not None:
+            logger.warning("setup_metrics() called more than once; keeping existing provider")
+            return _meter_provider
+
+        from opentelemetry import metrics
+        from opentelemetry.sdk.metrics import MeterProvider
+        from opentelemetry.sdk.metrics.export import PeriodicExportingMetricReader
+
+        from arlogi.otel.exporters import RotatingJsonlMetricExporter
+
+        readers = [
+            PeriodicExportingMetricReader(
+                RotatingJsonlMetricExporter(
+                    file_dir, prefix=file_prefix, rotate_hours=rotate_hours, retention_count=retention_count
+                ),
+                export_interval_millis=export_interval_millis,
+            )
+        ]
+        if otlp_endpoint:
+            from opentelemetry.exporter.otlp.proto.http.metric_exporter import OTLPMetricExporter
+
+            readers.append(
+                PeriodicExportingMetricReader(
+                    OTLPMetricExporter(endpoint=f"{otlp_endpoint.rstrip('/')}/v1/metrics"),
+                    export_interval_millis=export_interval_millis,
+                )
+            )
+        provider = MeterProvider(resource=_build_resource(service_name, service_version), metric_readers=readers)
+        metrics.set_meter_provider(provider)
+        _meter_provider = provider
+        return provider

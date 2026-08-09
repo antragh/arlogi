@@ -1,7 +1,14 @@
 """Optional OpenTelemetry helpers. Requires the `arlogi[otel]` extra."""
 
-from arlogi.otel.bootstrap import install_log_correlation, setup_tracing
+from arlogi.otel.bootstrap import install_log_correlation, setup_metrics, setup_tracing
 from arlogi.otel.decorator import traced
-from arlogi.otel.exporters import RotatingJsonlSpanExporter
+from arlogi.otel.exporters import RotatingJsonlMetricExporter, RotatingJsonlSpanExporter
 
-__all__ = ["RotatingJsonlSpanExporter", "install_log_correlation", "setup_tracing", "traced"]
+__all__ = [
+    "RotatingJsonlMetricExporter",
+    "RotatingJsonlSpanExporter",
+    "install_log_correlation",
+    "setup_metrics",
+    "setup_tracing",
+    "traced",
+]
