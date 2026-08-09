@@ -1,5 +1,6 @@
 """@traced decorator for sync and async functions."""
 
+import asyncio
 import functools
 import inspect
 from collections.abc import Callable
@@ -61,6 +62,42 @@ def traced[**P, R](
         span_name = name or f"{fn.__module__}.{fn.__qualname__}"
         tracer = trace.get_tracer(fn.__module__)
         module = fn.__module__
+
+        if inspect.isasyncgenfunction(fn):
+
+            @functools.wraps(fn)
+            async def agen_wrapper(*args: Any, **kwargs: Any) -> Any:
+                if not _module_enabled(module):
+                    async for item in fn(*args, **kwargs):
+                        yield item
+                    return
+                span = tracer.start_span(span_name, attributes=attrs)
+                gen = fn(*args, **kwargs)
+                try:
+                    while True:
+                        with trace.use_span(
+                            span,
+                            end_on_exit=False,
+                            record_exception=False,
+                            set_status_on_exception=False,
+                        ):
+                            try:
+                                item = await gen.__anext__()
+                            except StopAsyncIteration:
+                                break
+                        yield item
+                except (GeneratorExit, asyncio.CancelledError):
+                    # Consumer abandonment / task cancellation: end the span
+                    # below without marking it as a generator failure.
+                    raise
+                except Exception as exc:
+                    span.record_exception(exc)
+                    span.set_status(trace.StatusCode.ERROR, str(exc))
+                    raise
+                finally:
+                    span.end()
+
+            return agen_wrapper
 
         if inspect.iscoroutinefunction(fn):
 

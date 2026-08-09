@@ -178,3 +178,140 @@ def test_traced_attrs_is_noop_without_sdk():
         return 7
 
     assert work() == 7
+
+
+def test_traced_async_gen_span_covers_full_iteration(memory_spans):
+    @traced
+    async def stream():
+        yield 1
+        yield 2
+
+    async def consume():
+        agen = stream()
+        first = await agen.__anext__()
+        # Mid-iteration: the generator's span must still be open.
+        assert memory_spans.get_finished_spans() == ()
+        rest = [item async for item in agen]
+        return [first, *rest]
+
+    assert asyncio.run(consume()) == [1, 2]
+    spans = memory_spans.get_finished_spans()
+    assert len(spans) == 1
+    assert spans[0].name.endswith("stream")
+
+
+def test_traced_async_gen_exception_recorded_and_span_ended(memory_spans):
+    @traced
+    async def broken():
+        yield 1
+        raise ValueError("mid-iteration")
+
+    async def consume():
+        items = []
+        with pytest.raises(ValueError):
+            async for item in broken():
+                items.append(item)
+        return items
+
+    assert asyncio.run(consume()) == [1]
+    span = memory_spans.get_finished_spans()[0]
+    assert span.status.status_code == StatusCode.ERROR
+    assert any(e.name == "exception" for e in span.events)
+
+
+def test_traced_async_gen_aclose_ends_span_without_error(memory_spans):
+    @traced
+    async def stream():
+        yield 1
+        yield 2
+
+    async def consume():
+        agen = stream()
+        assert await agen.__anext__() == 1
+        await agen.aclose()
+
+    asyncio.run(consume())
+    spans = memory_spans.get_finished_spans()
+    assert len(spans) == 1
+    assert spans[0].status.status_code != StatusCode.ERROR
+
+
+def test_consumer_spans_between_yields_not_parented_under_gen_span(memory_spans):
+    tracer = trace.get_tracer(__name__)
+
+    @traced
+    async def stream():
+        yield 1
+        yield 2
+
+    async def consume():
+        agen = stream()
+        await agen.__anext__()
+        with tracer.start_as_current_span("consumer-work"):
+            pass
+        async for _ in agen:
+            pass
+
+    asyncio.run(consume())
+    spans = {s.name: s for s in memory_spans.get_finished_spans()}
+    assert spans["consumer-work"].parent is None
+
+
+def test_spans_inside_gen_body_parent_under_gen_span(memory_spans):
+    tracer = trace.get_tracer(__name__)
+
+    @traced
+    async def stream():
+        with tracer.start_as_current_span("inner-work"):
+            pass
+        yield 1
+
+    async def consume():
+        async for _ in stream():
+            pass
+
+    asyncio.run(consume())
+    spans = {s.name: s for s in memory_spans.get_finished_spans()}
+    gen_span = next(s for n, s in spans.items() if n.endswith("stream"))
+    inner = spans["inner-work"]
+    assert inner.parent is not None
+    assert inner.parent.span_id == gen_span.context.span_id
+
+
+def test_traced_async_gen_gated_off_yields_without_span(memory_spans):
+    @traced
+    async def stream():
+        yield 1
+        yield 2
+
+    set_trace_modules({stream.__module__: False})
+
+    async def consume():
+        return [item async for item in stream()]
+
+    assert asyncio.run(consume()) == [1, 2]
+    assert memory_spans.get_finished_spans() == ()
+
+
+def test_traced_async_gen_attrs_recorded(memory_spans):
+    @traced(attrs={"component": "demo"})
+    async def stream():
+        yield 1
+
+    async def consume():
+        return [item async for item in stream()]
+
+    assert asyncio.run(consume()) == [1]
+    assert memory_spans.get_finished_spans()[0].attributes["component"] == "demo"
+
+
+def test_traced_async_gen_is_noop_without_sdk():
+    @traced
+    async def stream():
+        yield 1
+        yield 2
+
+    async def consume():
+        return [item async for item in stream()]
+
+    assert asyncio.run(consume()) == [1, 2]
