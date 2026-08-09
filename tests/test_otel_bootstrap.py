@@ -9,7 +9,7 @@ pytest.importorskip("opentelemetry")
 
 from opentelemetry import trace
 
-from arlogi.otel import install_log_correlation, setup_tracing
+from arlogi.otel import install_log_correlation, setup_tracing, shutdown_tracing
 
 
 def test_setup_tracing_sets_global_provider_and_writes_file(tmp_path, reset_otel_globals):
@@ -34,6 +34,27 @@ def test_setup_tracing_is_idempotent(tmp_path, reset_otel_globals):
     second = setup_tracing("svc", file_dir=tmp_path)
     assert first is second
     first.shutdown()
+
+
+def test_shutdown_tracing_without_setup_is_a_noop(reset_otel_globals):
+    shutdown_tracing()  # never initialised
+    shutdown_tracing()  # and still safe to repeat
+
+
+def test_setup_tracing_after_shutdown_creates_a_new_working_provider(tmp_path, reset_otel_globals):
+    first = setup_tracing("svc", file_dir=tmp_path / "first", file_prefix="first")
+    shutdown_tracing()
+
+    second = setup_tracing("svc", file_dir=tmp_path / "second", file_prefix="second")
+    assert second is not first
+    assert trace.get_tracer_provider() is second
+
+    with trace.get_tracer("t").start_as_current_span("after-restart"):
+        pass
+    second.shutdown()
+
+    payload = json.loads(next((tmp_path / "second").glob("second-*.jsonl")).read_text(encoding="utf-8").strip())
+    assert payload["resourceSpans"][0]["scopeSpans"][0]["spans"][0]["name"] == "after-restart"
 
 
 def test_install_log_correlation_stamps_active_span_ids(tmp_path, reset_otel_globals):

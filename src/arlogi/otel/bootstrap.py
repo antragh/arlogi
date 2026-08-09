@@ -4,23 +4,48 @@ import logging
 import socket
 import threading
 from pathlib import Path
-from typing import TYPE_CHECKING
 
-from opentelemetry import trace
+from opentelemetry import metrics, trace
+from opentelemetry.sdk.metrics import MeterProvider
+from opentelemetry.sdk.metrics.export import PeriodicExportingMetricReader
 from opentelemetry.sdk.resources import Resource
 from opentelemetry.sdk.trace import TracerProvider
 from opentelemetry.sdk.trace.export import BatchSpanProcessor
 
-from arlogi.otel.exporters import RotatingJsonlSpanExporter
-
-if TYPE_CHECKING:
-    from opentelemetry.sdk.metrics import MeterProvider
+from arlogi.otel.exporters import RotatingJsonlMetricExporter, RotatingJsonlSpanExporter
 
 logger = logging.getLogger(__name__)
 
 _lock = threading.Lock()
 _tracer_provider: TracerProvider | None = None
-_meter_provider: "MeterProvider | None" = None
+_meter_provider: MeterProvider | None = None
+
+
+def _clear_global_tracer_provider() -> None:
+    """Release OpenTelemetry's process-global TracerProvider slot.
+
+    ``trace.set_tracer_provider()`` is a set-once API: without releasing the slot a
+    ``setup_tracing()`` call after a shutdown would build a live provider that
+    ``trace.get_tracer()`` never routes to, silently dropping every span.
+    """
+    try:
+        from opentelemetry.util._once import Once
+
+        trace._TRACER_PROVIDER_SET_ONCE = Once()
+        trace._TRACER_PROVIDER = None
+    except Exception:  # pragma: no cover - upstream internals moved
+        logger.warning("could not release the global TracerProvider; re-initialisation may be ignored")
+
+
+def _clear_global_meter_provider() -> None:
+    """Release OpenTelemetry's process-global MeterProvider slot (see above)."""
+    try:
+        from opentelemetry.util._once import Once
+
+        metrics._internal._METER_PROVIDER_SET_ONCE = Once()
+        metrics._internal._METER_PROVIDER = None
+    except Exception:  # pragma: no cover - upstream internals moved
+        logger.warning("could not release the global MeterProvider; re-initialisation may be ignored")
 
 
 def _build_resource(service_name: str, service_version: str | None) -> Resource:
@@ -40,7 +65,11 @@ def setup_tracing(
     retention_count: int = 20,
     otlp_endpoint: str | None = None,
 ) -> TracerProvider:
-    """Create and register the global TracerProvider. Idempotent."""
+    """Create and register the global TracerProvider. Idempotent.
+
+    Call :func:`shutdown_tracing` before calling this again if the host
+    application needs to tear the pipeline down and re-initialise it.
+    """
     global _tracer_provider
     with _lock:
         if _tracer_provider is not None:
@@ -64,6 +93,22 @@ def setup_tracing(
         trace.set_tracer_provider(provider)
         _tracer_provider = provider
         return provider
+
+
+def shutdown_tracing() -> None:
+    """Shut down and unregister the global TracerProvider.
+
+    A no-op when tracing was never set up, so it is safe to call unconditionally
+    (and repeatedly) from host-application cleanup paths. After this returns,
+    :func:`setup_tracing` builds a fresh, working provider.
+    """
+    global _tracer_provider
+    with _lock:
+        if _tracer_provider is None:
+            return
+        _tracer_provider.shutdown()
+        _tracer_provider = None
+        _clear_global_tracer_provider()
 
 
 def install_log_correlation() -> None:
@@ -99,19 +144,17 @@ def setup_metrics(
     retention_count: int = 20,
     otlp_endpoint: str | None = None,
     export_interval_millis: int = 60_000,
-) -> "MeterProvider":
-    """Create and register the global MeterProvider. Idempotent."""
+) -> MeterProvider:
+    """Create and register the global MeterProvider. Idempotent.
+
+    Call :func:`shutdown_metrics` before calling this again if the host
+    application needs to tear the pipeline down and re-initialise it.
+    """
     global _meter_provider
     with _lock:
         if _meter_provider is not None:
             logger.warning("setup_metrics() called more than once; keeping existing provider")
             return _meter_provider
-
-        from opentelemetry import metrics
-        from opentelemetry.sdk.metrics import MeterProvider
-        from opentelemetry.sdk.metrics.export import PeriodicExportingMetricReader
-
-        from arlogi.otel.exporters import RotatingJsonlMetricExporter
 
         readers = [
             PeriodicExportingMetricReader(
@@ -134,3 +177,19 @@ def setup_metrics(
         metrics.set_meter_provider(provider)
         _meter_provider = provider
         return provider
+
+
+def shutdown_metrics() -> None:
+    """Shut down and unregister the global MeterProvider.
+
+    A no-op when metrics were never set up, so it is safe to call unconditionally
+    (and repeatedly) from host-application cleanup paths. After this returns,
+    :func:`setup_metrics` builds a fresh, working provider.
+    """
+    global _meter_provider
+    with _lock:
+        if _meter_provider is None:
+            return
+        _meter_provider.shutdown()
+        _meter_provider = None
+        _clear_global_meter_provider()
