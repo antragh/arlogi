@@ -3,18 +3,15 @@
 import functools
 import inspect
 from collections.abc import Callable
-from typing import Any, ParamSpec, TypeVar, overload
+from typing import Any, overload
 
 from opentelemetry import trace
-
-P = ParamSpec("P")
-R = TypeVar("R")
 
 
 @overload
 def traced[**P, R](func: Callable[P, R]) -> Callable[P, R]: ...
 @overload
-def traced(*, name: str | None = None) -> Callable[[Callable[P, R]], Callable[P, R]]: ...
+def traced[**P, R](*, name: str | None = None) -> Callable[[Callable[P, R]], Callable[P, R]]: ...
 
 
 def traced[**P, R](func: Callable[P, R] | None = None, *, name: str | None = None) -> Any:
