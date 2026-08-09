@@ -72,17 +72,18 @@ def install_log_correlation() -> None:
     Implemented via the process-global LogRecord factory (not a Filter) so it
     survives handler reconfiguration by the host application.
     """
-    current = logging.getLogRecordFactory()
-    if getattr(current, "_arlogi_otel_correlation", False):
-        return
+    with _lock:
+        current = logging.getLogRecordFactory()
+        if getattr(current, "_arlogi_otel_correlation", False):
+            return
 
-    def factory(*args: object, **kwargs: object) -> logging.LogRecord:
-        record = current(*args, **kwargs)  # type: ignore[arg-type]
-        context = trace.get_current_span().get_span_context()
-        if context.is_valid:
-            record.trace_id = format(context.trace_id, "032x")
-            record.span_id = format(context.span_id, "016x")
-        return record
+        def factory(*args: object, **kwargs: object) -> logging.LogRecord:
+            record = current(*args, **kwargs)  # type: ignore[arg-type]
+            context = trace.get_current_span().get_span_context()
+            if context.is_valid:
+                record.trace_id = format(context.trace_id, "032x")
+                record.span_id = format(context.span_id, "016x")
+            return record
 
-    factory._arlogi_otel_correlation = True  # type: ignore[attr-defined]
-    logging.setLogRecordFactory(factory)
+        factory._arlogi_otel_correlation = True  # type: ignore[attr-defined]
+        logging.setLogRecordFactory(factory)
