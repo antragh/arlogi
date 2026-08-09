@@ -1,3 +1,16 @@
+## v0.611.0 (2026-08-09)
+
+### Feat
+
+- **otel**: trace sync generators across their full iteration
+- **otel**: trace async generators across their full iteration
+- **otel**: static span attributes via @traced(attrs=...)
+- **otel**: per-module span gating via set_trace_modules
+
+### Fix
+
+- **otel**: keep arlogi.otel.decorator import free of the OTEL SDK
+
 ## v0.610.0 (2026-08-09)
 
 ### Feat
