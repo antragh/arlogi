@@ -64,11 +64,16 @@ def setup_tracing(
     rotate_hours: int = 24,
     retention_count: int = 20,
     otlp_endpoint: str | None = None,
+    otlp_timeout: int = 5,
 ) -> TracerProvider:
     """Create and register the global TracerProvider. Idempotent.
 
     Call :func:`shutdown_tracing` before calling this again if the host
     application needs to tear the pipeline down and re-initialise it.
+
+    Args:
+        otlp_timeout: Per-export timeout in seconds for the OTLP exporter. Keeps an
+            unreachable collector from stalling shutdown with retry backoff.
     """
     global _tracer_provider
     with _lock:
@@ -88,7 +93,9 @@ def setup_tracing(
             from opentelemetry.exporter.otlp.proto.http.trace_exporter import OTLPSpanExporter
 
             provider.add_span_processor(
-                BatchSpanProcessor(OTLPSpanExporter(endpoint=f"{otlp_endpoint.rstrip('/')}/v1/traces"))
+                BatchSpanProcessor(
+                    OTLPSpanExporter(endpoint=f"{otlp_endpoint.rstrip('/')}/v1/traces", timeout=otlp_timeout)
+                )
             )
         trace.set_tracer_provider(provider)
         _tracer_provider = provider
@@ -143,12 +150,17 @@ def setup_metrics(
     rotate_hours: int = 24,
     retention_count: int = 20,
     otlp_endpoint: str | None = None,
+    otlp_timeout: int = 5,
     export_interval_millis: int = 60_000,
 ) -> MeterProvider:
     """Create and register the global MeterProvider. Idempotent.
 
     Call :func:`shutdown_metrics` before calling this again if the host
     application needs to tear the pipeline down and re-initialise it.
+
+    Args:
+        otlp_timeout: Per-export timeout in seconds for the OTLP exporter. Keeps an
+            unreachable collector from stalling shutdown with retry backoff.
     """
     global _meter_provider
     with _lock:
@@ -169,7 +181,7 @@ def setup_metrics(
 
             readers.append(
                 PeriodicExportingMetricReader(
-                    OTLPMetricExporter(endpoint=f"{otlp_endpoint.rstrip('/')}/v1/metrics"),
+                    OTLPMetricExporter(endpoint=f"{otlp_endpoint.rstrip('/')}/v1/metrics", timeout=otlp_timeout),
                     export_interval_millis=export_interval_millis,
                 )
             )

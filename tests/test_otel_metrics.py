@@ -52,3 +52,19 @@ def test_setup_metrics_after_shutdown_creates_a_new_working_provider(tmp_path, r
     lines = next((tmp_path / "second").glob("second-*.jsonl")).read_text(encoding="utf-8").strip().splitlines()
     payload = json.loads(lines[0])
     assert payload["resourceMetrics"][0]["scopeMetrics"][0]["metrics"][0]["name"] == "restarted"
+
+
+def test_setup_metrics_with_otlp_endpoint_adds_reader_with_timeout(tmp_path, reset_otel_globals):
+    provider = setup_metrics(
+        "svc",
+        file_dir=tmp_path,
+        otlp_endpoint="http://localhost:19999",  # unused local port: fails fast, reaches nothing
+        otlp_timeout=1,
+    )
+    readers = provider._metric_readers
+    assert len(readers) == 2  # rotating file + OTLP
+
+    otlp_exporter = readers[1]._exporter
+    assert otlp_exporter._endpoint == "http://localhost:19999/v1/metrics"
+    assert otlp_exporter._timeout == 1
+    provider.shutdown()

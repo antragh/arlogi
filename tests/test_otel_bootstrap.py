@@ -57,6 +57,22 @@ def test_setup_tracing_after_shutdown_creates_a_new_working_provider(tmp_path, r
     assert payload["resourceSpans"][0]["scopeSpans"][0]["spans"][0]["name"] == "after-restart"
 
 
+def test_setup_tracing_with_otlp_endpoint_adds_exporter_with_timeout(tmp_path, reset_otel_globals):
+    provider = setup_tracing(
+        "svc",
+        file_dir=tmp_path,
+        otlp_endpoint="http://localhost:19999",  # unused local port: fails fast, reaches nothing
+        otlp_timeout=1,
+    )
+    processors = provider._active_span_processor._span_processors
+    assert len(processors) == 2  # rotating file + OTLP
+
+    otlp_exporter = processors[1].span_exporter
+    assert otlp_exporter._endpoint == "http://localhost:19999/v1/traces"
+    assert otlp_exporter._timeout == 1
+    provider.shutdown()
+
+
 def test_install_log_correlation_stamps_active_span_ids(tmp_path, reset_otel_globals):
     provider = setup_tracing("svc", file_dir=tmp_path)
     install_log_correlation()
