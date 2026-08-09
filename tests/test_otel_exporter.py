@@ -73,18 +73,58 @@ def test_rotation_creates_new_file_and_prunes_old(tmp_path):
     assert len(files) == 2  # retention_count caps total files, oldest deleted
 
 
-def test_io_error_degrades_to_noop_without_raising(tmp_path):
+def test_stream_closed_externally_triggers_self_heal_reopen(tmp_path):
+    """If something else closes the stream, write_line reopens a fresh file rather than erroring.
+
+    This exercises the `self._stream.closed` self-healing branch in write_line — a different
+    code path from the OSError-during-write degrade tested below.
+    """
     exporter = RotatingJsonlSpanExporter(tmp_path / "sub", prefix="t")
     provider = _provider_with(exporter)
     with provider.get_tracer("test").start_as_current_span("one"):
         pass
     provider.force_flush()
 
-    # Simulate the stream dying mid-run
+    # Simulate the stream being closed by something external to the writer
     exporter._writer._stream.close()  # type: ignore[union-attr]
     with provider.get_tracer("test").start_as_current_span("two"):
         pass
-    provider.force_flush()  # must not raise
+    provider.force_flush()  # must not raise; writer transparently reopens a new file
     with provider.get_tracer("test").start_as_current_span("three"):
         pass
+    provider.shutdown()  # must not raise
+    assert exporter._writer._broken is False
+
+
+def test_io_error_degrades_to_noop_without_raising(tmp_path):
+    """A real OSError raised during write() must permanently degrade the writer to a no-op.
+
+    Telemetry must never break the host app: after an OSError, write_line returns False
+    (rather than raising) on every subsequent call, and export()/shutdown() stay silent too.
+    """
+    exporter = RotatingJsonlSpanExporter(tmp_path, prefix="t")
+    provider = _provider_with(exporter)
+
+    # First write succeeds normally, opening the file.
+    with provider.get_tracer("test").start_as_current_span("one"):
+        pass
+    provider.force_flush()
+    assert exporter._writer._broken is False
+
+    def _boom(*_args, **_kwargs):
+        raise OSError("disk full")
+
+    exporter._writer._stream.write = _boom  # type: ignore[union-attr]
+
+    # Direct write_line call must return False, not raise.
+    assert exporter._writer.write_line('{"still": "broken"}') is False
+    assert exporter._writer._broken is True
+
+    # Once broken, further calls are silent no-ops (short-circuited before touching the stream).
+    assert exporter._writer.write_line('{"also": "broken"}') is False
+
+    # The exporter/provider layers must not let the error (or the FAILURE result) propagate.
+    with provider.get_tracer("test").start_as_current_span("two"):
+        pass
+    provider.force_flush()  # must not raise
     provider.shutdown()  # must not raise
