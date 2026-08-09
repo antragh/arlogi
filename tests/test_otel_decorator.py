@@ -315,3 +315,66 @@ def test_traced_async_gen_is_noop_without_sdk():
         return [item async for item in stream()]
 
     assert asyncio.run(consume()) == [1, 2]
+
+
+def test_traced_sync_gen_span_covers_full_iteration(memory_spans):
+    @traced
+    def counter():
+        yield 1
+        yield 2
+
+    gen = counter()
+    assert next(gen) == 1
+    assert memory_spans.get_finished_spans() == ()
+    assert list(gen) == [2]
+    spans = memory_spans.get_finished_spans()
+    assert len(spans) == 1
+    assert spans[0].name.endswith("counter")
+
+
+def test_traced_sync_gen_close_ends_span_without_error(memory_spans):
+    @traced
+    def counter():
+        yield 1
+        yield 2
+
+    gen = counter()
+    assert next(gen) == 1
+    gen.close()
+    spans = memory_spans.get_finished_spans()
+    assert len(spans) == 1
+    assert spans[0].status.status_code != StatusCode.ERROR
+
+
+def test_traced_sync_gen_exception_recorded(memory_spans):
+    @traced
+    def broken():
+        yield 1
+        raise ValueError("mid-iteration")
+
+    gen = broken()
+    assert next(gen) == 1
+    with pytest.raises(ValueError):
+        next(gen)
+    span = memory_spans.get_finished_spans()[0]
+    assert span.status.status_code == StatusCode.ERROR
+
+
+def test_traced_sync_gen_gated_off_yields_without_span(memory_spans):
+    @traced
+    def counter():
+        yield 1
+        yield 2
+
+    set_trace_modules({counter.__module__: False})
+    assert list(counter()) == [1, 2]
+    assert memory_spans.get_finished_spans() == ()
+
+
+def test_traced_sync_gen_is_noop_without_sdk():
+    @traced
+    def counter():
+        yield 1
+        yield 2
+
+    assert list(counter()) == [1, 2]

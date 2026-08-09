@@ -99,6 +99,39 @@ def traced[**P, R](
 
             return agen_wrapper
 
+        if inspect.isgeneratorfunction(fn):
+
+            @functools.wraps(fn)
+            def gen_wrapper(*args: Any, **kwargs: Any) -> Any:
+                if not _module_enabled(module):
+                    yield from fn(*args, **kwargs)
+                    return
+                span = tracer.start_span(span_name, attributes=attrs)
+                gen = fn(*args, **kwargs)
+                try:
+                    while True:
+                        with trace.use_span(
+                            span,
+                            end_on_exit=False,
+                            record_exception=False,
+                            set_status_on_exception=False,
+                        ):
+                            try:
+                                item = next(gen)
+                            except StopIteration:
+                                break
+                        yield item
+                except GeneratorExit:
+                    raise  # consumer close(): end span without ERROR status
+                except Exception as exc:
+                    span.record_exception(exc)
+                    span.set_status(trace.StatusCode.ERROR, str(exc))
+                    raise
+                finally:
+                    span.end()
+
+            return gen_wrapper
+
         if inspect.iscoroutinefunction(fn):
 
             @functools.wraps(fn)
