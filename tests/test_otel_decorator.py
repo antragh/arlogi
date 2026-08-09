@@ -1,6 +1,8 @@
 """Tests for arlogi.otel.decorator.traced."""
 
 import asyncio
+import subprocess
+import sys
 
 import pytest
 
@@ -378,3 +380,15 @@ def test_traced_sync_gen_is_noop_without_sdk():
         yield 2
 
     assert list(counter()) == [1, 2]
+
+
+def test_decorator_module_never_imports_otel_sdk():
+    """cpaiops-class consumers import arlogi.otel.decorator directly with only
+    opentelemetry-api installed. Importing it must not pull the SDK."""
+    code = (
+        "import sys\n"
+        "import arlogi.otel.decorator\n"
+        "sdk = [m for m in sys.modules if m.startswith('opentelemetry.sdk')]\n"
+        "assert not sdk, f'decorator imported the OTEL SDK: {sdk}'\n"
+    )
+    subprocess.run([sys.executable, "-c", code], check=True)
