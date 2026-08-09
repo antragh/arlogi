@@ -148,3 +148,33 @@ def test_gated_off_is_noop_without_sdk():
     work = _make_traced("acme.api.client")
     set_trace_modules({"acme.api.client": False})
     assert work() == 1
+
+
+def test_traced_attrs_recorded_on_span(memory_spans):
+    @traced(attrs={"component": "demo", "kind": "unit"})
+    def work():
+        return 1
+
+    work()
+    span = memory_spans.get_finished_spans()[0]
+    assert span.attributes["component"] == "demo"
+    assert span.attributes["kind"] == "unit"
+
+
+def test_traced_attrs_combine_with_custom_name(memory_spans):
+    @traced(name="custom.op", attrs={"component": "demo"})
+    async def work():
+        return 1
+
+    asyncio.run(work())
+    span = memory_spans.get_finished_spans()[0]
+    assert span.name == "custom.op"
+    assert span.attributes["component"] == "demo"
+
+
+def test_traced_attrs_is_noop_without_sdk():
+    @traced(attrs={"component": "demo"})
+    def work():
+        return 7
+
+    assert work() == 7

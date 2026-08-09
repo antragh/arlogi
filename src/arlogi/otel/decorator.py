@@ -37,15 +37,24 @@ def _module_enabled(module: str) -> bool:
 @overload
 def traced[**P, R](func: Callable[P, R]) -> Callable[P, R]: ...
 @overload
-def traced[**P, R](*, name: str | None = None) -> Callable[[Callable[P, R]], Callable[P, R]]: ...
+def traced[**P, R](
+    *, name: str | None = None, attrs: dict[str, Any] | None = None
+) -> Callable[[Callable[P, R]], Callable[P, R]]: ...
 
 
-def traced[**P, R](func: Callable[P, R] | None = None, *, name: str | None = None) -> Any:
+def traced[**P, R](
+    func: Callable[P, R] | None = None,
+    *,
+    name: str | None = None,
+    attrs: dict[str, Any] | None = None,
+) -> Any:
     """Wrap a function in an OpenTelemetry span.
 
-    Usable bare (@traced) or with a custom span name (@traced(name="...")).
-    Exceptions are recorded on the span and re-raised. Without a configured
-    SDK the proxy tracer makes this a near-zero-cost no-op.
+    Usable bare (@traced) or parameterized (@traced(name="...", attrs={...})).
+    attrs are static attributes set at span start. Per-module gating is
+    controlled by set_trace_modules(). Exceptions are recorded on the span
+    and re-raised. Without a configured SDK the proxy tracer makes this a
+    near-zero-cost no-op.
     """
 
     def decorate(fn: Callable[P, R]) -> Callable[P, R]:
@@ -59,7 +68,7 @@ def traced[**P, R](func: Callable[P, R] | None = None, *, name: str | None = Non
             async def async_wrapper(*args: P.args, **kwargs: P.kwargs) -> R:
                 if not _module_enabled(module):
                     return await fn(*args, **kwargs)  # type: ignore[no-any-return]
-                with tracer.start_as_current_span(span_name):
+                with tracer.start_as_current_span(span_name, attributes=attrs):
                     return await fn(*args, **kwargs)  # type: ignore[no-any-return]
 
             return async_wrapper  # type: ignore[return-value]
@@ -68,7 +77,7 @@ def traced[**P, R](func: Callable[P, R] | None = None, *, name: str | None = Non
         def sync_wrapper(*args: P.args, **kwargs: P.kwargs) -> R:
             if not _module_enabled(module):
                 return fn(*args, **kwargs)
-            with tracer.start_as_current_span(span_name):
+            with tracer.start_as_current_span(span_name, attributes=attrs):
                 return fn(*args, **kwargs)
 
         return sync_wrapper
