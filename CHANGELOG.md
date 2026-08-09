@@ -1,3 +1,16 @@
+## v0.609.0 (2026-08-09)
+
+### Feat
+
+- arlogi.otel metrics pipeline (RotatingJsonlMetricExporter, setup_metrics)
+- arlogi.otel setup_tracing bootstrap and log correlation
+- arlogi.otel @traced decorator (sync + async)
+- arlogi.otel package with RotatingJsonlSpanExporter ([otel] extra)
+
+### Fix
+
+- make install_log_correlation atomic under the module lock
+
 ## v0.608.0 (2026-07-25)
 
 ### Feat
