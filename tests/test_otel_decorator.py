@@ -13,6 +13,7 @@ from opentelemetry.sdk.trace.export.in_memory_span_exporter import InMemorySpanE
 from opentelemetry.trace import StatusCode
 
 from arlogi.otel import traced
+from arlogi.otel import set_trace_modules
 
 
 @pytest.fixture
@@ -22,6 +23,25 @@ def memory_spans(reset_otel_globals):
     provider.add_span_processor(SimpleSpanProcessor(exporter))
     trace.set_tracer_provider(provider)
     return exporter
+
+
+@pytest.fixture(autouse=True)
+def _reset_trace_modules():
+    """Gating rules are process-global; every test starts and ends clean."""
+    set_trace_modules(None)
+    yield
+    set_trace_modules(None)
+
+
+def _make_traced(module_name):
+    """A traced function whose __module__ is overridden BEFORE decoration,
+    so gating (and the span-name prefix) sees the synthetic module path."""
+
+    def fn():
+        return 1
+
+    fn.__module__ = module_name
+    return traced(fn)
 
 
 def test_traced_sync_records_span(memory_spans):
@@ -74,3 +94,57 @@ def test_traced_is_noop_without_sdk():
         return x * 2
 
     assert plain(21) == 42
+
+
+def test_gated_off_module_runs_without_span(memory_spans):
+    work = _make_traced("acme.api.client")
+    set_trace_modules({"acme.api.client": False})
+    assert work() == 1
+    assert memory_spans.get_finished_spans() == ()
+
+
+def test_longest_prefix_match_wins(memory_spans):
+    gated = _make_traced("acme.api.client")
+    sibling = _make_traced("acme.api.transport")
+    unmatched = _make_traced("northwind.web")
+    set_trace_modules({"acme": True, "acme.api.client": False})
+    gated()
+    sibling()
+    unmatched()
+    names = [s.name for s in memory_spans.get_finished_spans()]
+    assert len(names) == 2
+    assert not any(n.startswith("acme.api.client") for n in names)
+    assert any(n.startswith("acme.api.transport") for n in names)
+    assert any(n.startswith("northwind.web") for n in names)
+
+
+def test_prefix_matches_dotted_segments_not_substrings(memory_spans):
+    lookalike = _make_traced("acme.apix")
+    set_trace_modules({"acme.api": False})
+    lookalike()
+    assert len(memory_spans.get_finished_spans()) == 1
+
+
+def test_set_trace_modules_none_resets(memory_spans):
+    work = _make_traced("acme.api.client")
+    set_trace_modules({"acme": False})
+    work()
+    assert memory_spans.get_finished_spans() == ()
+    set_trace_modules(None)
+    work()
+    assert len(memory_spans.get_finished_spans()) == 1
+
+
+def test_gating_applies_after_decoration(memory_spans):
+    work = _make_traced("acme.api.client")
+    work()
+    assert len(memory_spans.get_finished_spans()) == 1
+    set_trace_modules({"acme": False})
+    work()
+    assert len(memory_spans.get_finished_spans()) == 1  # unchanged
+
+
+def test_gated_off_is_noop_without_sdk():
+    work = _make_traced("acme.api.client")
+    set_trace_modules({"acme.api.client": False})
+    assert work() == 1
