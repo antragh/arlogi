@@ -224,6 +224,35 @@ LoggerFactory.setup(
 - **WARNING**: Yellow
 - **ERROR / CRITICAL**: Red
 
+## OpenTelemetry helpers (`arlogi[otel]`)
+
+```python
+from arlogi.otel import setup_tracing, set_trace_modules, traced
+
+setup_tracing("my-service", file_dir="logs")  # owns the TracerProvider
+
+@traced                                        # span per call
+def work(): ...
+
+@traced(name="custom.op", attrs={"component": "billing"})
+async def handle(): ...
+
+@traced                                        # async generators: one span
+async def stream():                            # covering the full iteration
+    yield ...
+
+# Gate spans per module subtree (longest dotted prefix wins; default: on).
+set_trace_modules({"myapp": True, "myapp.noisy": False})
+```
+
+Library code that must stay off the OTEL SDK (provider owned by the host
+application) can import the decorator directly — it depends only on
+`opentelemetry-api`:
+
+```python
+from arlogi.otel.decorator import set_trace_modules, traced
+```
+
 ## Development
 
 Run tests with pytest:

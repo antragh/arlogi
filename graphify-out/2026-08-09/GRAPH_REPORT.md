@@ -1,16 +1,16 @@
-# Graph Report - arlogi  (2026-08-09)
+# Graph Report - arlogi  (2026-07-25)
 
 ## Corpus Check
-- 72 files · ~79,190 words
+- 59 files · ~79,293 words
 - Verdict: corpus is large enough that graph structure adds value.
 
 ## Summary
-- 1730 nodes · 2467 edges · 130 communities (119 shown, 11 thin omitted)
-- Extraction: 81% EXTRACTED · 19% INFERRED · 0% AMBIGUOUS · INFERRED: 458 edges (avg confidence: 0.54)
+- 1560 nodes · 2229 edges · 126 communities (115 shown, 11 thin omitted)
+- Extraction: 81% EXTRACTED · 19% INFERRED · 0% AMBIGUOUS · INFERRED: 419 edges (avg confidence: 0.51)
 - Token cost: 0 input · 0 output
 
 ## Graph Freshness
-- Built from commit: `fcf18140`
+- Built from commit: `65abaf72`
 - Run `git rev-parse HEAD` and compare to check if the graph is stale.
 - Run `graphify update .` after code changes (no API cost).
 
@@ -139,10 +139,6 @@
 - Configuration Reference
 - Cross-Module Attribution
 - Documentation
-- RotatingJsonlMetricExporter
-- test_core.py
-- reset_otel_globals
-- Architecture Decisions
 
 ## God Nodes (most connected - your core abstractions)
 1. `JSONFileHandler` - 114 edges
@@ -157,6 +153,8 @@
 10. `JSONFormatter` - 33 edges
 
 ## Surprising Connections (you probably didn't know these)
+- `main()` --calls--> `LoggingConfig`  [INFERRED]
+  tests/example/example.py → src/arlogi/config.py
 - `TestBranchCoverageExtra` --uses--> `LoggingConfig`  [INFERRED]
   tests/test_coverage_boost.py → src/arlogi/config.py
 - `TestConfigBuilderCoverage` --uses--> `LoggingConfig`  [INFERRED]
@@ -165,29 +163,27 @@
   tests/test_coverage_boost.py → src/arlogi/config.py
 - `TestHandlersCoverageEdgeCases` --uses--> `LoggingConfig`  [INFERRED]
   tests/test_coverage_boost.py → src/arlogi/config.py
-- `TestLevelsCoverage` --uses--> `LoggingConfig`  [INFERRED]
-  tests/test_coverage_boost.py → src/arlogi/config.py
 
 ## Import Cycles
 - None detected.
 
-## Communities (130 total, 11 thin omitted)
+## Communities (126 total, 11 thin omitted)
 
 ### Community 0 - "Core Factory & Handler Infrastructure"
 Cohesion: 0.08
-Nodes (36): RichHandler, ColoredConsoleHandler, JSONFormatter, JSONHandler, Logging handlers for arlogi.  This module provides custom logging handlers inclu, JSON formatter for structured log output.      Outputs log records as JSON with, A logging handler that uses rich for colored console output.      Features:, A logging handler that outputs log records as JSON to a stream.      Defaults to (+28 more)
+Nodes (28): RichHandler, ColoredConsoleHandler, JSONFormatter, JSON formatter for structured log output.      Outputs log records as JSON with, A logging handler that uses rich for colored console output.      Features:, Test ColoredConsoleHandler and JSONFileHandler edge cases., TestHandlersCoverageEdgeCases, Resource management tests for arlogi.  This module tests that handlers properly (+20 more)
 
 ### Community 1 - "Handler Implementation & Resource Management"
-Cohesion: 0.15
-Nodes (5): Logging configuration dataclass for type-safe setup.  This module provides a str, Validate configuration after initialization., Validate a log level value.          Args:             level: Log level as int o, _validate_level(), Additional unit tests to achieve high test coverage across arlogi modules.
+Cohesion: 0.22
+Nodes (5): get_default_level(), is_test_mode(), Logging configuration dataclass for type-safe setup.  This module provides a str, Detect if running under a test runner.      Checks for pytest, unittest, or the, Get the default log level based on the current environment.      Returns DEBUG i
 
 ### Community 2 - "Thread Safety Tests"
 Cohesion: 0.08
-Nodes (25): LoggerFactory, Factory for creating and configuring logger instances.      This factory manages, Get a logger that only outputs to JSON, bypassing root handlers.          Args:, Thread safety tests for arlogi.  This module tests that the library is thread-sa, Test thread safety of TRACE level registration., Test that concurrent TRACE registration is safe., Test that multiple TRACE registrations are safe., Test concurrent logging operations. (+17 more)
+Nodes (20): LoggerFactory, main(), Thread safety tests for arlogi.  This module tests that the library is thread-sa, Test concurrent logging operations., Test concurrent logging to the same logger instance., Test concurrent initialization of the logging system., Test concurrent logging with extra fields., Test concurrent logging at different levels. (+12 more)
 
 ### Community 3 - "Configuration Management"
-Cohesion: 0.06
-Nodes (27): datetime, LogRecord, Any, Override render method to show relative paths from project root.          Args:, Get level text as a single character with styling.          Args:             re, Render message text with level-specific styling.          Args:             reco, Format log record as JSON.          Args:             record: The log record to, Close the handler and the stream if we own it.          Only closes custom strea (+19 more)
+Cohesion: 0.12
+Nodes (8): Close the handler and the stream if we own it.          Only closes custom strea, Build target path for a rotated file., Return a unique rotated path by appending numeric suffixes when needed., Prune old rotated files based on retention count., Ensure file stream is available for writing., Return True when base file has content that can be rotated., Rotate current file under lock. Returns True on successful rotation., Force immediate file rotation.          Returns:             True if rotation co
 
 ### Community 4 - "Integration Tests"
 Cohesion: 0.17
@@ -210,8 +206,8 @@ Cohesion: 0.04
 Nodes (48): API Documentation Generation, Automated Validation, Build Artifacts, C4 Component Level: Documentation System, Code Elements, Command Line Interface (CLI), Component Diagram, Component Interactions (+40 more)
 
 ### Community 9 - "Trace Logger Implementation"
-Cohesion: 0.06
-Nodes (31): P, R, Any, @traced decorator for sync and async functions., Replace per-module span gating rules.      Keys are dotted module prefixes; valu, Wrap a function in an OpenTelemetry span.      Usable bare (@traced) or paramete, set_trace_modules(), traced() (+23 more)
+Cohesion: 0.25
+Nodes (5): Test that handlers are properly closed and removed., Test that _clear_and_add_handlers closes existing handlers., Test that get_json_logger closes previous handlers before adding new ones., Test that get_syslog_logger closes previous handlers before adding new ones., TestHandlerCleanup
 
 ### Community 10 - "SRP Compliance Tests"
 Cohesion: 0.05
@@ -222,8 +218,8 @@ Cohesion: 0.05
 Nodes (44): 1. Factory Pattern, 2. Builder Pattern, 3. Strategy Pattern, 4. Protocol Pattern, 5. Singleton Pattern, 6. Template Method Pattern, Advanced Features, Architecture Notes (+36 more)
 
 ### Community 12 - "TRACE Level Validation Tests"
-Cohesion: 0.12
-Nodes (25): Factory for creating logger instances with caller attribution support.  This mod, Log a message with TRACE level (below DEBUG).          Args:             msg: Th, Log a warning message., Log an error message., Log a critical message., Log an exception with traceback., Log a message at the specified level., Custom logger class with trace() and caller attribution support.      This logge (+17 more)
+Cohesion: 0.13
+Nodes (34): Factory for creating logger instances with caller attribution support.  This mod, Log a message with TRACE level (below DEBUG).          Args:             msg: Th, Log a warning message., Log an error message., Log a critical message., Log an exception with traceback., Log a message at the specified level., Factory for creating and configuring logger instances.      This factory manages (+26 more)
 
 ### Community 13 - "Backward Compatibility Tests"
 Cohesion: 0.05
@@ -238,8 +234,8 @@ Cohesion: 0.05
 Nodes (38): Adding Custom Handlers, Adding Custom Log Levels, Architecture Diagrams, Arlogi Architecture Documentation, Builder Pattern, C4 Container Diagram, C4 Context Diagram, Caller Attribution Overhead (+30 more)
 
 ### Community 16 - "Critical Bug Fix Tests"
-Cohesion: 0.14
-Nodes (19): Resource, _build_resource(), _clear_global_tracer_provider(), install_log_correlation(), Provider bootstrap and log correlation for host applications., Shut down and unregister the global TracerProvider.      A no-op when tracing wa, Stamp trace_id/span_id (hex) onto LogRecords while a span is active.      Implem, Release OpenTelemetry's process-global TracerProvider slot.      ``trace.set_tra (+11 more)
+Cohesion: 0.36
+Nodes (8): datetime, Logging handlers for arlogi.  This module provides custom logging handlers inclu, _emit(), test_emit_rotates_on_period_boundary(), test_period_key_generation(), test_retention_prunes_old_rotated_files(), test_rotate_now_is_noop_for_empty_file(), test_rotate_now_moves_to_suffixed_file()
 
 ### Community 17 - "Feature Tests"
 Cohesion: 0.07
@@ -254,16 +250,16 @@ Cohesion: 0.18
 Nodes (6): Set up arlogi logging with the specified configuration.      This is a convenien, setup_logging(), test_module_specific_levels(), Test to verify relative path functionality in logger output., test_relative_path_logging(), test_setup_logging_accepts_rotation_options()
 
 ### Community 20 - "Path Handling Tests"
-Cohesion: 0.20
-Nodes (6): get_default_level(), is_test_mode(), Detect if running under a test runner.      Checks for pytest, unittest, or the, Get the default log level based on the current environment.      Returns DEBUG i, get_json_logger(), Get a dedicated JSON-only logger.      Args:         name: Logger name suffix
+Cohesion: 0.17
+Nodes (3): get_json_logger(), Get a dedicated JSON-only logger.      Args:         name: Logger name suffix, test_test_mode_detection()
 
 ### Community 21 - "Level Validation Helper"
 Cohesion: 0.03
 Nodes (58): Communities (70 Total, 12 Thin Omitted), Community 0 - "Core Factory & Handler Infrastructure", Community 10 - "SRP Compliance Tests", Community 11 - "Type Safety Tests", Community 12 - "TRACE Level Validation Tests", Community 13 - "Backward Compatibility Tests", Community 14 - "Documentation Generation", Community 15 - "Parameter Validation Tests" (+50 more)
 
 ### Community 22 - "Global Level Helper"
-Cohesion: 0.18
-Nodes (14): SpanExporter, Writes each export batch as one OTLP/JSON ResourceSpans object per line., RotatingJsonlSpanExporter, memory_spans(), _provider_with(), Tests for arlogi.otel.exporters.RotatingJsonlSpanExporter., A real OSError raised during write() must permanently degrade the writer to a no, If something else closes the stream, write_line reopens a fresh file rather than (+6 more)
+Cohesion: 0.27
+Nodes (6): LogRecord, Any, Override render method to show relative paths from project root.          Args:, Get level text as a single character with styling.          Args:             re, Render message text with level-specific styling.          Args:             reco, Format log record as JSON.          Args:             record: The log record to
 
 ### Community 23 - "Console Output Helper"
 Cohesion: 0.08
@@ -286,12 +282,12 @@ Cohesion: 0.09
 Nodes (22): About the C4 Model, Additional Resources, API Specifications, Architecture Levels, C4 Architecture Documentation, Code-Level Documents, Component Documentation, Contributing (+14 more)
 
 ### Community 28 - ".__post_init__"
-Cohesion: 0.17
-Nodes (14): MeterProvider, _clear_global_meter_provider(), Path, Create and register the global MeterProvider. Idempotent.      Call :func:`shutd, Shut down and unregister the global MeterProvider.      A no-op when metrics wer, Release OpenTelemetry's process-global MeterProvider slot (see above)., setup_metrics(), shutdown_metrics() (+6 more)
+Cohesion: 0.40
+Nodes (3): Validate configuration after initialization., Validate a log level value.          Args:             level: Log level as int o, _validate_level()
 
 ### Community 29 - "Integration with Other Libraries"
 Cohesion: 0.09
-Nodes (22): Advanced Configuration, `arlogi` - Advanced Logging Library, Basic Setup, Centralized Logging Setup, Color Schemes, Dedicated Loggers, Default INFO when `arlogi` is not imported, Development (+14 more)
+Nodes (21): Advanced Configuration, `arlogi` - Advanced Logging Library, Basic Setup, Centralized Logging Setup, Color Schemes, Dedicated Loggers, Default INFO when `arlogi` is not imported, Development (+13 more)
 
 ### Community 30 - "File Logging Rotation Design"
 Cohesion: 0.10
@@ -326,8 +322,8 @@ Cohesion: 0.05
 Nodes (44): Advanced API, Advanced Module Configuration, Arlogi API Reference, `ArlogiSyslogHandler`, Caller Attribution, `cleanup_json_logger(name)`, `cleanup_syslog_logger(name)`, `ColoredConsoleHandler` (+36 more)
 
 ### Community 38 - "test_thread_safety.py"
-Cohesion: 0.23
-Nodes (5): Path, Path, Appends lines to `<directory>/<prefix>-YYYYMMDD-HHMMSS.jsonl`.      A new file i, Test seam, mirroring JSONFileHandler._now_local., _RotatingJsonlWriter
+Cohesion: 0.33
+Nodes (4): Test thread safety of TRACE level registration., Test that concurrent TRACE registration is safe., Test that multiple TRACE registrations are safe., TestTraceRegistrationThreadSafety
 
 ### Community 39 - "Code Quality"
 Cohesion: 0.22
@@ -342,8 +338,8 @@ Cohesion: 0.29
 Nodes (7): Arlogi User Guide, Getting Help, License, Minimal Setup, Performance Tips, Quick Start, Table of Contents
 
 ### Community 42 - ".__init__"
-Cohesion: 0.33
-Nodes (3): Initialize the JSON stream handler.          Args:             stream: The strea, Initialize the JSON file handler.          Args:             filename: Path to t, Initialize the syslog handler.          Args:             address: Syslog server
+Cohesion: 0.25
+Nodes (4): Initialize the JSON stream handler.          Args:             stream: The strea, Initialize the colored console handler.          Args:             show_time: Wh, Initialize the syslog handler.          Args:             address: Syslog server, Find the project root by looking for common indicators.          Searches upward
 
 ### Community 43 - "Contributing"
 Cohesion: 0.29
@@ -414,8 +410,8 @@ Cohesion: 0.67
 Nodes (3): Best Practices, DO, DON'T
 
 ### Community 70 - "LoggingConfig"
-Cohesion: 0.07
-Nodes (22): Handler, LoggingConfig, Determine if console output should be shown.          Returns:             True, Determine if JSON output is configured.          Returns:             True if JS, Resolve a module level to an integer.          Args:             name: Module na, Immutable configuration for arlogi logging setup.      Attributes:         level, Get the global level as an integer.          Returns:             The resolved l, Apply a LoggingConfig to the root logger.          Args:             config: The (+14 more)
+Cohesion: 0.09
+Nodes (16): Handler, LoggingConfig, Determine if console output should be shown.          Returns:             True, Determine if JSON output is configured.          Returns:             True if JS, Resolve a module level to an integer.          Args:             name: Module na, Immutable configuration for arlogi logging setup.      Attributes:         level, Get the global level as an integer.          Returns:             The resolved l, Create a syslog handler.          Args:             config: Logging configuratio (+8 more)
 
 ### Community 71 - "LoggerProtocol"
 Cohesion: 0.14
@@ -438,16 +434,12 @@ Cohesion: 0.15
 Nodes (12): Arlogi Codebase Knowledge Graph (Graphify), Community Hubs (Navigation), Corpus Check, FILE: graphify-out/GRAPH_REPORT.md, God Nodes (Most cOnnected - yOur cOre aBstractions), Graph Freshness, Graph Report - Arlogi (2026-07-25), Import Cycles (+4 more)
 
 ### Community 77 - "test_coverage_boost.py"
-Cohesion: 0.17
-Nodes (11): 1. Per-module gating, 2. Async-generator (and sync-generator) support, 3. Static attributes, Constraints, Design, Gating interaction with all four wrapper kinds, Out of scope, Problem (+3 more)
+Cohesion: 0.21
+Nodes (5): Register the TRACE level with the standard logging module.      Thread-safe: Use, register_trace_level(), Additional unit tests to achieve high test coverage across arlogi modules., Test TRACE level registration and execution covering all 8 branches in levels.py, TestLevelsCoverage
 
 ### Community 78 - "Arlogi Developer Guide"
 Cohesion: 0.17
-Nodes (12): Arlogi Developer Guide, Continuous Integration, Docstring Standards, Documentation, FILE: docs/API_REFERENCE.md, Getting Help, GitHub Actions Workflow, License (+4 more)
-
-### Community 79 - "TraceLogger"
-Cohesion: 0.17
-Nodes (6): Any, TraceLogger, Register the TRACE level with the standard logging module.      Thread-safe: Use, register_trace_level(), Test TRACE level registration and execution covering all 8 branches in levels.py, TestLevelsCoverage
+Nodes (12): Architecture Decisions, Arlogi Developer Guide, Continuous Integration, Current Architecture, Decision Records, FILE: docs/API_REFERENCE.md, Getting Help, GitHub Actions Workflow (+4 more)
 
 ### Community 80 - "Arlogi Library Documentation"
 Cohesion: 0.18
@@ -458,16 +450,16 @@ Cohesion: 0.18
 Nodes (11): Coverage Requirements, Feature Tests, Integration Tests, Running Tests, Test Categories, Test Fixtures, Test Mode Detection, Test Structure (+3 more)
 
 ### Community 82 - "C4 Code Level: subdir"
-Cohesion: 0.17
-Nodes (12): C4 Code Level: subdir, Classes/Modules, Code Elements, Dependencies, External Dependencies, Functions/Methods, Internal Dependencies, `main()` (implicit main execution) (+4 more)
+Cohesion: 0.20
+Nodes (7): C4 Code Level: subdir, Dependencies, External Dependencies, Internal Dependencies, Notes, Overview, Relationships
 
 ### Community 83 - "Arlogi Core Source Code"
 Cohesion: 0.20
 Nodes (9): Arlogi Core Source Code, FILE: src/arlogi/config_builder.py, FILE: src/arlogi/config.py, FILE: src/arlogi/factory.py, FILE: src/arlogi/handler_factory.py, FILE: src/arlogi/handlers.py, FILE: src/arlogi/__init__.py, FILE: src/arlogi/levels.py (+1 more)
 
 ### Community 84 - "._compute_period_key"
-Cohesion: 0.18
-Nodes (8): ReadableSpan, SpanExportResult, b64_ids_to_hex(), Any, OTLP/JSON encoding helpers.  Protobuf's JSON mapping emits bytes fields (trace/s, Recursively convert base64-encoded id fields to lowercase hex, in place., File-based OTLP exporters., Rotating JSONL file writer shared by the span and metric exporters.
+Cohesion: 0.22
+Nodes (5): Initialize the JSON file handler.          Args:             filename: Path to t, Get current local datetime.          This indirection keeps schedule checks test, Compute the period key for the configured schedule., Return the new period key when an emit should trigger rotation., Emit a log record, rotating first when schedule boundary changed.
 
 ### Community 85 - "`arlogi` - Advanced Logging Library"
 Cohesion: 0.22
@@ -518,8 +510,8 @@ Cohesion: 0.33
 Nodes (6): Background Job Processing, Class Method Attribution, Database Operations, Error Handling and Exception Tracking, Real-World Application Examples, Web API Handler
 
 ### Community 97 - "Code Elements"
-Cohesion: 0.22
-Nodes (8): Feat, Feat, Feat, Fix, Fix, v0.608.0 (2026-07-25), v0.609.0 (2026-08-09), v0.610.0 (2026-08-09)
+Cohesion: 0.40
+Nodes (5): Classes/Modules, Code Elements, Functions/Methods, `main()` (implicit main execution), `test_nested.py` Module
 
 ### Community 98 - "Cross-Component Concerns"
 Cohesion: 0.40
@@ -626,35 +618,23 @@ Cohesion: 0.67
 Nodes (3): Cross-Module Attribution, Cross-Module Attribution, Same Module Attribution
 
 ### Community 125 - "Documentation"
-Cohesion: 0.22
-Nodes (8): Gate spans per module subtree (longest dotted prefix wins; default: on)., Global Constraints, Task 1: Per-module gating (`set_trace_modules`), Task 2: Static attributes (`@traced(attrs=...)`), Task 3: Async-generator support, Task 4: Sync-generator support, Task 5: api-only guard test, docs, full suite, release bump, @traced v2 Implementation Plan (per-module gating, async-gen support, static attrs)
-
-### Community 126 - "RotatingJsonlMetricExporter"
-Cohesion: 0.25
-Nodes (5): MetricExporter, MetricExportResult, MetricsData, Writes each export as one OTLP/JSON ResourceMetrics object per line., RotatingJsonlMetricExporter
-
-### Community 128 - "reset_otel_globals"
-Cohesion: 0.50
-Nodes (3): Shared pytest fixtures. OTEL fixtures are inert when the [otel] extra is absent., Reset OpenTelemetry global provider state after a test that sets it., reset_otel_globals()
-
-### Community 129 - "Architecture Decisions"
 Cohesion: 0.67
-Nodes (3): Architecture Decisions, Current Architecture, Decision Records
+Nodes (3): Docstring Standards, Documentation, Updating Documentation
 
 ## Knowledge Gaps
-- **865 isolated node(s):** `arlogi`, `Feat`, `Feat`, `Fix`, `Feat` (+860 more)
+- **844 isolated node(s):** `arlogi`, `graphify`, `Release & Publishing`, `Features`, `Installation` (+839 more)
   These have ≤1 connection - possible missing edges or undocumented components.
 - **11 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
 
 ## Suggested Questions
 _Questions this graph is uniquely positioned to answer:_
 
-- **Why does `JSONFileHandler` connect `TRACE Level Validation Tests` to `Core Factory & Handler Infrastructure`, `Thread Safety Tests`, `Configuration Management`, `factory.py`, `Builder Pattern Tests`, `LoggingConfig`, `C4 Code Level: subdir`, `.__init__`, `TestFactoryEdgeCases`, `handler_factory.py`, `TraceLogger`, `LoggingConfig`?**
+- **Why does `Arlogi API Reference` connect `SRP Compliance Tests` to `C4-Documentation/README.md`?**
+  _High betweenness centrality (0.039) - this node is a cross-community bridge._
+- **Why does `Arlogi User Guide` connect `Arlogi User Guide` to `C4-Documentation/README.md`, `Configuration`, `Troubleshooting`, `Common Patterns`, `Installation`, `Advanced Usage`, `Basic Usage`, `Caller Attribution`, `Output Handlers`, `Best Practices`?**
   _High betweenness centrality (0.036) - this node is a cross-community bridge._
-- **Why does `Arlogi Developer Guide` connect `Arlogi Developer Guide` to `Testing`, `Code Quality`, `C4-Documentation/README.md`, `Contributing`, `Development Setup`, `Performance Guidelines`, `Release Process`, `Architecture Decisions`, `Documentation`?**
-  _High betweenness centrality (0.019) - this node is a cross-community bridge._
-- **Why does `RotatingJsonlSpanExporter` connect `Global Level Helper` to `Critical Bug Fix Tests`, `._compute_period_key`, `test_thread_safety.py`?**
-  _High betweenness centrality (0.019) - this node is a cross-community bridge._
+- **Why does `C4 Component Level: Documentation System` connect `Deprecation Warning Tests` to `C4-Documentation/README.md`?**
+  _High betweenness centrality (0.028) - this node is a cross-community bridge._
 - **Are the 81 inferred relationships involving `JSONFileHandler` (e.g. with `LoggerFactory` and `TraceLogger`) actually correct?**
   _`JSONFileHandler` has 81 INFERRED edges - model-reasoned connections that need verification._
 - **Are the 63 inferred relationships involving `LoggingConfig` (e.g. with `LoggingConfigBuilder` and `Builder pattern for LoggingConfig construction.  This module provides a fluent b`) actually correct?**

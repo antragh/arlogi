@@ -124,9 +124,5 @@
   "122": "Best Practices",
   "123": "Configuration Reference",
   "124": "Cross-Module Attribution",
-  "125": "Documentation",
-  "126": "RotatingJsonlMetricExporter",
-  "127": "test_core.py",
-  "128": "reset_otel_globals",
-  "129": "Architecture Decisions"
+  "125": "Documentation"
 }

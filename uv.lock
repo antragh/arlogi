@@ -13,7 +13,7 @@ wheels = [
 
 [[package]]
 name = "arlogi"
-version = "0.609.0"
+version = "0.610.0"
 source = { editable = "." }
 dependencies = [
     { name = "graphifyy" },

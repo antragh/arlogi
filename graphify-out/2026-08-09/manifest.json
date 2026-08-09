@@ -1,7 +1,12 @@
 {
+  "coverage.json": {
+    "mtime": 1784988195.6061747,
+    "ast_hash": "294306b5dbd8b995d84aa1f400a71c40",
+    "semantic_hash": ""
+  },
   "pyproject.toml": {
-    "mtime": 1786268180.613946,
-    "ast_hash": "4d5a795786ffe743e9941c22a20d333d",
+    "mtime": 1784988138.745381,
+    "ast_hash": "bc80f7057631cb82d2d7bbb04ed0e5d5",
     "semantic_hash": ""
   },
   "src/arlogi/__init__.py": {
@@ -105,8 +110,8 @@
     "semantic_hash": ""
   },
   "README.md": {
-    "mtime": 1786302021.807674,
-    "ast_hash": "869febd0c874d91b2b7311c603f61fc1",
+    "mtime": 1784981404.9109035,
+    "ast_hash": "7a89d8a4da4bbf770fb828ffeace30e3",
     "semantic_hash": ""
   },
   "docs/API_REFERENCE.md": {
@@ -280,8 +285,8 @@
     "semantic_hash": ""
   },
   ".github/workflows/publish.yml": {
-    "mtime": 1786259881.9398735,
-    "ast_hash": "38e5337011a9a4a9deff28537b1161db",
+    "mtime": 1784988172.9632456,
+    "ast_hash": "a92e39bcdb0a2d9bd05083c8fc4679dc",
     "semantic_hash": ""
   },
   "docs/NotebookLM/01-architecture-conventions.md": {
@@ -317,76 +322,6 @@
   "docs/superpowers/specs/2026-07-25-publishing-workflow-design.md": {
     "mtime": 1784988086.6072605,
     "ast_hash": "2c16707745762c1a61e7080df3b211d5",
-    "semantic_hash": ""
-  },
-  "src/arlogi/otel/__init__.py": {
-    "mtime": 1786301995.8371744,
-    "ast_hash": "514682d530c2ef339743e65c895874f5",
-    "semantic_hash": ""
-  },
-  "src/arlogi/otel/_encode.py": {
-    "mtime": 1786259881.9402263,
-    "ast_hash": "c68b9bcbf93426744a3e20933f8b56ef",
-    "semantic_hash": ""
-  },
-  "src/arlogi/otel/_files.py": {
-    "mtime": 1786259881.9403324,
-    "ast_hash": "698de0693a40f6c7dc5723c17cddf64b",
-    "semantic_hash": ""
-  },
-  "src/arlogi/otel/bootstrap.py": {
-    "mtime": 1786267203.1435153,
-    "ast_hash": "0053aff0cc8353e5ea3d67bd30c67317",
-    "semantic_hash": ""
-  },
-  "src/arlogi/otel/decorator.py": {
-    "mtime": 1786300284.2602687,
-    "ast_hash": "8632dd0fd08fdd730ca56f30caacfeac",
-    "semantic_hash": ""
-  },
-  "src/arlogi/otel/exporters.py": {
-    "mtime": 1786259881.9407241,
-    "ast_hash": "42c12e4b4fe7a08344d3c714aa877c7b",
-    "semantic_hash": ""
-  },
-  "tests/conftest.py": {
-    "mtime": 1786266908.2263875,
-    "ast_hash": "b4645778ed134ff6cbf20df03e372b28",
-    "semantic_hash": ""
-  },
-  "tests/test_otel_bootstrap.py": {
-    "mtime": 1786267203.147245,
-    "ast_hash": "59ad48a3f7118d21697a06223838e9a8",
-    "semantic_hash": ""
-  },
-  "tests/test_otel_decorator.py": {
-    "mtime": 1786300317.7171843,
-    "ast_hash": "c114010c390a282b200aa5625e46265f",
-    "semantic_hash": ""
-  },
-  "tests/test_otel_exporter.py": {
-    "mtime": 1786259881.9412143,
-    "ast_hash": "d3344a7340cb6cea6eaea24fd2ebf797",
-    "semantic_hash": ""
-  },
-  "tests/test_otel_metrics.py": {
-    "mtime": 1786267203.150539,
-    "ast_hash": "e6dec219762a0a8fe5f283417f98f578",
-    "semantic_hash": ""
-  },
-  "CHANGELOG.md": {
-    "mtime": 1786268180.6061869,
-    "ast_hash": "9387e8659eabd52b2c54669c1d94d3e1",
-    "semantic_hash": ""
-  },
-  "docs/superpowers/plans/2026-08-09-traced-v2.md": {
-    "mtime": 1786299528.537927,
-    "ast_hash": "e0f4b30d37430215dc89dfe535587404",
-    "semantic_hash": ""
-  },
-  "docs/superpowers/specs/2026-08-09-traced-v2-design.md": {
-    "mtime": 1786298663.1726315,
-    "ast_hash": "1c6a4b4cbea70a746b7adfe4e9da9a82",
     "semantic_hash": ""
   }
 }
