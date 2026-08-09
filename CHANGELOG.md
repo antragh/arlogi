@@ -1,3 +1,10 @@
+## v0.610.0 (2026-08-09)
+
+### Feat
+
+- **otel**: bound OTLP export time with an otlp_timeout parameter
+- **otel**: add shutdown_tracing()/shutdown_metrics() for clean re-init
+
 ## v0.609.0 (2026-08-09)
 
 ### Feat
