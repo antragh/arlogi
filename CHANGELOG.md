@@ -1,3 +1,9 @@
+## v0.611.1 (2026-08-11)
+
+### Fix
+
+- **ci**: bump pypa/gh-action-pypi-publish to v1.14.2
+
 ## v0.611.0 (2026-08-09)
 
 ### Feat
