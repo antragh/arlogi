@@ -1,6 +1,7 @@
 """Rotating JSONL file writer shared by the span and metric exporters."""
 
 import logging
+import threading
 import time
 from datetime import datetime
 from pathlib import Path
@@ -26,6 +27,7 @@ class _RotatingJsonlWriter:
         self._stream: IO[str] | None = None
         self._opened_at = 0.0
         self._broken = False
+        self._lock = threading.Lock()
 
     def _now(self) -> float:
         """Test seam, mirroring JSONFileHandler._now_local."""
@@ -34,17 +36,23 @@ class _RotatingJsonlWriter:
     def write_line(self, line: str) -> bool:
         if self._broken:
             return False
-        try:
-            if self._stream is None or self._stream.closed or self._now() - self._opened_at >= self._rotate_seconds:
-                self._open_new_file()
-            assert self._stream is not None
-            self._stream.write(line + "\n")
-            self._stream.flush()
-            return True
-        except OSError as exc:
-            self._broken = True
-            logger.warning("Telemetry file writer disabled after I/O error: %s", exc)
-            return False
+        with self._lock:
+            if self._broken:
+                return False
+            try:
+                if self._stream is None or self._stream.closed or self._now() - self._opened_at >= self._rotate_seconds:
+                    self._open_new_file()
+                if self._stream is None:
+                    self._broken = True
+                    logger.warning("Telemetry file writer stream is None after opening file")
+                    return False
+                self._stream.write(line + "\n")
+                self._stream.flush()
+                return True
+            except OSError as exc:
+                self._broken = True
+                logger.warning("Telemetry file writer disabled after I/O error: %s", exc)
+                return False
 
     def _open_new_file(self) -> None:
         if self._stream is not None and not self._stream.closed:
@@ -73,9 +81,10 @@ class _RotatingJsonlWriter:
                 continue  # pruning failures must never break telemetry
 
     def close(self) -> None:
-        if self._stream is not None and not self._stream.closed:
-            try:
-                self._stream.close()
-            except OSError:
-                pass
-        self._stream = None
+        with self._lock:
+            if self._stream is not None and not self._stream.closed:
+                try:
+                    self._stream.close()
+                except OSError:
+                    pass
+            self._stream = None

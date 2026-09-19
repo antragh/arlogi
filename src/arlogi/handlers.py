@@ -559,18 +559,42 @@ class ArlogiSyslogHandler(logging.handlers.SysLogHandler):
             facility: Syslog facility (default: LOG_USER)
             socktype: Socket type (SOCK_STREAM or SOCK_DGRAM)
         """
+        self._failed = False
+        target_address = address
+        # Proactively check /dev/log so systems without it fall back to localhost:514
+        if address == "/dev/log" and not os.path.exists("/dev/log"):
+            target_address = ("localhost", 514)
+
         try:
-            super().__init__(address=address, facility=facility, socktype=socktype)
+            super().__init__(address=target_address, facility=facility, socktype=socktype)
             self.setFormatter(logging.Formatter("%(name)s[%(process)d]: %(levelname)s: %(message)s"))
         except Exception as e:
-            # Fallback for systems without /dev/log (e.g., macOS or some containers)
             if address == "/dev/log":
-                # Try UDP on localhost as a last resort
-                try:
-                    super().__init__(address=("localhost", 514), facility=facility, socktype=socktype)
-                except Exception:
-                    # If everything fails, silently continue - don't crash
-                    # the application just because logging setup failed
-                    pass
+                if target_address != ("localhost", 514):
+                    try:
+                        super().__init__(address=("localhost", 514), facility=facility, socktype=socktype)
+                        self.setFormatter(logging.Formatter("%(name)s[%(process)d]: %(levelname)s: %(message)s"))
+                        return
+                    except Exception:
+                        pass
+                logging.Handler.__init__(self)
+                self._failed = True
             else:
                 raise e
+
+    def emit(self, record: logging.LogRecord) -> None:
+        """Emit a record, silently dropping it if syslog is unavailable."""
+        if getattr(self, "_failed", False):
+            return
+        try:
+            super().emit(record)
+        except Exception:
+            self._failed = True
+
+    def close(self) -> None:
+        """Close the handler safely even if initialization failed."""
+        if getattr(self, "_failed", False):
+            logging.Handler.close(self)
+            return
+        super().close()
+

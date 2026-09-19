@@ -10,6 +10,7 @@ import tempfile
 import threading
 import time
 from concurrent.futures import ThreadPoolExecutor, as_completed
+from unittest.mock import patch
 
 from arlogi import (
     get_json_logger,
@@ -69,6 +70,29 @@ class TestConcurrentInitialization:
 
         # Should have initialized
         assert LoggerFactory._initialized, "LoggerFactory should be initialized"
+
+    def test_concurrent_get_logger_calls_setup_once(self):
+        """Verify that double-checked locking calls setup exactly once across concurrent threads."""
+        setup_calls = 0
+        original_setup = LoggerFactory.setup
+
+        def wrapped_setup(*args, **kwargs):
+            nonlocal setup_calls
+            time.sleep(0.01)  # Expand window to expose race if lock missing
+            setup_calls += 1
+            original_setup(*args, **kwargs)
+
+        LoggerFactory._initialized = False
+        try:
+            with patch.object(LoggerFactory, "setup", side_effect=wrapped_setup):
+                with ThreadPoolExecutor(max_workers=30) as executor:
+                    futures = [executor.submit(LoggerFactory.get_logger, f"test_race_{i}") for i in range(60)]
+                    for future in as_completed(futures):
+                        future.result()
+            assert setup_calls == 1, f"setup was called {setup_calls} times instead of 1"
+        finally:
+            LoggerFactory._initialized = True
+
 
     def test_concurrent_get_global_logger(self):
         """Test that concurrent get_global_logger() calls are thread-safe."""

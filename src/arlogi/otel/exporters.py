@@ -1,6 +1,7 @@
 """File-based OTLP exporters."""
 
 import json
+import logging
 from collections.abc import Sequence
 from pathlib import Path
 
@@ -13,6 +14,8 @@ from opentelemetry.sdk.trace.export import SpanExporter, SpanExportResult
 
 from arlogi.otel._encode import b64_ids_to_hex
 from arlogi.otel._files import _RotatingJsonlWriter
+
+logger = logging.getLogger(__name__)
 
 
 class RotatingJsonlSpanExporter(SpanExporter):
@@ -30,7 +33,8 @@ class RotatingJsonlSpanExporter(SpanExporter):
     def export(self, spans: Sequence[ReadableSpan]) -> SpanExportResult:
         try:
             payload = MessageToDict(encode_spans(spans))
-        except Exception:
+        except Exception as exc:
+            logger.warning("Failed to encode telemetry spans: %s", exc, exc_info=True)
             return SpanExportResult.FAILURE
         b64_ids_to_hex(payload)
         ok = self._writer.write_line(json.dumps(payload, separators=(",", ":")))
@@ -62,7 +66,8 @@ class RotatingJsonlMetricExporter(MetricExporter):
     def export(self, metrics_data: MetricsData, timeout_millis: float = 10_000, **kwargs: object) -> MetricExportResult:
         try:
             payload = MessageToDict(encode_metrics(metrics_data))
-        except Exception:
+        except Exception as exc:
+            logger.warning("Failed to encode telemetry metrics: %s", exc, exc_info=True)
             return MetricExportResult.FAILURE
         b64_ids_to_hex(payload)
         ok = self._writer.write_line(json.dumps(payload, separators=(",", ":")))

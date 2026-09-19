@@ -1,15 +1,18 @@
-"""Tests for arlogi.otel.exporters.RotatingJsonlSpanExporter."""
-
 import json
+import logging
+from concurrent.futures import ThreadPoolExecutor, as_completed
+from unittest.mock import MagicMock, patch
 
 import pytest
 
 pytest.importorskip("opentelemetry")
 
+from opentelemetry.sdk.metrics.export import MetricExportResult
 from opentelemetry.sdk.trace import TracerProvider
-from opentelemetry.sdk.trace.export import SimpleSpanProcessor
+from opentelemetry.sdk.trace.export import SimpleSpanProcessor, SpanExportResult
 
-from arlogi.otel import RotatingJsonlSpanExporter
+from arlogi.otel import RotatingJsonlMetricExporter, RotatingJsonlSpanExporter
+from arlogi.otel._files import _RotatingJsonlWriter
 
 
 def _provider_with(exporter):
@@ -128,3 +131,66 @@ def test_io_error_degrades_to_noop_without_raising(tmp_path):
         pass
     provider.force_flush()  # must not raise
     provider.shutdown()  # must not raise
+
+
+def test_concurrent_writes_thread_safe(tmp_path):
+    """Multiple threads concurrently writing to the writer must produce clean, non-corrupted jsonl."""
+    writer = _RotatingJsonlWriter(tmp_path, prefix="concurrent", rotate_hours=24, retention_count=10)
+    lines_per_thread = 50
+    thread_count = 20
+
+    def worker(worker_id: int):
+        for i in range(lines_per_thread):
+            line = json.dumps({"worker": worker_id, "seq": i})
+            assert writer.write_line(line) is True
+
+    with ThreadPoolExecutor(max_workers=thread_count) as executor:
+        futures = [executor.submit(worker, tid) for tid in range(thread_count)]
+        for f in as_completed(futures):
+            f.result()
+
+    writer.close()
+
+    files = list(tmp_path.glob("concurrent-*.jsonl"))
+    assert len(files) >= 1
+    total_lines = 0
+    for f in files:
+        for line in f.read_text(encoding="utf-8").strip().splitlines():
+            data = json.loads(line)
+            assert "worker" in data
+            total_lines += 1
+
+    assert total_lines == thread_count * lines_per_thread
+
+
+def test_writer_stream_none_handled_gracefully(tmp_path):
+    """If _stream is None after opening attempt, writer safely marks broken without assert error."""
+    writer = _RotatingJsonlWriter(tmp_path, prefix="none_test", rotate_hours=24, retention_count=10)
+    # Patch _open_new_file to be a no-op so _stream remains None
+    with patch.object(writer, "_open_new_file", return_value=None):
+        ok = writer.write_line('{"msg": "test"}')
+        assert ok is False
+        assert writer._broken is True
+
+
+def test_span_exporter_logs_warning_on_encode_failure(tmp_path, caplog):
+    """SpanExporter logs warning with exc_info when span encoding fails."""
+    exporter = RotatingJsonlSpanExporter(tmp_path, prefix="test")
+    span = MagicMock()
+    with patch("arlogi.otel.exporters.encode_spans", side_effect=ValueError("Invalid span data")):
+        with caplog.at_level(logging.WARNING):
+            result = exporter.export([span])
+            assert result == SpanExportResult.FAILURE
+            assert any("Failed to encode telemetry spans" in record.message for record in caplog.records)
+
+
+def test_metric_exporter_logs_warning_on_encode_failure(tmp_path, caplog):
+    """MetricExporter logs warning with exc_info when metric encoding fails."""
+    exporter = RotatingJsonlMetricExporter(tmp_path, prefix="test")
+    metrics_data = MagicMock()
+    with patch("arlogi.otel.exporters.encode_metrics", side_effect=ValueError("Invalid metric data")):
+        with caplog.at_level(logging.WARNING):
+            result = exporter.export(metrics_data)
+            assert result == MetricExportResult.FAILURE
+            assert any("Failed to encode telemetry metrics" in record.message for record in caplog.records)
+

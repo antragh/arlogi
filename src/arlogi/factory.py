@@ -6,6 +6,7 @@ and caller attribution features.
 """
 
 import logging
+import threading
 from typing import Any
 
 from .config import LoggingConfig, get_default_level, is_test_mode
@@ -171,6 +172,7 @@ class LoggerFactory:
 
     _initialized = False
     _global_logger: TraceLogger | None = None
+    _init_lock = threading.RLock()
 
     @classmethod
     def setup(
@@ -205,20 +207,21 @@ class LoggerFactory:
             show_level: Show log levels in console output
             show_path: Show file paths in console output
         """
-        config = LoggingConfig.from_kwargs(
-            level=level,
-            module_levels=module_levels,
-            json_file_name=json_file_name,
-            json_file_only=json_file_only,
-            use_syslog=use_syslog,
-            syslog_address=syslog_address,
-            rotate_schedule=rotate_schedule,
-            rotate_retention_count=rotate_retention_count,
-            show_time=show_time,
-            show_level=show_level,
-            show_path=show_path,
-        )
-        cls._apply_configuration(config)
+        with cls._init_lock:
+            config = LoggingConfig.from_kwargs(
+                level=level,
+                module_levels=module_levels,
+                json_file_name=json_file_name,
+                json_file_only=json_file_only,
+                use_syslog=use_syslog,
+                syslog_address=syslog_address,
+                rotate_schedule=rotate_schedule,
+                rotate_retention_count=rotate_retention_count,
+                show_time=show_time,
+                show_level=show_level,
+                show_path=show_path,
+            )
+            cls._apply_configuration(config)
 
     @classmethod
     def _apply_configuration(cls, config: LoggingConfig) -> None:
@@ -308,7 +311,9 @@ class LoggerFactory:
             A logger instance supporting caller attribution
         """
         if not cls._initialized:
-            cls.setup(level=get_default_level())
+            with cls._init_lock:
+                if not cls._initialized:
+                    cls.setup(level=get_default_level())
 
         logger = logging.getLogger(name)
         if level is not None:
@@ -416,7 +421,9 @@ class LoggerFactory:
             The global application logger instance
         """
         if cls._global_logger is None:
-            cls._global_logger = cls.get_logger("app")  # type: ignore
+            with cls._init_lock:
+                if cls._global_logger is None:
+                    cls._global_logger = cls.get_logger("app")  # type: ignore
         return cls._global_logger  # type: ignore
 
 

@@ -183,6 +183,32 @@ class TestSyslogLoggerAndCleanupCoverage:
         with pytest.raises(OSError):
             ArlogiSyslogHandler(address=("invalid_host_that_does_not_exist_9999", 99999))
 
+    def test_arlogi_syslog_handler_all_fallback_fails(self):
+        # When both /dev/log and localhost fail, handler should degrade gracefully without crashing
+        with patch("logging.handlers.SysLogHandler.__init__", side_effect=OSError("Network down")):
+            handler = ArlogiSyslogHandler(address="/dev/log")
+            assert handler._failed is True
+            record = logging.LogRecord("test", logging.INFO, "test.py", 1, "test msg", (), None)
+            handler.emit(record)
+            handler.close()
+
+    def test_arlogi_syslog_handler_emit_exception_marks_failed(self):
+        handler = ArlogiSyslogHandler(address="/nonexistent_socket_path_12345")
+        record = logging.LogRecord("test", logging.INFO, "test.py", 1, "test msg", (), None)
+        with patch.object(logging.handlers.SysLogHandler, "emit", side_effect=OSError("Socket closed")):
+            handler.emit(record)
+            assert handler._failed is True
+            # Subsequent emit is a no-op
+            handler.emit(record)
+
+    def test_arlogi_syslog_handler_dev_log_exists_but_fails(self):
+        with patch("os.path.exists", return_value=True):
+            with patch("logging.handlers.SysLogHandler.__init__", side_effect=[OSError("Connection refused"), None]):
+                handler = ArlogiSyslogHandler(address="/dev/log")
+                assert handler._failed is False
+
+
+
 
 class TestHandlersCoverageEdgeCases:
     """Test ColoredConsoleHandler and JSONFileHandler edge cases."""
