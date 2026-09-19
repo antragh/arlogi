@@ -1,3 +1,9 @@
+## v0.611.2 (2026-09-19)
+
+### Fix
+
+- **core,otel**: address audit findings 1-5 for thread safety and syslog fallback
+
 ## v0.611.1 (2026-08-11)
 
 ### Fix
