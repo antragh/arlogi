@@ -5,6 +5,7 @@ exclude_docs: |
   scripts/*
   superpowers/*
   NotebookLM/*
+  rep/*
 theme:
   # name: "readthedocs"
   name: "material"
