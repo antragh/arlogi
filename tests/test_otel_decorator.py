@@ -14,8 +14,7 @@ from opentelemetry.sdk.trace.export import SimpleSpanProcessor
 from opentelemetry.sdk.trace.export.in_memory_span_exporter import InMemorySpanExporter
 from opentelemetry.trace import StatusCode
 
-from arlogi.otel import traced
-from arlogi.otel import set_trace_modules
+from arlogi.otel import set_trace_modules, traced
 
 
 @pytest.fixture

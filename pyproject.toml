@@ -8,7 +8,6 @@ authors = [
 ]
 requires-python = ">=3.13"
 dependencies = [
-    "graphifyy",
     "rich>=14.2.0",
 ]
 
@@ -25,6 +24,7 @@ build-backend = "hatchling.build"
 [dependency-groups]
 dev = [
     "commitizen>=4.0.0",
+    "graphifyy",
     "pytest>=9.0.2",
     "pytest-cov>=7.0.0",
     "radon>=6.0.1",

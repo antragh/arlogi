@@ -13,10 +13,9 @@ wheels = [
 
 [[package]]
 name = "arlogi"
-version = "0.611.0"
+version = "0.611.2"
 source = { editable = "." }
 dependencies = [
-    { name = "graphifyy" },
     { name = "rich" },
 ]
 
@@ -29,6 +28,7 @@ otel = [
 [package.dev-dependencies]
 dev = [
     { name = "commitizen" },
+    { name = "graphifyy" },
     { name = "mkdocs-git-revision-date-localized-plugin" },
     { name = "mkdocs-material" },
     { name = "mkdocs-minify-plugin" },
@@ -44,7 +44,6 @@ dev = [
 
 [package.metadata]
 requires-dist = [
-    { name = "graphifyy", git = "https://github.com/Graphify-Labs/graphify" },
     { name = "opentelemetry-exporter-otlp-proto-http", marker = "extra == 'otel'", specifier = ">=1.30.0" },
     { name = "opentelemetry-sdk", marker = "extra == 'otel'", specifier = ">=1.30.0" },
     { name = "rich", specifier = ">=14.2.0" },
@@ -54,6 +53,7 @@ provides-extras = ["otel"]
 [package.metadata.requires-dev]
 dev = [
     { name = "commitizen", specifier = ">=4.0.0" },
+    { name = "graphifyy", git = "https://github.com/Graphify-Labs/graphify" },
     { name = "mkdocs-git-revision-date-localized-plugin", specifier = ">=1.5.0" },
     { name = "mkdocs-material", specifier = ">=9.7.1" },
     { name = "mkdocs-minify-plugin", specifier = ">=0.8.0" },
