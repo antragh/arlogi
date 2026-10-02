@@ -1,3 +1,9 @@
+## v0.611.3 (2026-10-02)
+
+### Fix
+
+- **deps**: graphifyy is no longer a runtime dependency
+
 ## v0.611.2 (2026-09-19)
 
 ### Fix
