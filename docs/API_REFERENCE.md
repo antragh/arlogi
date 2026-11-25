@@ -1,6 +1,6 @@
 # Arlogi API Reference
 
-Complete API reference for the arlogi logging library v0.611.25.
+Complete API reference for the arlogi logging library v0.612.0.
 
 ---
 
@@ -720,6 +720,7 @@ All arlogi functions handle errors gracefully:
 
 | Version         | Changes                                                                                                                  |
 | --------------- | ------------------------------------------------------------------------------------------------------------------------ |
+| 0.612.0         | Syslog JSON format support, shared rotation helper, OTel/logging lifecycle hardening, Graphify removal, and docs/CI sync |
 | 0.611.25        | Security & lifecycle hardening: path confinement, JSON envelope key protection, OTel lifecycle/generator tracing, CI/sdist |
 | 0.609.0–0.611.3 | OpenTelemetry `arlogi[otel]` integration, `@traced` sync/async/generator tracing, rotating JSONL exporters, audit fixes  |
 | 0.606.22        | Rotation, syslog, and resource cleanup                                                                                   |

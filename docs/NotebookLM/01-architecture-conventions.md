@@ -277,7 +277,7 @@ MIT License - see [LICENSE](LICENSE) file for details.
 ```toml
 [project]
 name = "arlogi"
-version = "0.611.25"
+version = "0.612.0"
 description = "Robust, type-safe and highly configurable logging library for Python"
 readme = "README.md"
 authors = [

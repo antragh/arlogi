@@ -1,6 +1,6 @@
 # Arlogi Library Documentation
 
-**Version:** 0.611.25
+**Version:** 0.612.0
 
 **Python:** 3.13+
 
