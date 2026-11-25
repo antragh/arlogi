@@ -1,3 +1,16 @@
+## v0.611.25 (2026-11-25)
+
+### Fix
+
+- **core**: strictly confine JSON file paths within `json_file_base_dir`, fix elapsed-period archive naming, guard rotation I/O against `OSError`, make `JSONHandler.close()` lock-protected and idempotent, protect JSON envelope keys by nesting `extra` collisions, disable Rich markup by default in `ColoredConsoleHandler`, preserve caller `extra` mapping immutability, unify level parsing, and support `fatal()` / single-pass `exception()`
+- **lifecycle**: perform atomic root handler replacement with rollback on factory setup failure, export `LoggingConfigBuilder`, fix `LoggerFactory.setup()` defaults and keyword-only options, detach dedicated JSON/syslog loggers safely under lock, and fix monkey-patched `trace()` `stacklevel`
+- **otel**: bound prefix/retention validation and atomic `os.scandir()` pruning in rotating JSONL exporters, harden OTLP endpoint validation and lifecycle rollback, preserve external global providers, support full `send`/`throw`/`close` in `@traced` sync/async generators, and re-key `@traced` tracer cache per provider
+
+### Docs & CI
+
+- **ci,packaging**: add dedicated `ci.yml`, harden `publish.yml` and `deploy-docs.yml` permissions and tag/version verification, slim down source distributions (`sdist`), and split optional dependency groups (`test`, `docs`, `graph`, `dev`)
+- **docs**: add `arlogi.otel` MkDocs API reference pages, sync `README.md`, `index.md`, `API_REFERENCE.md`, `ARCHITECTURE.md`, `CONFIGURATION_GUIDE.md`, `USER_GUIDE.md`, and `DEVELOPER_GUIDE.md` with current behavior and v0.611.25
+
 ## v0.611.3 (2026-10-02)
 
 ### Fix
