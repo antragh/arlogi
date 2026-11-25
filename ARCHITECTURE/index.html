@@ -824,10 +824,10 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#planned-features" class="md-nav__link">
+  <a href="#implemented-planned-extensions" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Planned Features
+        Implemented &amp; Planned Extensions
       
     </span>
   </a>
@@ -1134,6 +1134,173 @@
   
 
       </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_8_8" >
+        
+          
+          <label class="md-nav__link" for="__nav_8_8" id="__nav_8_8_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    OpenTelemetry
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_8_8_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_8_8">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    OpenTelemetry
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../reference/arlogi/otel/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Overview
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../reference/arlogi/otel/bootstrap/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Bootstrap
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../reference/arlogi/otel/decorator/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Decorator
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../reference/arlogi/otel/exporters/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Exporters
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
     </li>
   
 
@@ -2020,10 +2187,10 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#planned-features" class="md-nav__link">
+  <a href="#implemented-planned-extensions" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Planned Features
+        Implemented &amp; Planned Extensions
       
     </span>
   </a>
@@ -2248,9 +2415,12 @@
         +int|str level
         +dict module_levels
         +str json_file_name
+        +str json_file_base_dir
         +bool json_file_only
         +bool use_syslog
         +str|tuple syslog_address
+        +str rotate_schedule
+        +int rotate_retention_count
         +bool show_time
         +bool show_level
         +bool show_path
@@ -2470,7 +2640,7 @@
 <h3 id="logging-call-flow">Logging Call Flow</h3>
 <pre class="mermaid"><code>graph TD
     A[logger.info] --&gt; B[_process_params]
-    B --&gt; C{from_ set?}
+    B --&gt; C{caller_depth set?}
     C --&gt;|Yes| D[_get_caller_info]
     C --&gt;|No| E[Skip attribution]
     D --&gt; F[Build attribution string]
@@ -2562,7 +2732,7 @@
 </tr>
 </tbody>
 </table>
-<p><strong>Optimization Tip:</strong> Use <code>from_</code> only in development/debug builds.</p>
+<p><strong>Optimization Tip:</strong> Use <code>caller_depth</code> only in development/debug builds.</p>
 <h3 id="memory-usage">Memory Usage</h3>
 <table>
 <thead>
@@ -2636,12 +2806,9 @@
 <h2 id="testing-strategy">Testing Strategy</h2>
 <h3 id="test-mode-detection">Test Mode Detection</h3>
 <div class="language-python highlight"><pre><span></span><code><span id="__span-8-1"><a id="__codelineno-8-1" name="__codelineno-8-1" href="#__codelineno-8-1"></a><span class="k">def</span><span class="w"> </span><span class="nf">is_test_mode</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
-</span><span id="__span-8-2"><a id="__codelineno-8-2" name="__codelineno-8-2" href="#__codelineno-8-2"></a>    <span class="k">return</span> <span class="p">(</span>
-</span><span id="__span-8-3"><a id="__codelineno-8-3" name="__codelineno-8-3" href="#__codelineno-8-3"></a>        <span class="s2">&quot;pytest&quot;</span> <span class="ow">in</span> <span class="n">sys</span><span class="o">.</span><span class="n">modules</span>
-</span><span id="__span-8-4"><a id="__codelineno-8-4" name="__codelineno-8-4" href="#__codelineno-8-4"></a>        <span class="ow">or</span> <span class="s2">&quot;unittest&quot;</span> <span class="ow">in</span> <span class="n">sys</span><span class="o">.</span><span class="n">modules</span>
-</span><span id="__span-8-5"><a id="__codelineno-8-5" name="__codelineno-8-5" href="#__codelineno-8-5"></a>        <span class="ow">or</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;PYTEST_CURRENT_TEST&quot;</span><span class="p">)</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
-</span><span id="__span-8-6"><a id="__codelineno-8-6" name="__codelineno-8-6" href="#__codelineno-8-6"></a>    <span class="p">)</span>
+</span><span id="__span-8-2"><a id="__codelineno-8-2" name="__codelineno-8-2" href="#__codelineno-8-2"></a>    <span class="k">return</span> <span class="s2">&quot;pytest&quot;</span> <span class="ow">in</span> <span class="n">sys</span><span class="o">.</span><span class="n">modules</span> <span class="ow">or</span> <span class="s2">&quot;unittest&quot;</span> <span class="ow">in</span> <span class="n">sys</span><span class="o">.</span><span class="n">modules</span>
 </span></code></pre></div>
+<p><code>PYTEST_CURRENT_TEST</code> is intentionally ignored so externally controlled environment variables cannot suppress handlers in production processes.</p>
 <p>In test mode:</p>
 <ul>
 <li>Default level is DEBUG (not INFO)</li>
@@ -2665,31 +2832,21 @@
 <td>Supported</td>
 </tr>
 <tr>
-<td>3.12</td>
-<td>0.512+</td>
-<td>Supported (with uv)</td>
-</tr>
-<tr>
-<td>3.11</td>
-<td>0.512+</td>
-<td>Supported (with uv)</td>
-</tr>
-<tr>
-<td>&lt;3.11</td>
+<td>&lt;3.13</td>
 <td>-</td>
-<td>Not supported</td>
+<td>Not supported (requires Python 3.13+)</td>
 </tr>
 </tbody>
 </table>
 <hr />
 <h2 id="future-enhancements">Future Enhancements</h2>
-<h3 id="planned-features">Planned Features</h3>
+<h3 id="implemented-planned-extensions">Implemented &amp; Planned Extensions</h3>
 <ol>
-<li><strong>Async Handlers</strong> - AsyncIO-compatible log handlers</li>
-<li><strong>Log Rotation</strong> - Built-in rotation for JSON files</li>
-<li><strong>Filter Support</strong> - Per-handler log filtering</li>
-<li><strong>Context Injection</strong> - Automatic request/context IDs</li>
-<li><strong>Metrics Integration</strong> - OpenTelemetry integration</li>
+<li><strong>Async Handlers</strong> - AsyncIO-compatible log handlers (planned)</li>
+<li><strong>Log Rotation</strong> - Built-in schedule-based rotation and retention pruning in <code>JSONFileHandler</code> (implemented)</li>
+<li><strong>Filter Support</strong> - Per-handler log filtering (planned)</li>
+<li><strong>Context Injection</strong> - Automatic OpenTelemetry <code>trace_id</code>/<code>span_id</code> log correlation via <code>install_log_correlation()</code> (implemented)</li>
+<li><strong>OpenTelemetry Integration</strong> - Optional <code>arlogi[otel]</code> (<code>arlogi.otel</code>) with lazy SDK loading, <code>@traced</code>, tracing/metrics bootstrap, and rotating JSONL exporters (implemented)</li>
 </ol>
 <h3 id="extension-points">Extension Points</h3>
 <ul>

@@ -947,6 +947,173 @@
 
               
             
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_8_8" >
+        
+          
+          <label class="md-nav__link" for="__nav_8_8" id="__nav_8_8_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    OpenTelemetry
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_8_8_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_8_8">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    OpenTelemetry
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="reference/arlogi/otel/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Overview
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="reference/arlogi/otel/bootstrap/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Bootstrap
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="reference/arlogi/otel/decorator/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Decorator
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="reference/arlogi/otel/exporters/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Exporters
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
           </ul>
         </nav>
       
@@ -1693,7 +1860,7 @@
 
 
 <h1 id="arlogi-library-documentation">Arlogi Library Documentation</h1>
-<p><strong>Version:</strong> 0.606.22</p>
+<p><strong>Version:</strong> 0.611.25</p>
 <p><strong>Python:</strong> 3.13+</p>
 <p><strong>License:</strong> MIT</p>
 <p>Comprehensive documentation for the arlogi logging library - a robust, type-safe, and highly configurable logging solution for Python applications.</p>
@@ -1708,6 +1875,7 @@
 <li><strong>🧪 Test-Aware</strong>: Automatic test mode detection for seamless pytest integration</li>
 <li><strong>🔌 Multiple Handlers</strong>: Console, JSON file, and Syslog support</li>
 <li><strong>🏗️ Modular Handlers</strong>: Dedicated JSON-only and syslog-only loggers</li>
+<li><strong>📡 OpenTelemetry Integration (Optional)</strong>: Lazy-loaded <code>arlogi[otel]</code> (<code>@traced</code> decorator, tracing/metrics bootstrap, automatic <code>trace_id</code>/<code>span_id</code> log correlation, and rotating JSONL exporters)</li>
 </ul>
 <hr />
 <h2 id="quick-start">Quick Start</h2>
@@ -1810,7 +1978,17 @@
 <li>Handler classes</li>
 <li>Log levels</li>
 <li>Type hints</li>
-<li>Examples</li>
+<li>
+<p>Examples</p>
+</li>
+<li>
+<p><strong><a href="reference/arlogi/otel/">OpenTelemetry Reference</a></strong></p>
+</li>
+<li>
+<p>Tracing and metrics bootstrap</p>
+</li>
+<li><code>@traced</code> decorator for sync, async, and generators</li>
+<li>Rotating JSONL span and metric exporters</li>
 </ol>
 <hr />
 <h2 id="key-features-by-category">Key Features by Category</h2>
@@ -2014,11 +2192,12 @@
 <ul>
 <li><strong>Python</strong>: 3.13 or higher</li>
 <li><strong>Dependencies</strong>: <code>rich</code> &gt;= 14.2.0 (automatically installed)</li>
+<li><strong>Optional Extras</strong>: <code>arlogi[otel]</code> (<code>opentelemetry-sdk</code> &gt;= 1.30.0, <code>opentelemetry-exporter-otlp-proto-http</code> &gt;= 1.30.0)</li>
 </ul>
 <hr />
 <h2 id="additional-resources">Additional Resources</h2>
 <ul>
-<li><strong>GitHub Issues</strong>: <a href="https://github.com/your-org/arlogi/issues">Report bugs and request features</a></li>
+<li><strong>GitHub Issues</strong>: <a href="https://github.com/antragh/arlogi/issues">Report bugs and request features</a></li>
 <li><strong>Changelog</strong>: Check project repository for version history</li>
 </ul>
 <hr />

@@ -828,6 +828,17 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#optional-opentelemetry-api-arlogiotel" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Optional OpenTelemetry API (arlogi.otel)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#type-hints" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -1206,6 +1217,173 @@
   
 
       </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_8_8" >
+        
+          
+          <label class="md-nav__link" for="__nav_8_8" id="__nav_8_8_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    OpenTelemetry
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_8_8_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_8_8">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    OpenTelemetry
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../reference/arlogi/otel/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Overview
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../reference/arlogi/otel/bootstrap/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Bootstrap
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../reference/arlogi/otel/decorator/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Decorator
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../reference/arlogi/otel/exporters/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Exporters
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
     </li>
   
 
@@ -2069,6 +2247,17 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#optional-opentelemetry-api-arlogiotel" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Optional OpenTelemetry API (arlogi.otel)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#type-hints" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -2219,7 +2408,7 @@
 
 
 <h1 id="arlogi-api-reference">Arlogi API Reference</h1>
-<p>Complete API reference for the arlogi logging library v0.606.22.</p>
+<p>Complete API reference for the arlogi logging library v0.611.25.</p>
 <hr />
 <h2 id="table-of-contents">Table of Contents</h2>
 <ul>
@@ -2271,6 +2460,12 @@
 <td><code>str \| None</code></td>
 <td><code>None</code></td>
 <td>JSON log file path</td>
+</tr>
+<tr>
+<td><code>json_file_base_dir</code></td>
+<td><code>str \| None</code></td>
+<td><code>None</code></td>
+<td>Optional base directory containment for <code>json_file_name</code></td>
 </tr>
 <tr>
 <td><code>json_file_only</code></td>
@@ -2997,7 +3192,7 @@
 </span><span id="__span-18-3"><a id="__codelineno-18-3" name="__codelineno-18-3" href="#__codelineno-18-3"></a><span class="k">if</span> <span class="n">is_test_mode</span><span class="p">():</span>
 </span><span id="__span-18-4"><a id="__codelineno-18-4" name="__codelineno-18-4" href="#__codelineno-18-4"></a>    <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Test mode detected&quot;</span><span class="p">)</span>
 </span></code></pre></div>
-<p><strong>Returns:</strong> <code>bool</code> - True if pytest, unittest, or PYTEST_CURRENT_TEST is detected</p>
+<p><strong>Returns:</strong> <code>bool</code> - True if <code>pytest</code> or <code>unittest</code> is loaded in <code>sys.modules</code> (<code>PYTEST_CURRENT_TEST</code> is intentionally ignored)</p>
 <hr />
 <h4 id="get_default_level"><code>get_default_level()</code></h4>
 <p>Get the default log level based on environment.</p>
@@ -3006,6 +3201,20 @@
 </span><span id="__span-19-3"><a id="__codelineno-19-3" name="__codelineno-19-3" href="#__codelineno-19-3"></a><span class="n">level</span> <span class="o">=</span> <span class="n">get_default_level</span><span class="p">()</span>  <span class="c1"># DEBUG in tests, INFO otherwise</span>
 </span></code></pre></div>
 <p><strong>Returns:</strong> <code>int</code> - <code>logging.DEBUG</code> if in test mode, <code>logging.INFO</code> otherwise</p>
+<hr />
+<h2 id="optional-opentelemetry-api-arlogiotel">Optional OpenTelemetry API (<code>arlogi.otel</code>)</h2>
+<p>When installed with <code>arlogi[otel]</code>, <code>arlogi.otel</code> exports:</p>
+<ul>
+<li><code>setup_tracing(service_name, service_version=None, *, file_dir, file_prefix="traces", rotate_hours=24, retention_count=20, otlp_endpoint=None, otlp_timeout=5) -&gt; TracerProvider</code></li>
+<li><code>shutdown_tracing() -&gt; None</code></li>
+<li><code>setup_metrics(service_name, service_version=None, *, file_dir, file_prefix="metrics", rotate_hours=24, retention_count=20, otlp_endpoint=None, otlp_timeout=5, export_interval_millis=60_000) -&gt; MeterProvider</code></li>
+<li><code>shutdown_metrics() -&gt; None</code></li>
+<li><code>install_log_correlation() -&gt; None</code></li>
+<li><code>set_trace_modules(rules: dict[str, bool] | None) -&gt; None</code></li>
+<li><code>traced</code> (sync, async, sync generator, and async generator decorator; <code>opentelemetry-api</code>-only)</li>
+<li><code>RotatingJsonlSpanExporter</code> / <code>RotatingJsonlMetricExporter</code></li>
+</ul>
+<p>Bare <code>import arlogi.otel</code> and <code>import arlogi.otel.decorator</code> never eagerly import <code>opentelemetry.sdk</code>.</p>
 <hr />
 <h2 id="type-hints">Type Hints</h2>
 <h3 id="loggerprotocol_1">LoggerProtocol</h3>
@@ -3101,8 +3310,16 @@
 </thead>
 <tbody>
 <tr>
+<td>0.611.25</td>
+<td>Security &amp; lifecycle hardening: path confinement, JSON envelope key protection, OTel lifecycle/generator tracing, CI/sdist</td>
+</tr>
+<tr>
+<td>0.609.0–0.611.3</td>
+<td>OpenTelemetry <code>arlogi[otel]</code> integration, <code>@traced</code> sync/async/generator tracing, rotating JSONL exporters, audit fixes</td>
+</tr>
+<tr>
 <td>0.606.22</td>
-<td>Current stable version: rotation, syslog, and resource cleanup</td>
+<td>Rotation, syslog, and resource cleanup</td>
 </tr>
 <tr>
 <td>0.601.04</td>
