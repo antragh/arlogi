@@ -1,3 +1,9 @@
+## v0.612.0 (2026-11-25)
+
+### Feat
+
+- add syslog JSON format, harden logging/OTel lifecycle, and sync docs
+
 ## v0.611.25 (2026-11-25)
 
 ### Fix

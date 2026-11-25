@@ -13,7 +13,7 @@ wheels = [
 
 [[package]]
 name = "arlogi"
-version = "0.611.25"
+version = "0.612.0"
 source = { editable = "." }
 dependencies = [
     { name = "rich" },
