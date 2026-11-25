@@ -1,6 +1,6 @@
 # Arlogi API Reference
 
-Complete API reference for the arlogi logging library v0.606.22.
+Complete API reference for the arlogi logging library v0.611.25.
 
 ---
 
@@ -623,14 +623,16 @@ All arlogi functions handle errors gracefully:
 
 ## Version History
 
-| Version  | Changes                                                           |
-| -------- | ----------------------------------------------------------------- |
-| 0.606.22 | Current stable version: rotation, syslog, and resource cleanup    |
-| 0.601.04 | Enhanced resource cleanup, improved test mode detection          |
-| 0.601.00 | Added cleanup_json_logger, cleanup_syslog_logger                 |
-| 0.512.28 | Added LoggingConfig, HandlerFactory, reduced complexity           |
-| 0.512.20 | Initial caller attribution support                               |
-| 0.512.0  | First stable release                                              |
+| Version         | Changes                                                                                                                  |
+| --------------- | ------------------------------------------------------------------------------------------------------------------------ |
+| 0.611.25        | Security & lifecycle hardening: path confinement, JSON envelope key protection, OTel lifecycle/generator tracing, CI/sdist |
+| 0.609.0–0.611.3 | OpenTelemetry `arlogi[otel]` integration, `@traced` sync/async/generator tracing, rotating JSONL exporters, audit fixes  |
+| 0.606.22        | Rotation, syslog, and resource cleanup                                                                                   |
+| 0.601.04        | Enhanced resource cleanup, improved test mode detection                                                                  |
+| 0.601.00        | Added cleanup_json_logger, cleanup_syslog_logger                                                                         |
+| 0.512.28        | Added LoggingConfig, HandlerFactory, reduced complexity                                                                  |
+| 0.512.20        | Initial caller attribution support                                                                                       |
+| 0.512.0         | First stable release                                                                                                     |
 
 ---
 

@@ -18,7 +18,7 @@ wheels/
 .env.secrets
 
 # Custom ignores
-.agebt/
+.agents/
 .claude/
 docs/.Notes/
 docs/_Notes_/

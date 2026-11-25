@@ -1,6 +1,6 @@
 # Arlogi Library Documentation
 
-**Version:** 0.606.22
+**Version:** 0.611.25
 
 **Python:** 3.13+
 
@@ -20,6 +20,7 @@ Comprehensive documentation for the arlogi logging library - a robust, type-safe
 - **🧪 Test-Aware**: Automatic test mode detection for seamless pytest integration
 - **🔌 Multiple Handlers**: Console, JSON file, and Syslog support
 - **🏗️ Modular Handlers**: Dedicated JSON-only and syslog-only loggers
+- **📡 OpenTelemetry Integration (Optional)**: Lazy-loaded `arlogi[otel]` (`@traced` decorator, tracing/metrics bootstrap, automatic `trace_id`/`span_id` log correlation, and rotating JSONL exporters)
 
 ---
 
@@ -112,6 +113,12 @@ INFO    Hello, Arlogi!        [module()]
    - Log levels
    - Type hints
    - Examples
+
+7. **[OpenTelemetry Reference](reference/arlogi/otel/index.md)**
+
+   - Tracing and metrics bootstrap
+   - `@traced` decorator for sync, async, and generators
+   - Rotating JSONL span and metric exporters
 
 ---
 
@@ -237,12 +244,13 @@ No special configuration needed!
 
 - **Python**: 3.13 or higher
 - **Dependencies**: `rich` >= 14.2.0 (automatically installed)
+- **Optional Extras**: `arlogi[otel]` (`opentelemetry-sdk` >= 1.30.0, `opentelemetry-exporter-otlp-proto-http` >= 1.30.0)
 
 ---
 
 ## Additional Resources
 
-- **GitHub Issues**: [Report bugs and request features](https://github.com/your-org/arlogi/issues)
+- **GitHub Issues**: [Report bugs and request features](https://github.com/antragh/arlogi/issues)
 - **Changelog**: Check project repository for version history
 
 ---

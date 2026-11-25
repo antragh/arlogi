@@ -1,42 +1,42 @@
 {
   "pyproject.toml": {
-    "mtime": 1786268180.613946,
-    "ast_hash": "4d5a795786ffe743e9941c22a20d333d",
+    "mtime": 1795547737.1285446,
+    "ast_hash": "071a0c4aeae8894ef55d07c6ff991daa",
     "semantic_hash": ""
   },
   "src/arlogi/__init__.py": {
-    "mtime": 1784632483.5927694,
-    "ast_hash": "d2690f312b7ce85b372f4e4397ece470",
+    "mtime": 1795545683.7197459,
+    "ast_hash": "7c24804faf16361a06e8dd9a71241ea4",
     "semantic_hash": ""
   },
   "src/arlogi/config.py": {
-    "mtime": 1784980740.8036304,
-    "ast_hash": "032f8c7aa91489802f71b6943024a363",
+    "mtime": 1795545600.6933722,
+    "ast_hash": "2feaa35bf62b65d7ca9e5a405c678883",
     "semantic_hash": ""
   },
   "src/arlogi/config_builder.py": {
-    "mtime": 1784980740.8035355,
-    "ast_hash": "d4cc6faded279b9a8ce09989187acfc3",
+    "mtime": 1795545647.975327,
+    "ast_hash": "b16b51e939eff7fa1264284701d54938",
     "semantic_hash": ""
   },
   "src/arlogi/factory.py": {
-    "mtime": 1784980740.80376,
-    "ast_hash": "024bea820f462b706fbb8d38fc157ff4",
+    "mtime": 1795576905.264315,
+    "ast_hash": "3e86e9f7191718fde9e6928a25bb2b8b",
     "semantic_hash": ""
   },
   "src/arlogi/handler_factory.py": {
-    "mtime": 1784980740.8035975,
-    "ast_hash": "98ba07ce29bef6ca80d359d48635df5b",
+    "mtime": 1795545895.6377988,
+    "ast_hash": "5bb78e59947928a9dbcf87ca5d3b8309",
     "semantic_hash": ""
   },
   "src/arlogi/handlers.py": {
-    "mtime": 1784980740.803749,
-    "ast_hash": "a45895aa767ce7358df49ad2e7d8da45",
+    "mtime": 1795576839.2079184,
+    "ast_hash": "82deb6e1a2dc55a3a6c0af01edb0608c",
     "semantic_hash": ""
   },
   "src/arlogi/levels.py": {
-    "mtime": 1784632483.5933945,
-    "ast_hash": "26eb21976ad7e0f663f4e12ca42600e4",
+    "mtime": 1795545862.0599136,
+    "ast_hash": "111002202a317d43a3c19bdcf2199644",
     "semantic_hash": ""
   },
   "src/arlogi/types.py": {
@@ -50,8 +50,8 @@
     "semantic_hash": ""
   },
   "tests/example/example.py": {
-    "mtime": 1784980740.803211,
-    "ast_hash": "6d5c8720f8c3caac1431bb666025f91e",
+    "mtime": 1795545691.7677894,
+    "ast_hash": "58371a56a1c0e5ae9a26c2be25ab3cde",
     "semantic_hash": ""
   },
   "tests/example/worker.py": {
@@ -60,38 +60,38 @@
     "semantic_hash": ""
   },
   "tests/test_core.py": {
-    "mtime": 1784980740.8033595,
-    "ast_hash": "4cf720b47e8de612895a40dfcae7760a",
+    "mtime": 1795576920.5999923,
+    "ast_hash": "9391ac5dc2e5ec68851527b1e8f976a6",
     "semantic_hash": ""
   },
   "tests/test_features.py": {
-    "mtime": 1784980740.8033023,
-    "ast_hash": "badaf2247877f705377fa0fac642f1b8",
+    "mtime": 1795576894.6740487,
+    "ast_hash": "c1b0107058d52c5e00d6f6a53330fcbb",
     "semantic_hash": ""
   },
   "tests/test_file_rotation.py": {
-    "mtime": 1784632483.594081,
-    "ast_hash": "dae629eaee6c99faeda4800fb86b06c9",
+    "mtime": 1795545823.7648613,
+    "ast_hash": "65820dd086582a67ff5d5df4a4b1f4f4",
     "semantic_hash": ""
   },
   "tests/test_resource_management.py": {
-    "mtime": 1784980740.8034441,
-    "ast_hash": "1fcf41c17a75e4bd4e776a51e4ad6f21",
+    "mtime": 1795546000.0274708,
+    "ast_hash": "812281bcdf3fe5f5f82ac90b1f9bc322",
     "semantic_hash": ""
   },
   "tests/test_rotation_config.py": {
-    "mtime": 1784632483.5942304,
-    "ast_hash": "a5d88237617a88ed054ec98dfae47715",
+    "mtime": 1795545649.5405848,
+    "ast_hash": "bb0c4a3d2d41062c28df5388f78570e0",
     "semantic_hash": ""
   },
   "tests/test_thread_safety.py": {
-    "mtime": 1784980740.8037403,
-    "ast_hash": "15cce838768928e962def29e78bad403",
+    "mtime": 1795546000.027583,
+    "ast_hash": "b56562c9d7d6046aded0b79c72332774",
     "semantic_hash": ""
   },
   ".github/workflows/deploy-docs.yml": {
-    "mtime": 1784632483.5854995,
-    "ast_hash": "db29a37d4635f18110ebdf5e0bf6ab05",
+    "mtime": 1795547744.9048016,
+    "ast_hash": "59272db9b2dd2fe71a6ca068b0c86b31",
     "semantic_hash": ""
   },
   ".markdownlint.yaml": {
@@ -105,18 +105,18 @@
     "semantic_hash": ""
   },
   "README.md": {
-    "mtime": 1786302021.807674,
-    "ast_hash": "869febd0c874d91b2b7311c603f61fc1",
+    "mtime": 1795547791.0713325,
+    "ast_hash": "9bded178137b9fcf83446e1d86f0fc56",
     "semantic_hash": ""
   },
   "docs/API_REFERENCE.md": {
-    "mtime": 1784979536.802416,
-    "ast_hash": "14b6cf6c19c78f2d769bbcc374e53c05",
+    "mtime": 1795577567.2355108,
+    "ast_hash": "8658139b8ab31560ba2307d31936a908",
     "semantic_hash": ""
   },
   "docs/ARCHITECTURE.md": {
-    "mtime": 1784979089.8449662,
-    "ast_hash": "3e4c7c28a9ed19877a8050939d3b0095",
+    "mtime": 1795577568.4725986,
+    "ast_hash": "9e09d43338e98810f5c01550303d171e",
     "semantic_hash": ""
   },
   "docs/C4-Documentation/README.md": {
@@ -195,23 +195,23 @@
     "semantic_hash": ""
   },
   "docs/CONFIGURATION_GUIDE.md": {
-    "mtime": 1784979551.8546515,
-    "ast_hash": "a01bd496385f5cb99e521c75b5c21d89",
+    "mtime": 1795547799.8412757,
+    "ast_hash": "6f00877a2790c7eb25a09d882f2e0d23",
     "semantic_hash": ""
   },
   "docs/DEVELOPER_GUIDE.md": {
-    "mtime": 1784978537.693048,
-    "ast_hash": "24584c6e8c9aaa1fc15d0b2211d96f14",
+    "mtime": 1795547853.450861,
+    "ast_hash": "b058b8e63d2fca430af98850693d25df",
     "semantic_hash": ""
   },
   "docs/USER_GUIDE.md": {
-    "mtime": 1784978506.411415,
-    "ast_hash": "50d1e344ea5df2692178e1c2b6f30ddf",
+    "mtime": 1795547849.5634902,
+    "ast_hash": "8a12e401a238cafa67e3e5239bf74726",
     "semantic_hash": ""
   },
   "docs/index.md": {
-    "mtime": 1784978407.8942695,
-    "ast_hash": "228b33d420087df44cbc3ee920d1d8b1",
+    "mtime": 1795577564.563906,
+    "ast_hash": "e0ff1eb2e6f0ad4fb911b13bfda546a3",
     "semantic_hash": ""
   },
   "docs/reference/arlogi/config.md": {
@@ -249,19 +249,9 @@
     "ast_hash": "8fad20dcb7a40e57fec68429605b28de",
     "semantic_hash": ""
   },
-  "docs/superpowers/plans/2026-06-10-file-logging-rotation-implementation-plan.md": {
-    "mtime": 1784632483.5893936,
-    "ast_hash": "ef29c04eaf9cfe701f71398cdc567923",
-    "semantic_hash": ""
-  },
-  "docs/superpowers/specs/2026-06-10-file-logging-rotation-design.md": {
-    "mtime": 1784632483.5895143,
-    "ast_hash": "93fd7626c573f7ff6c08dc010b2c22bb",
-    "semantic_hash": ""
-  },
   "mkdocs.yml": {
-    "mtime": 1784981663.3971965,
-    "ast_hash": "9a0dc9cef57b24b99595e984ce0c8754",
+    "mtime": 1795547906.3895416,
+    "ast_hash": "3899358105e651067f6ba69a852b8899",
     "semantic_hash": ""
   },
   "docs/logo.svg": {
@@ -270,8 +260,8 @@
     "semantic_hash": ""
   },
   "tests/test_coverage_boost.py": {
-    "mtime": 1784986728.8753912,
-    "ast_hash": "ee816618401aa380ef45f1231313122b",
+    "mtime": 1795546000.027586,
+    "ast_hash": "5639444d2af7d465978c96de0a9264fb",
     "semantic_hash": ""
   },
   "tests/test_relative_path.py": {
@@ -280,8 +270,8 @@
     "semantic_hash": ""
   },
   ".github/workflows/publish.yml": {
-    "mtime": 1786259881.9398735,
-    "ast_hash": "38e5337011a9a4a9deff28537b1161db",
+    "mtime": 1795547743.1054187,
+    "ast_hash": "43e3308399f8e0322a754ec0ce7d875c",
     "semantic_hash": ""
   },
   "docs/NotebookLM/01-architecture-conventions.md": {
@@ -309,16 +299,6 @@
     "ast_hash": "95fb8674a0e80fcdd647db322381d468",
     "semantic_hash": ""
   },
-  "docs/superpowers/plans/2026-07-25-publishing-workflow.md": {
-    "mtime": 1784988171.1530263,
-    "ast_hash": "5bc2e524cfc1b7f83acd7ffe179a414d",
-    "semantic_hash": ""
-  },
-  "docs/superpowers/specs/2026-07-25-publishing-workflow-design.md": {
-    "mtime": 1784988086.6072605,
-    "ast_hash": "2c16707745762c1a61e7080df3b211d5",
-    "semantic_hash": ""
-  },
   "src/arlogi/otel/__init__.py": {
     "mtime": 1786301995.8371744,
     "ast_hash": "514682d530c2ef339743e65c895874f5",
@@ -330,43 +310,43 @@
     "semantic_hash": ""
   },
   "src/arlogi/otel/_files.py": {
-    "mtime": 1786259881.9403324,
-    "ast_hash": "698de0693a40f6c7dc5723c17cddf64b",
+    "mtime": 1795547450.6832607,
+    "ast_hash": "8be1e51bb8599a825d698fd602f6d91c",
     "semantic_hash": ""
   },
   "src/arlogi/otel/bootstrap.py": {
-    "mtime": 1786267203.1435153,
-    "ast_hash": "0053aff0cc8353e5ea3d67bd30c67317",
+    "mtime": 1795576962.9139183,
+    "ast_hash": "a308ff6cf3a38025bcb2c14bcd09d16d",
     "semantic_hash": ""
   },
   "src/arlogi/otel/decorator.py": {
-    "mtime": 1786300284.2602687,
-    "ast_hash": "8632dd0fd08fdd730ca56f30caacfeac",
+    "mtime": 1795547360.726711,
+    "ast_hash": "5d1f2f7e611e2b0bd9843a94a3082dba",
     "semantic_hash": ""
   },
   "src/arlogi/otel/exporters.py": {
-    "mtime": 1786259881.9407241,
-    "ast_hash": "42c12e4b4fe7a08344d3c714aa877c7b",
+    "mtime": 1795154719.888963,
+    "ast_hash": "5bf07cb837a8c7b138d19a5e7adcdfd8",
     "semantic_hash": ""
   },
   "tests/conftest.py": {
-    "mtime": 1786266908.2263875,
-    "ast_hash": "b4645778ed134ff6cbf20df03e372b28",
+    "mtime": 1795547433.1453497,
+    "ast_hash": "70c86bfce630e88927f16b69880d63ae",
     "semantic_hash": ""
   },
   "tests/test_otel_bootstrap.py": {
-    "mtime": 1786267203.147245,
-    "ast_hash": "59ad48a3f7118d21697a06223838e9a8",
+    "mtime": 1795576893.077261,
+    "ast_hash": "df8fd70c1981831e32e8ad9f636428b7",
     "semantic_hash": ""
   },
   "tests/test_otel_decorator.py": {
-    "mtime": 1786300317.7171843,
-    "ast_hash": "c114010c390a282b200aa5625e46265f",
+    "mtime": 1795547382.3844867,
+    "ast_hash": "d714ccc19d10d09edda81fbc28fe802d",
     "semantic_hash": ""
   },
   "tests/test_otel_exporter.py": {
-    "mtime": 1786259881.9412143,
-    "ast_hash": "d3344a7340cb6cea6eaea24fd2ebf797",
+    "mtime": 1795547450.6833735,
+    "ast_hash": "dcf2fc0931e9e8e425f4ec12f9120216",
     "semantic_hash": ""
   },
   "tests/test_otel_metrics.py": {
@@ -375,18 +355,168 @@
     "semantic_hash": ""
   },
   "CHANGELOG.md": {
-    "mtime": 1786268180.6061869,
-    "ast_hash": "9387e8659eabd52b2c54669c1d94d3e1",
+    "mtime": 1790969362.1827872,
+    "ast_hash": "33c6e2695a8de1bc8f1103b02ae815d3",
     "semantic_hash": ""
   },
-  "docs/superpowers/plans/2026-08-09-traced-v2.md": {
-    "mtime": 1786299528.537927,
-    "ast_hash": "e0f4b30d37430215dc89dfe535587404",
+  ".github/workflows/ci.yml": {
+    "mtime": 1795547741.2344575,
+    "ast_hash": "24a30aed2948a9cfc9ffd0f85ee099e8",
     "semantic_hash": ""
   },
-  "docs/superpowers/specs/2026-08-09-traced-v2-design.md": {
-    "mtime": 1786298663.1726315,
-    "ast_hash": "1c6a4b4cbea70a746b7adfe4e9da9a82",
+  "docs/reference/arlogi/otel/bootstrap.md": {
+    "mtime": 1795547877.7174008,
+    "ast_hash": "07922ed7f8f557739947e00d86e5bc39",
+    "semantic_hash": ""
+  },
+  "docs/reference/arlogi/otel/decorator.md": {
+    "mtime": 1795547879.0957274,
+    "ast_hash": "4c40174c8fb116f33baeed3bea7dafa8",
+    "semantic_hash": ""
+  },
+  "docs/reference/arlogi/otel/exporters.md": {
+    "mtime": 1795547880.594312,
+    "ast_hash": "8488ba7c24ed56ee1f6acf3005ea96c6",
+    "semantic_hash": ""
+  },
+  "docs/reference/arlogi/otel/index.md": {
+    "mtime": 1795547876.497063,
+    "ast_hash": "0bf8fcd5c6a7b9225bdd745d7c46589b",
+    "semantic_hash": ""
+  },
+  "openspec/changes/archive/2026-11-24-harden-ci-packaging-and-docs/.openspec.yaml": {
+    "mtime": 1795547679.6078444,
+    "ast_hash": "971ff8ab7957ea0fbaed078220732475",
+    "semantic_hash": ""
+  },
+  "openspec/changes/archive/2026-11-24-harden-ci-packaging-and-docs/design.md": {
+    "mtime": 1795547716.535441,
+    "ast_hash": "fd24bca7dd6440e019a2a3b59917dc27",
+    "semantic_hash": ""
+  },
+  "openspec/changes/archive/2026-11-24-harden-ci-packaging-and-docs/proposal.md": {
+    "mtime": 1795547712.4241214,
+    "ast_hash": "575218244d135beca374df0f82f3d8a2",
+    "semantic_hash": ""
+  },
+  "openspec/changes/archive/2026-11-24-harden-ci-packaging-and-docs/specs/ci-and-packaging/spec.md": {
+    "mtime": 1795547713.9646149,
+    "ast_hash": "6abb7d21a82b062e57b95741fdb4433c",
+    "semantic_hash": ""
+  },
+  "openspec/changes/archive/2026-11-24-harden-ci-packaging-and-docs/specs/documentation-sync/spec.md": {
+    "mtime": 1795547942.9814925,
+    "ast_hash": "cb2a22a7be94c8c5c475fe8fe558246a",
+    "semantic_hash": ""
+  },
+  "openspec/changes/archive/2026-11-24-harden-ci-packaging-and-docs/tasks.md": {
+    "mtime": 1795547929.0550866,
+    "ast_hash": "3bda20f6eaf0672bd5c87c807b87722f",
+    "semantic_hash": ""
+  },
+  "openspec/changes/archive/2026-11-24-harden-core-and-rotation/.openspec.yaml": {
+    "mtime": 1795544880.674272,
+    "ast_hash": "971ff8ab7957ea0fbaed078220732475",
+    "semantic_hash": ""
+  },
+  "openspec/changes/archive/2026-11-24-harden-core-and-rotation/design.md": {
+    "mtime": 1795545245.8753247,
+    "ast_hash": "8b030e076eee19d97a54b704ed3a4240",
+    "semantic_hash": ""
+  },
+  "openspec/changes/archive/2026-11-24-harden-core-and-rotation/proposal.md": {
+    "mtime": 1795544932.4535308,
+    "ast_hash": "f16d8d289e56c577fd8d12a1fa297b99",
+    "semantic_hash": ""
+  },
+  "openspec/changes/archive/2026-11-24-harden-core-and-rotation/specs/json-handlers-and-rotation/spec.md": {
+    "mtime": 1795545324.836218,
+    "ast_hash": "df003cd57c6f6972a32b4a877a0f66d8",
+    "semantic_hash": ""
+  },
+  "openspec/changes/archive/2026-11-24-harden-core-and-rotation/specs/logger-lifecycle/spec.md": {
+    "mtime": 1795545033.031849,
+    "ast_hash": "b629fc3bbe0471511ac45f51fd8d238e",
+    "semantic_hash": ""
+  },
+  "openspec/changes/archive/2026-11-24-harden-core-and-rotation/specs/logging-configuration/spec.md": {
+    "mtime": 1795545001.912958,
+    "ast_hash": "270391718994010da9f11bc2457c05a0",
+    "semantic_hash": ""
+  },
+  "openspec/changes/archive/2026-11-24-harden-core-and-rotation/tasks.md": {
+    "mtime": 1795546041.1063643,
+    "ast_hash": "e6cef50f245e7e6b2bb20d6d65b8efa8",
+    "semantic_hash": ""
+  },
+  "openspec/changes/archive/2026-11-24-harden-otel-lifecycle/.openspec.yaml": {
+    "mtime": 1795547228.7045393,
+    "ast_hash": "971ff8ab7957ea0fbaed078220732475",
+    "semantic_hash": ""
+  },
+  "openspec/changes/archive/2026-11-24-harden-otel-lifecycle/design.md": {
+    "mtime": 1795547266.8024714,
+    "ast_hash": "cb3f58d1a33aedb2865ac78a5c668526",
+    "semantic_hash": ""
+  },
+  "openspec/changes/archive/2026-11-24-harden-otel-lifecycle/proposal.md": {
+    "mtime": 1795547231.5653603,
+    "ast_hash": "1ae132aec6332b5b7be472d55ffaee3c",
+    "semantic_hash": ""
+  },
+  "openspec/changes/archive/2026-11-24-harden-otel-lifecycle/specs/otel-file-exporters/spec.md": {
+    "mtime": 1795547265.3460865,
+    "ast_hash": "251fc07d7f38c8872fcd7defa1993e6d",
+    "semantic_hash": ""
+  },
+  "openspec/changes/archive/2026-11-24-harden-otel-lifecycle/specs/otel-lifecycle/spec.md": {
+    "mtime": 1795547264.2051177,
+    "ast_hash": "d43fd0500769b9fd0f33268a7452ff1d",
+    "semantic_hash": ""
+  },
+  "openspec/changes/archive/2026-11-24-harden-otel-lifecycle/tasks.md": {
+    "mtime": 1795547464.5060372,
+    "ast_hash": "20be05eebc027a45c2de3ffb75056b3c",
+    "semantic_hash": ""
+  },
+  "openspec/config.yaml": {
+    "mtime": 1795576836.029963,
+    "ast_hash": "eefdae060184429d7a4cc82d460d706a",
+    "semantic_hash": ""
+  },
+  "openspec/specs/ci-and-packaging/spec.md": {
+    "mtime": 1795547945.6448314,
+    "ast_hash": "3d344b585d2be526f4418d93f9c770fd",
+    "semantic_hash": ""
+  },
+  "openspec/specs/documentation-sync/spec.md": {
+    "mtime": 1795547945.6453424,
+    "ast_hash": "a2b210f9aa844988df36d3cde34e010a",
+    "semantic_hash": ""
+  },
+  "openspec/specs/json-handlers-and-rotation/spec.md": {
+    "mtime": 1795547197.175608,
+    "ast_hash": "fa67b575cfe888a28445f71755fa9e0e",
+    "semantic_hash": ""
+  },
+  "openspec/specs/logger-lifecycle/spec.md": {
+    "mtime": 1795547197.1760674,
+    "ast_hash": "9972e9567e513a3279cd23e8b9e61609",
+    "semantic_hash": ""
+  },
+  "openspec/specs/logging-configuration/spec.md": {
+    "mtime": 1795547197.1764607,
+    "ast_hash": "bb467c9402a11c5b80b8706a950f1b4c",
+    "semantic_hash": ""
+  },
+  "openspec/specs/otel-file-exporters/spec.md": {
+    "mtime": 1795547466.3252575,
+    "ast_hash": "93c9e6e82ad92b690aaea2e57856f14c",
+    "semantic_hash": ""
+  },
+  "openspec/specs/otel-lifecycle/spec.md": {
+    "mtime": 1795547466.3257043,
+    "ast_hash": "afa07e519bdc3f1bba4f0458196b3d93",
     "semantic_hash": ""
   }
 }

@@ -546,12 +546,10 @@ In test mode:
 
 ## Version Compatibility
 
-| Python | arlogi | Status              |
-| ------ | ------ | ------------------- |
-| 3.13+  | 0.601+ | Supported           |
-| 3.12   | 0.512+ | Supported (with uv) |
-| 3.11   | 0.512+ | Supported (with uv) |
-| <3.11  | -      | Not supported       |
+| Python | arlogi | Status                                      |
+| ------ | ------ | ------------------------------------------- |
+| 3.13+  | 0.601+ | Supported                                   |
+| <3.13  | -      | Not supported (requires Python 3.13+)       |
 
 ---
 
