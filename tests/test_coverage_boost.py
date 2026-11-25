@@ -130,8 +130,19 @@ class TestLevelsCoverage:
 
     def test_register_trace_level_hasattr_true_branch(self):
         with patch("arlogi.levels._trace_registered", False):
-            with patch.object(logging, "TRACE", 5, create=True):
-                register_trace_level()
+            old_logger_trace = getattr(logging.Logger, "trace", None)
+            if hasattr(logging.Logger, "trace"):
+                delattr(logging.Logger, "trace")
+            try:
+                with patch.object(logging, "TRACE", 99, create=True):
+                    register_trace_level()
+                    # Existing logging.TRACE is preserved while missing pieces are repaired
+                    assert logging.TRACE == 99  # type: ignore[attr-defined]
+                    assert logging.getLevelName(5) == "TRACE"
+                    assert hasattr(logging.Logger, "trace")
+            finally:
+                if old_logger_trace is not None:
+                    logging.Logger.trace = old_logger_trace  # type: ignore
 
     def test_register_trace_level_full_execution_and_trace_method(self):
         with patch("arlogi.levels._trace_registered", False):
@@ -175,9 +186,14 @@ class TestSyslogLoggerAndCleanupCoverage:
         assert len(syslog_sys_logger.handlers) == 0
 
     def test_arlogi_syslog_handler_fallback(self):
-        # Trigger fallback by passing invalid socket path
-        handler = ArlogiSyslogHandler(address="/nonexistent_socket_path_12345")
+        # /dev/log missing or unreachable falls back to localhost:514 or degrades gracefully
+        handler = ArlogiSyslogHandler(address="/dev/log")
         assert handler is not None
+        handler.close()
+
+    def test_arlogi_syslog_handler_custom_unix_socket_fails_fast(self):
+        with pytest.raises(OSError):
+            ArlogiSyslogHandler(address="/nonexistent_socket_path_12345")
 
     def test_arlogi_syslog_handler_raises_on_non_dev_log_error(self):
         with pytest.raises(OSError):
@@ -193,13 +209,16 @@ class TestSyslogLoggerAndCleanupCoverage:
             handler.close()
 
     def test_arlogi_syslog_handler_emit_exception_marks_failed(self):
-        handler = ArlogiSyslogHandler(address="/nonexistent_socket_path_12345")
+        handler = ArlogiSyslogHandler(address=("localhost", 514))
         record = logging.LogRecord("test", logging.INFO, "test.py", 1, "test msg", (), None)
-        with patch.object(logging.handlers.SysLogHandler, "emit", side_effect=OSError("Socket closed")):
-            handler.emit(record)
-            assert handler._failed is True
-            # Subsequent emit is a no-op
-            handler.emit(record)
+        try:
+            with patch.object(logging.handlers.SysLogHandler, "emit", side_effect=OSError("Socket closed")):
+                handler.emit(record)
+                assert handler._failed is True
+                # Subsequent emit is a no-op
+                handler.emit(record)
+        finally:
+            handler.close()
 
     def test_arlogi_syslog_handler_dev_log_exists_but_fails(self):
         with patch("os.path.exists", return_value=True):
@@ -244,7 +263,7 @@ class TestHandlersCoverageEdgeCases:
 
     def test_json_file_handler_invalid_schedule(self):
         with tempfile.NamedTemporaryFile(suffix=".jsonl") as f:
-            with pytest.raises(ValueError, match="Unsupported rotate_schedule"):
+            with pytest.raises(ValueError, match="Invalid rotate_schedule"):
                 JSONFileHandler(f.name, rotate_schedule="invalid")  # type: ignore
 
     def test_json_file_handler_collision_safe_path(self):

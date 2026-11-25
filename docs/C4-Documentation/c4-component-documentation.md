@@ -64,48 +64,34 @@ This component contains the following code-level elements:
   - Describes module documentation structure and navigation
   - Details reference documentation for all arlogi modules (config, factory, handlers, levels, types)
 
-- **[c4-code-docs-scripts.md](./c4-code-docs-scripts.md)** - Documentation Build Scripts
-  - Documents Python scripts for automated documentation generation
-  - Covers Bash scripts for deployment automation
-  - Describes functions for extracting classes and functions from source code
-  - Details workflow for building and publishing documentation
-
 ## Interfaces
 
 ### Command Line Interface (CLI)
 
-#### Documentation Generation
+#### Documentation Generation & Strict Build
 ```bash
-# Generate API reference pages from source code
-python docs/scripts/gen_ref_pages.py
-
-# Build the complete documentation site
-mkdocs build
+# Build the complete documentation site with strict link checking
+uv run --no-sync mkdocs build --strict
 
 # Serve documentation locally for development
-mkdocs serve
+uv run mkdocs serve
 ```
 
 #### Documentation Deployment
-```bash
-# Deploy built documentation to remote server
-docs/scripts/build_pub.sh
-```
+- Deployed automatically via `.github/workflows/deploy-docs.yml` to GitHub Pages.
 
 **Parameters**:
-- None required for generation (uses default paths)
-- Deployment uses pre-configured SSH settings
+- Uses `mkdocs.yml` configuration and `docs` dependency group
 
 **Returns**:
-- Generation: Creates markdown files in `docs/reference/` and prints YAML navigation
 - Build: Creates static HTML site in `site/` directory
-- Deployment: Syncs files to remote server and provides status messages
+- Deployment: Publishes `site/` to GitHub Pages (`https://antragh.github.io/arlogi/`)
 
 ### Web Interface
 
 #### Documentation Site
-- **Protocol**: HTTP/HTTPS
-- **Access**: `http://[server]/arlogi` (when deployed)
+- **Protocol**: HTTPS
+- **Access**: `https://antragh.github.io/arlogi/` (when deployed)
 - **Features**:
   - Browse API reference by module
   - Search across all documentation
@@ -167,15 +153,13 @@ docs/scripts/build_pub.sh
   - Advanced markdown features
 
 ### Infrastructure Dependencies
-- **SSH Server**: Remote documentation hosting (192.168.168.5)
-  - Deployment target for published documentation
-  - Web server hosting (nginx)
-  - Document root: `/opt/c/nginx/html/arlogi`
+- **GitHub Pages (`.github/workflows/deploy-docs.yml`)**: Public static documentation hosting
+  - Builds via `uv run --no-sync mkdocs build --strict`
+  - Publishes static HTML site from `site/` to `https://antragh.github.io/arlogi/`
 
 - **Development Tools**:
-  - Python 3.x for script execution
-  - Bash shell for deployment automation
-  - rsync for file synchronization
+  - Python 3.13+ and `uv` package manager
+  - MkDocs Material and `mkdocstrings-python`
 
 ### Data Dependencies
 - **Source Code**: Python files in `src/arlogi/` directory

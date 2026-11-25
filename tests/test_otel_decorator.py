@@ -1,8 +1,10 @@
 """Tests for arlogi.otel.decorator.traced."""
 
 import asyncio
+import inspect
 import subprocess
 import sys
+import threading
 
 import pytest
 
@@ -484,3 +486,277 @@ def test_traced_async_gen_closes_inner_and_forwards_asend_athrow(memory_spans):
 
     asyncio.run(drive())
     assert len(memory_spans.get_finished_spans()) == 2
+
+
+def test_traced_async_gen_gated_off_forwards_asend_athrow_aclose(memory_spans):
+    cleaned = {"flag": False}
+
+    @traced
+    async def astream(start: int):
+        try:
+            val = yield start
+            try:
+                yield val
+            except RuntimeError as exc:
+                yield f"caught:{exc}"
+            yield "unreachable-if-closed"
+        finally:
+            cleaned["flag"] = True
+
+    assert inspect.isasyncgenfunction(astream)
+    set_trace_modules({astream.__module__: False})
+
+    async def drive():
+        agen = astream(5)
+        assert await agen.__anext__() == 5
+        assert await agen.asend(7) == 7
+        assert await agen.athrow(RuntimeError("boom")) == "caught:boom"
+        await agen.aclose()
+        assert cleaned["flag"] is True
+
+    asyncio.run(drive())
+    assert memory_spans.get_finished_spans() == ()
+
+
+def test_traced_sync_and_async_gen_cleanup_runs_inside_span_context(memory_spans):
+    tracer = trace.get_tracer(__name__)
+    captured: list[int] = []
+
+    @traced
+    def sync_stream():
+        try:
+            yield 1
+            yield 2
+        finally:
+            captured.append(trace.get_current_span().get_span_context().span_id)
+            with tracer.start_as_current_span("sync-cleanup-child"):
+                pass
+
+    @traced
+    async def async_stream():
+        try:
+            yield 1
+            yield 2
+        finally:
+            captured.append(trace.get_current_span().get_span_context().span_id)
+            with tracer.start_as_current_span("async-cleanup-child"):
+                pass
+
+    g = sync_stream()
+    assert next(g) == 1
+    g.close()
+
+    async def close_async():
+        ag = async_stream()
+        assert await ag.__anext__() == 1
+        await ag.aclose()
+
+    asyncio.run(close_async())
+
+    spans = {s.name: s for s in memory_spans.get_finished_spans()}
+    sync_parent = next(s for n, s in spans.items() if n.endswith("sync_stream"))
+    async_parent = next(s for n, s in spans.items() if n.endswith("async_stream"))
+    assert captured[0] == sync_parent.context.span_id
+    assert captured[1] == async_parent.context.span_id
+    assert spans["sync-cleanup-child"].parent is not None
+    assert spans["sync-cleanup-child"].parent.span_id == sync_parent.context.span_id
+    assert spans["async-cleanup-child"].parent is not None
+    assert spans["async-cleanup-child"].parent.span_id == async_parent.context.span_id
+
+
+def test_traced_gen_cleanup_exception_marks_span_error_and_cancellation_stays_non_error(memory_spans):
+    @traced
+    def sync_boom():
+        try:
+            yield 1
+        finally:
+            raise RuntimeError("cleanup boom")
+
+    @traced
+    async def async_boom():
+        try:
+            yield 1
+        finally:
+            raise RuntimeError("cleanup boom")
+
+    @traced
+    async def async_cancellable(ready: asyncio.Event):
+        yield 1
+        ready.set()
+        await asyncio.sleep(10)
+
+    g = sync_boom()
+    assert next(g) == 1
+    with pytest.raises(RuntimeError, match="cleanup boom"):
+        g.close()
+
+    async def drive_async():
+        ag = async_boom()
+        assert await ag.__anext__() == 1
+        with pytest.raises(RuntimeError, match="cleanup boom"):
+            await ag.aclose()
+
+        ready = asyncio.Event()
+        ag_cancel = async_cancellable(ready)
+        assert await ag_cancel.__anext__() == 1
+        task = asyncio.create_task(ag_cancel.__anext__())
+        await ready.wait()
+        task.cancel()
+        with pytest.raises(asyncio.CancelledError):
+            await task
+        await ag_cancel.aclose()
+
+    asyncio.run(drive_async())
+
+    spans = list(memory_spans.get_finished_spans())
+    assert len(spans) == 3
+    for err_span in spans[:2]:
+        assert err_span.status.status_code == StatusCode.ERROR
+        assert len([e for e in err_span.events if e.name == "exception"]) == 1
+    assert spans[2].status.status_code != StatusCode.ERROR
+    assert not [e for e in spans[2].events if e.name == "exception"]
+
+
+def test_tracer_cache_atomic_under_concurrent_provider_swap(reset_otel_globals):
+    from opentelemetry.util._once import Once
+
+    exp0, exp1 = InMemorySpanExporter(), InMemorySpanExporter()
+    p0, p1 = TracerProvider(), TracerProvider()
+    p0.add_span_processor(SimpleSpanProcessor(exp0))
+    p1.add_span_processor(SimpleSpanProcessor(exp1))
+    trace.set_tracer_provider(p0)
+
+    @traced
+    def work() -> str:
+        return "ok"
+
+    assert work() == "ok"
+    assert len(exp0.get_finished_spans()) == 1
+
+    trace._TRACER_PROVIDER_SET_ONCE = Once()
+    trace._TRACER_PROVIDER = None
+    trace.set_tracer_provider(p1)
+
+    entered = threading.Event()
+    release = threading.Event()
+    orig_get_tracer = p1.get_tracer
+    lock = threading.Lock()
+    first_call = {"done": False}
+
+    def gated_get_tracer(*args, **kwargs):
+        with lock:
+            is_first = not first_call["done"]
+            if is_first:
+                first_call["done"] = True
+        if is_first:
+            entered.set()
+            release.wait(timeout=5)
+        return orig_get_tracer(*args, **kwargs)
+
+    p1.get_tracer = gated_get_tracer  # type: ignore[method-assign]
+    t_a = threading.Thread(target=work)
+    t_a.start()
+    assert entered.wait(timeout=5)
+    try:
+        assert work() == "ok"
+        # Thread B must record to P1 immediately rather than stale P0
+        assert len(exp1.get_finished_spans()) == 1
+        assert len(exp0.get_finished_spans()) == 1
+    finally:
+        release.set()
+        t_a.join(timeout=5)
+
+    assert len(exp1.get_finished_spans()) == 2
+    p0.shutdown()
+    p1.shutdown()
+
+
+def test_tracer_cache_acquires_tracer_from_read_provider(reset_otel_globals):
+    from opentelemetry.util._once import Once
+
+    exp_a, exp_b = InMemorySpanExporter(), InMemorySpanExporter()
+    p_a, p_b = TracerProvider(), TracerProvider()
+    p_a.add_span_processor(SimpleSpanProcessor(exp_a))
+    p_b.add_span_processor(SimpleSpanProcessor(exp_b))
+    trace.set_tracer_provider(p_a)
+
+    orig_a_get_tracer = p_a.get_tracer
+
+    def swapping_get_tracer(*args, **kwargs):
+        trace._TRACER_PROVIDER_SET_ONCE = Once()
+        trace._TRACER_PROVIDER = None
+        trace.set_tracer_provider(p_b)
+        return orig_a_get_tracer(*args, **kwargs)
+
+    p_a.get_tracer = swapping_get_tracer  # type: ignore[method-assign]
+
+    @traced
+    def op() -> int:
+        return 1
+
+    assert op() == 1
+    assert len(exp_a.get_finished_spans()) == 1
+    assert len(exp_b.get_finished_spans()) == 0
+    # Next call picks up p_b cleanly
+    assert op() == 1
+    assert len(exp_b.get_finished_spans()) == 1
+    p_a.shutdown()
+    p_b.shutdown()
+
+
+def test_proxy_tracer_provider_not_cached_across_setup_and_shutdown(reset_otel_globals):
+    from opentelemetry.util._once import Once
+
+    exp = InMemorySpanExporter()
+    p1 = TracerProvider()
+    p1.add_span_processor(SimpleSpanProcessor(exp))
+    seen_recording: list[bool] = []
+
+    @traced
+    def work() -> None:
+        seen_recording.append(trace.get_current_span().is_recording())
+
+    # Prime while global provider is still ProxyTracerProvider
+    work()
+    assert seen_recording[-1] is False
+
+    # Now install p1 and invoke work() (latches ProxyTracer if cached)
+    trace.set_tracer_provider(p1)
+    work()
+    assert seen_recording[-1] is True
+
+    # Simulate shutdown_tracing() clearing global TracerProvider slot
+    p1.shutdown()
+    trace._TRACER_PROVIDER_SET_ONCE = Once()
+    trace._TRACER_PROVIDER = None
+
+    # Gap call must observe a NonRecordingSpan, never shut-down p1
+    work()
+    assert seen_recording[-1] is False
+
+    # Also test provider-read race during setup_tracing()
+    @traced
+    def raced() -> None:
+        seen_recording.append(trace.get_current_span().is_recording())
+
+    proxy = trace._PROXY_TRACER_PROVIDER
+    orig_get_tracer = proxy.get_tracer
+    exp2 = InMemorySpanExporter()
+    p2 = TracerProvider()
+    p2.add_span_processor(SimpleSpanProcessor(exp2))
+
+    def install_during_get_tracer(*args, **kwargs):
+        trace.set_tracer_provider(p2)
+        return orig_get_tracer(*args, **kwargs)
+
+    proxy.get_tracer = install_during_get_tracer  # type: ignore[method-assign]
+    try:
+        raced()
+    finally:
+        proxy.get_tracer = orig_get_tracer  # type: ignore[method-assign]
+
+    p2.shutdown()
+    trace._TRACER_PROVIDER_SET_ONCE = Once()
+    trace._TRACER_PROVIDER = None
+    raced()
+    assert seen_recording[-1] is False

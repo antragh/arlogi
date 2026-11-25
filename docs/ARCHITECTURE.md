@@ -174,6 +174,7 @@ classDiagram
         +bool json_file_only
         +bool use_syslog
         +str|tuple syslog_address
+        +str syslog_format
         +str rotate_schedule
         +int rotate_retention_count
         +bool show_time
@@ -200,10 +201,11 @@ classDiagram
         <<factory>>
         _initialized: bool
         _global_logger: TraceLogger|None
-        +setup(level, module_levels, ...) None
+        +setup(level, module_levels, ..., config) None
+        +apply_config(config) None
         +get_logger(name, level) LoggerProtocol
-        +get_json_logger(name, file) LoggerProtocol
-        +get_syslog_logger(name, addr) LoggerProtocol
+        +get_json_logger(name, file, base_dir) LoggerProtocol
+        +get_syslog_logger(name, addr, syslog_format) LoggerProtocol
         +cleanup_json_logger(name) None
         +cleanup_syslog_logger(name) None
         +is_test_mode() bool
@@ -262,8 +264,18 @@ classDiagram
         extends FileHandler
     }
 
+    class JSONFormatter {
+        extends Formatter
+    }
+
+    class SyslogJSONFormatter {
+        extends JSONFormatter
+        +format(record) str
+    }
+
     class ArlogiSyslogHandler {
         extends SysLogHandler
+        +str syslog_format
     }
 
     LoggingConfig ..> HandlerFactory : uses
@@ -275,7 +287,12 @@ classDiagram
     HandlerFactory ..> JSONHandler : creates
     HandlerFactory ..> JSONFileHandler : creates
     HandlerFactory ..> ArlogiSyslogHandler : creates
+    ArlogiSyslogHandler ..> SyslogJSONFormatter : uses
 ```
+
+### Syslog Formatting and Transport
+
+`ArlogiSyslogHandler` accepts `syslog_format="text"` (default: `%(name)s[%(process)d]: %(levelname)s: %(message)s`) or `syslog_format="json"`, which attaches `SyslogJSONFormatter` to emit single-line RFC 3164-prefixed frames (`<name>[<pid>]: {...}`). For large JSON payloads or multi-line tracebacks, prefer a local Unix domain socket (`/dev/log`) or TCP (`socktype=socket.SOCK_STREAM`) over UDP (`SOCK_DGRAM`) to avoid MTU truncation.
 
 ---
 
@@ -301,14 +318,20 @@ handler = HandlerFactory.create_console(config)
 
 ### Builder Pattern
 
-**LoggingConfig.from_kwargs()** provides flexible configuration:
+**LoggingConfigBuilder** provides a fluent API for constructing validated `LoggingConfig` instances, which are applied via `setup_logging(config=...)` or `LoggerFactory.apply_config(config)`:
 
 ```python
-# Build configuration via public setup
-setup_logging(
-    level="INFO",
-    module_levels={"app.db": "DEBUG"}
+from arlogi import LoggerFactory, LoggingConfigBuilder
+
+config = (
+    LoggingConfigBuilder()
+    .with_level("INFO")
+    .with_module_levels({"app.db": "DEBUG"})
+    .with_json_file("app.jsonl")
+    .with_json_base_dir("/var/log/myapp")
+    .build()
 )
+LoggerFactory.apply_config(config)
 ```
 
 ### Protocol Pattern
@@ -348,27 +371,50 @@ syslog = ArlogiSyslogHandler()
 
 ### Core Modules
 
-| Module               | Responsibility                    | Lines of Code |
-| -------------------- | --------------------------------- | ------------- |
-| `factory.py`         | Logger creation and configuration | ~450          |
-| `handlers.py`        | Output handler implementations    | ~340          |
-| `config.py`          | Configuration dataclass           | ~195          |
-| `handler_factory.py` | Handler factory                   | ~170          |
-| `levels.py`          | TRACE level registration          | ~20           |
-| `types.py`           | Logger protocol definition        | ~25           |
+| Module               | Responsibility                                                  |
+| -------------------- | --------------------------------------------------------------- |
+| `factory.py`         | Logger creation, `LoggerFactory.apply_config()`, `TraceLogger`  |
+| `handlers.py`        | Output handler implementations                                  |
+| `config.py`          | Configuration dataclass & validation                            |
+| `config_builder.py`  | Fluent `LoggingConfigBuilder`                                   |
+| `handler_factory.py` | Handler factory                                                 |
+| `_rotation.py`       | Stdlib-only shared archive pruning helper                       |
+| `levels.py`          | TRACE level registration                                        |
+| `types.py`           | Logger protocol definition                                      |
+
+### Optional OpenTelemetry Subpackage (`arlogi.otel`)
+
+When the `arlogi[otel]` extra is installed, `src/arlogi/otel/` exposes 9 public symbols (`setup_tracing`, `shutdown_tracing`, `setup_metrics`, `shutdown_metrics`, `install_log_correlation`, `set_trace_modules`, `traced`, `RotatingJsonlSpanExporter`, `RotatingJsonlMetricExporter`). `src/arlogi/otel/__init__.py` uses a `__getattr__` lazy-loading boundary so bare `import arlogi.otel` and `arlogi.otel.decorator` depend only on `opentelemetry-api` and never eagerly import `opentelemetry-sdk`.
+
+| Module               | Responsibility                                                                                       |
+| -------------------- | ---------------------------------------------------------------------------------------------------- |
+| `otel/__init__.py`   | Public exports & `__getattr__` SDK-free lazy import boundary                                         |
+| `otel/bootstrap.py`  | `setup_tracing`, `shutdown_tracing`, `setup_metrics`, `shutdown_metrics`, `install_log_correlation`  |
+| `otel/decorator.py`  | `set_trace_modules`, `@traced` (sync/async/generator, API-only)                                      |
+| `otel/exporters.py`  | `RotatingJsonlSpanExporter`, `RotatingJsonlMetricExporter`                                           |
+| `otel/_files.py`     | Exclusive symlink-safe `_RotatingJsonlWriter`                                                        |
+| `otel/_encode.py`    | OTLP protobuf-to-JSONL encoding with hex trace/span IDs                                              |
 
 ### File Structure
 
 ```text
 src/arlogi/
 ├── __init__.py              # Public API exports
-├── config.py                # LoggingConfig dataclass
-├── config_builder.py        # Configuration builder utilities (if present)
+├── _rotation.py             # Shared stdlib-only archive pruning helper
+├── config.py                # LoggingConfig dataclass & validation
+├── config_builder.py        # Fluent LoggingConfigBuilder
 ├── factory.py               # LoggerFactory, TraceLogger
 ├── handler_factory.py       # HandlerFactory
 ├── handlers.py              # All handler classes
 ├── levels.py                # TRACE level registration
-└── types.py                 # LoggerProtocol
+├── types.py                 # LoggerProtocol
+└── otel/                    # Optional arlogi[otel] subpackage (lazy SDK boundary)
+    ├── __init__.py          # Lazy __getattr__ exports (9 public symbols)
+    ├── _encode.py           # OTLP JSONL encoder
+    ├── _files.py            # Exclusive, symlink-safe rotating JSONL writer
+    ├── bootstrap.py         # Tracing/metrics lifecycle & log correlation
+    ├── decorator.py         # @traced decorator & set_trace_modules
+    └── exporters.py         # RotatingJsonlSpanExporter & RotatingJsonlMetricExporter
 ```
 
 ---
@@ -382,7 +428,7 @@ The initialization process uses the `LoggingConfig` pattern for type-safe config
 ```mermaid
 graph TD
     A[setup_logging / LoggerFactory.setup] --> B[LoggingConfig.from_kwargs]
-    B --> C["_apply_configuration"]
+    B --> C["LoggerFactory.apply_config (internal _apply_configuration)"]
     C --> D[_initialize_trace_level]
     C --> E[_configure_root_logger]
     C --> F[is_test_mode?]
@@ -519,9 +565,9 @@ graph TD
 | --------------------- | ------------------------------------- |
 | LoggingConfig         | Validates on init, raises ValueError  |
 | HandlerFactory        | Raises ValueError for invalid config  |
-| LoggerFactory         | Silently falls back on handler errors |
-| ColoredConsoleHandler | Falls back to basic formatting        |
-| ArlogiSyslogHandler   | Falls back to UDP, then silent        |
+| LoggerFactory         | Closes partial handlers, preserves active ones, and re-raises |
+| ColoredConsoleHandler | Falls back to basic formatting                                |
+| ArlogiSyslogHandler   | Falls back to UDP/silent on `/dev/log`; raises on custom addr |
 
 ---
 

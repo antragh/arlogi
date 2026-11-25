@@ -1,11 +1,14 @@
+import gc
 import subprocess
 import sys
+import warnings
 
 import pytest
 
-from arlogi import setup_logging
+from arlogi import get_json_logger, setup_logging
 from arlogi.config import LoggingConfig
 from arlogi.config_builder import LoggingConfigBuilder
+from arlogi.handlers import JSONFileHandler, JSONHandler
 
 
 def test_logging_config_accepts_rotation_options():
@@ -112,3 +115,94 @@ def test_builder_with_json_console_only_clears_json_file_name():
     assert len(handlers) == 1
     assert isinstance(handlers[0], JSONHandler)
     handlers[0].close()
+
+
+@pytest.mark.parametrize("bad_schedule", ["invalid", "", ["day"], {"schedule": "day"}, 123])
+def test_json_file_handler_rejects_invalid_schedule_without_side_effects(tmp_path, bad_schedule):
+    target = tmp_path / "sub" / "app.jsonl"
+    with warnings.catch_warnings(record=True) as caught:
+        warnings.simplefilter("always", ResourceWarning)
+        with pytest.raises(ValueError, match="Invalid rotate_schedule"):
+            JSONFileHandler(str(target), rotate_schedule=bad_schedule)  # type: ignore[arg-type]
+        gc.collect()
+
+    assert not (tmp_path / "sub").exists()
+    assert not any(issubclass(w.category, ResourceWarning) for w in caught)
+
+
+@pytest.mark.parametrize("bad_schedule", [["day"], {"schedule": "day"}, 123])
+def test_logging_config_rejects_unhashable_and_non_str_rotate_schedule(bad_schedule):
+    with pytest.raises(ValueError, match="Invalid rotate_schedule"):
+        LoggingConfig(rotate_schedule=bad_schedule)  # type: ignore[arg-type]
+
+
+@pytest.mark.parametrize("bad_retention", [0, -1, True, False, "7"])
+def test_json_file_handler_rejects_invalid_retention_count(tmp_path, bad_retention):
+    target = tmp_path / "app.jsonl"
+    with pytest.raises(ValueError, match="rotate_retention_count"):
+        JSONFileHandler(str(target), rotate_retention_count=bad_retention)  # type: ignore[arg-type]
+    assert not target.exists()
+
+
+@pytest.mark.parametrize("bad_name", ["", "   ", 123])
+def test_empty_or_non_string_json_file_name_rejected(tmp_path, bad_name):
+    with pytest.raises(ValueError, match="non-empty string"):
+        LoggingConfig(json_file_name=bad_name, json_file_base_dir=str(tmp_path))  # type: ignore[arg-type]
+
+
+def test_empty_json_file_name_rejected_across_entrypoints(tmp_path):
+    with pytest.raises(ValueError, match="non-empty"):
+        LoggingConfigBuilder().with_json_file("").build()
+
+    with pytest.raises(ValueError, match="non-empty"):
+        setup_logging(json_file_name="", json_file_base_dir=str(tmp_path))
+
+    with pytest.raises(ValueError, match="non-empty"):
+        get_json_logger("audit_empty", "")
+
+    with pytest.raises(ValueError, match="non-empty"):
+        get_json_logger("audit_empty_base", "", base_dir=str(tmp_path))
+
+    stderr_logger = get_json_logger("audit_stderr")
+    import logging
+
+    raw = logging.getLogger("arlogi.json.audit_stderr")
+    assert len(raw.handlers) == 1
+    assert isinstance(raw.handlers[0], JSONHandler)
+    assert stderr_logger is raw
+
+
+def test_builder_with_json_console_only_clears_base_dir():
+    config = (
+        LoggingConfigBuilder().with_json_file("a.jsonl").with_json_base_dir("/tmp").with_json_console_only().build()
+    )
+    assert config.json_file_name is None
+    assert config.json_file_base_dir is None
+    assert config.json_file_only is True
+
+
+@pytest.mark.parametrize("bad_base_dir", ["", "   ", 123, True, "\x00"])
+def test_invalid_json_file_base_dir_rejected_without_side_effects(tmp_path, monkeypatch, bad_base_dir):
+    monkeypatch.chdir(tmp_path)
+
+    with pytest.raises(ValueError, match="base_dir"):
+        LoggingConfig(json_file_name="app.jsonl", json_file_base_dir=bad_base_dir)  # type: ignore[arg-type]
+
+    with pytest.raises(ValueError, match="base_dir"):
+        LoggingConfigBuilder().with_json_file("app.jsonl").with_json_base_dir(bad_base_dir).build()  # type: ignore[arg-type]
+
+    with pytest.raises(ValueError, match="base_dir"):
+        get_json_logger("audit_bad_base", "app.jsonl", base_dir=bad_base_dir)  # type: ignore[arg-type]
+
+    with pytest.raises(ValueError, match="base_dir"):
+        JSONFileHandler("app.jsonl", base_dir=bad_base_dir)  # type: ignore[arg-type]
+
+    assert list(tmp_path.iterdir()) == []
+
+
+@pytest.mark.parametrize("bad_name", ["", "   ", 123, "\x00"])
+def test_json_file_handler_rejects_invalid_filename_without_base_dir(tmp_path, monkeypatch, bad_name):
+    monkeypatch.chdir(tmp_path)
+    with pytest.raises(ValueError, match="non-empty"):
+        JSONFileHandler(bad_name)  # type: ignore[arg-type]
+    assert list(tmp_path.iterdir()) == []

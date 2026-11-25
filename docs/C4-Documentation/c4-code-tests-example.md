@@ -14,53 +14,53 @@
 
 - `main() -> None`
   - Description: Main entry point demonstrating comprehensive arlogi features including environment-based configuration, module-specific levels, dedicated loggers, and caller attribution
-  - Location: `/opt/Code/2026/_Libs/arlogi/tests/example/example.py:8`
+  - Location: `tests/example/example.py:8`
   - Dependencies: `os.environ`, `LoggingConfig`, `LoggerFactory`, `get_logger`, `get_json_logger`, `get_syslog_logger`, `worker.do_work()`
 
 - `worker_function() -> None`
   - Description: Nested function demonstrating caller attribution with different depth levels
-  - Location: `/opt/Code/2026/_Libs/arlogi/tests/example/example.py:74`
+  - Location: `tests/example/example.py:74`
   - Dependencies: `logger`, `worker.do_work()`
 
 - `do_work(depth: int = 0) -> None`
   - Description: Worker function demonstrating logging with cross-module caller attribution
-  - Location: `/opt/Code/2026/_Libs/arlogi/tests/example/worker.py:5`
+  - Location: `tests/example/worker.py:5`
   - Dependencies: `logger`
 
 ### Variables
 
 - `env_level: str`
   - Description: Environment variable LOG_LEVEL value, defaults to "INFO"
-  - Location: `/opt/Code/2026/_Libs/arlogi/tests/example/example.py:10`
+  - Location: `tests/example/example.py:10`
 
 - `logger: Logger`
   - Description: Logger instance for "app.main" module demonstrating standard logging
-  - Location: `/opt/Code/2026/_Libs/arlogi/tests/example/example.py:27`
+  - Location: `tests/example/example.py:27`
   - Dependencies: `get_logger("app.main")`
 
 - `net_logger: Logger`
   - Description: Logger instance for "app.network" module with TRACE-level override
-  - Location: `/opt/Code/2026/_Libs/arlogi/tests/example/example.py:28`
+  - Location: `tests/example/example.py:28`
   - Dependencies: `get_logger("app.network")`
 
 - `db_logger: Logger`
   - Description: Logger instance for "app.database" module with DEBUG-level override
-  - Location: `/opt/Code/2026/_Libs/arlogi/tests/example/example.py:29`
+  - Location: `tests/example/example.py:29`
   - Dependencies: `get_logger("app.database")`
 
 - `audit_logger: Logger`
   - Description: Dedicated JSON logger for audit logging with file output
-  - Location: `/opt/Code/2026/_Libs/arlogi/tests/example/example.py:64`
+  - Location: `tests/example/example.py:64`
   - Dependencies: `get_json_logger("audit")`
 
 - `syslog_logger: Logger`
   - Description: Dedicated syslog logger for security events
-  - Location: `/opt/Code/2026/_Libs/arlogi/tests/example/example.py:68`
+  - Location: `tests/example/example.py:68`
   - Dependencies: `get_syslog_logger("security")`
 
 - `logger: Logger`
   - Description: Worker module logger for "app.worker" namespace
-  - Location: `/opt/Code/2026/_Libs/arlogi/tests/example/worker.py:3`
+  - Location: `tests/example/worker.py:3`
   - Dependencies: `get_logger("app.worker")`
 
 ## Dependencies
@@ -112,7 +112,7 @@ classDiagram
     namespace arlogi {
         class LoggingSystem {
             +LoggingConfig(level, module_levels, ...)
-            +LoggerFactory._apply_configuration(config)
+            +LoggerFactory.apply_config(config)
             +get_logger() Logger
             +get_json_logger() Logger
             +get_syslog_logger() Logger
@@ -183,7 +183,7 @@ The example directory serves as a comprehensive demonstration of arlogi's core f
 - Environment-based log level configuration
 - Module-specific log level overrides
 - Multiple logger types (standard, JSON-only, syslog)
-- Caller attribution with depth control (`from_` parameter)
+- Caller attribution with depth control (`caller_depth` parameter)
 - Cross-module logging attribution support
 - Clean formatting with optional time/path display
 

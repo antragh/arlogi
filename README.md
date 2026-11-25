@@ -69,7 +69,8 @@ setup_logging(
     rotate_schedule="day",
     rotate_retention_count=7,
     use_syslog=True,
-    syslog_address="/dev/log"
+    syslog_address="/dev/log",
+    syslog_format="json",  # "text" (default) or "json" (<name>[<pid>]: {...})
 )
 ```
 
@@ -84,13 +85,15 @@ from arlogi import get_json_logger, get_syslog_logger, cleanup_json_logger
 audit_logger = get_json_logger("audit", "logs/audit.jsonl")
 audit_logger.info("User logged in", user_id=123)
 
-# Logs only to Syslog
-syslog_logger = get_syslog_logger("security")
-syslog_logger.warning("Failed login attempt")
+# Logs only to Syslog (supports "text" default or structured "json")
+syslog_logger = get_syslog_logger("security", syslog_format="json")
+syslog_logger.warning("Failed login attempt", user_id=123)
 
 # Resource cleanup when done
 cleanup_json_logger("audit")
 ```
+
+> **Tip:** `syslog_format="json"` uses `SyslogJSONFormatter` to emit `<name>[<pid>]: {...}` single-line JSON frames. When sending large JSON records or stack traces, prefer a local Unix socket (`/dev/log`) or TCP (`ArlogiSyslogHandler(..., socktype=socket.SOCK_STREAM)`) to avoid UDP MTU truncation.
 
 ## Integration with Other Libraries
 
@@ -202,17 +205,27 @@ setup_logging(
 )
 ```
 
-### Direct Factory API
+### Direct Factory API and Fluent Builder
 
-Alternatively, `LoggerFactory.setup(...)` provides the exact same functionality via the factory class:
+Alternatively, `LoggingConfigBuilder`, `LoggerFactory.apply_config(config)`, and `LoggerFactory.setup(...)` provide fluent and object-based configuration with optional `json_file_base_dir` path containment:
 
 ```python
-from arlogi import LoggerFactory
+from arlogi import LoggerFactory, LoggingConfigBuilder, get_json_logger, rotate_json_logger
 
-LoggerFactory.setup(
-    level="INFO",
-    module_levels={"app.db": "DEBUG"}
+config = (
+    LoggingConfigBuilder()
+    .with_level("INFO")
+    .with_module_levels({"app.db": "DEBUG"})
+    .with_json_file("app.jsonl")
+    .with_json_base_dir("/var/log/myapp")
+    .with_rotation("day", retention_count=7)
+    .build()
 )
+LoggerFactory.apply_config(config)
+
+audit = get_json_logger("audit", "audit.jsonl", base_dir="/var/log/myapp")
+audit.info("Audit event")
+rotate_json_logger("audit")
 ```
 
 ### Color Schemes
@@ -274,16 +287,17 @@ Run tests with pytest:
 uv run pytest
 ```
 
-Check code formatting and linting:
+Check linting and code formatting:
 
 ```bash
-uv run ruff check .
+uv run ruff check src/ tests/
+uv run ruff format --check src/ tests/
 ```
 
-Build local documentation:
+Build local documentation with strict link checking:
 
 ```bash
-uv run mkdocs build
+uv run mkdocs build --strict
 ```
 
 ## License

@@ -1,5 +1,6 @@
 import json
 import logging
+import os
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from unittest.mock import MagicMock, patch
 
@@ -122,6 +123,7 @@ def test_io_error_degrades_to_noop_without_raising(tmp_path):
     # Direct write_line call must return False, not raise.
     assert exporter._writer.write_line('{"still": "broken"}') is False
     assert exporter._writer._broken is True
+    assert exporter._writer._stream is None
 
     # Once broken, further calls are silent no-ops (short-circuited before touching the stream).
     assert exporter._writer.write_line('{"also": "broken"}') is False
@@ -131,6 +133,39 @@ def test_io_error_degrades_to_noop_without_raising(tmp_path):
         pass
     provider.force_flush()  # must not raise
     provider.shutdown()  # must not raise
+
+
+def test_post_shutdown_exports_return_failure_without_reopening_files(tmp_path):
+    from opentelemetry.sdk.metrics import MeterProvider
+    from opentelemetry.sdk.metrics.export import PeriodicExportingMetricReader
+
+    span_dir = tmp_path / "spans"
+    span_exporter = RotatingJsonlSpanExporter(span_dir, prefix="t")
+    tp = TracerProvider()
+    tp.add_span_processor(SimpleSpanProcessor(span_exporter))
+
+    in_flight = tp.get_tracer("test").start_span("in_flight")
+    tp.shutdown()
+    assert span_exporter._writer._closed is True
+
+    # Ending an in-flight span after shutdown must not reopen a file or leak an FD
+    in_flight.end()
+    assert list(span_dir.glob("t-*.jsonl")) == []
+    assert span_exporter.export([MagicMock()]) == SpanExportResult.FAILURE
+    assert span_exporter._writer._stream is None
+
+    metric_dir = tmp_path / "metrics"
+    metric_exporter = RotatingJsonlMetricExporter(metric_dir, prefix="m")
+    reader = PeriodicExportingMetricReader(metric_exporter, export_interval_millis=60_000)
+    mp = MeterProvider(metric_readers=[reader])
+    mp.get_meter("test").create_counter("c").add(1)
+    mp.force_flush()
+    before_files = set(metric_dir.glob("m-*.jsonl"))
+    mp.shutdown()
+    reader.collect()
+    after_files = set(metric_dir.glob("m-*.jsonl"))
+    assert after_files == before_files
+    assert metric_exporter._writer._stream is None
 
 
 def test_concurrent_writes_thread_safe(tmp_path):
@@ -225,3 +260,97 @@ def test_writer_prune_skips_dangling_symlink_and_preserves_sibling_files(tmp_pat
     assert writer._broken is False
     assert sibling.exists()
     writer.close()
+
+
+def test_writer_prune_equal_mtime_keeps_newer_and_ignores_matching_dir(tmp_path):
+    older = tmp_path / "traces-20200101-000000.jsonl"
+    newer = tmp_path / "traces-20200101-000001.jsonl"
+    older.write_text('{"seq": 0}\n', encoding="utf-8")
+    newer.write_text('{"seq": 1}\n', encoding="utf-8")
+    equal_ns = 1_700_000_000_000_000_000
+    os.utime(older, ns=(equal_ns, equal_ns))
+    os.utime(newer, ns=(equal_ns, equal_ns))
+
+    matching_dir = tmp_path / "traces-20200102-000000.jsonl"
+    matching_dir.mkdir()
+    os.utime(matching_dir, ns=(equal_ns + 1_000_000_000, equal_ns + 1_000_000_000))
+
+    writer = _RotatingJsonlWriter(tmp_path, prefix="traces", rotate_hours=1, retention_count=2)
+    writer._now = lambda: 1_750_000_000.0  # type: ignore[method-assign]
+    assert writer.write_line('{"seq": 2}') is True
+    writer.close()
+
+    assert not older.exists()
+    assert newer.exists()
+    assert matching_dir.is_dir()
+
+
+@pytest.mark.skipif(os.name == "nt", reason="POSIX symlink semantics")
+def test_writer_open_skips_dangling_live_symlinks_and_existing_files(tmp_path):
+    telem = tmp_path / "telem"
+    telem.mkdir()
+    outside = tmp_path / "outside.jsonl"
+
+    writer = _RotatingJsonlWriter(telem, prefix="traces", rotate_hours=1, retention_count=10)
+    writer._now = lambda: 1_700_000_000.0  # type: ignore[method-assign]
+    from datetime import datetime
+
+    stamp = datetime.fromtimestamp(1_700_000_000.0).strftime("%Y%m%d-%H%M%S")
+
+    # (a) Dangling symlink pointing outside telem
+    dangling = telem / f"traces-{stamp}.jsonl"
+    dangling.symlink_to(outside)
+    assert writer.write_line('{"case": "a"}') is True
+    assert not outside.exists()
+    assert dangling.is_symlink()
+    assert (telem / f"traces-{stamp}.1.jsonl").read_text(encoding="utf-8").strip() == '{"case": "a"}'
+    writer.close()
+
+    # (b) Dangling symlink pointing to missing parent dir does not mark writer broken
+    dangling_missing_parent = telem / f"traces-{stamp}.2.jsonl"
+    dangling_missing_parent.symlink_to(tmp_path / "missing_dir" / "target.jsonl")
+    writer2 = _RotatingJsonlWriter(telem, prefix="traces", rotate_hours=1, retention_count=10)
+    writer2._now = lambda: 1_700_000_000.0  # type: ignore[method-assign]
+    assert writer2.write_line('{"case": "b"}') is True
+    assert writer2._broken is False
+    assert (telem / f"traces-{stamp}.3.jsonl").read_text(encoding="utf-8").strip() == '{"case": "b"}'
+    writer2.close()
+
+    # (c) Live symlink to outside file and pre-existing regular file are skipped untouched
+    live_outside = tmp_path / "live_outside.jsonl"
+    live_outside.write_text("do-not-touch\n", encoding="utf-8")
+    (telem / f"traces-{stamp}.4.jsonl").symlink_to(live_outside)
+    existing_reg = telem / f"traces-{stamp}.5.jsonl"
+    existing_reg.write_text("existing\n", encoding="utf-8")
+    writer3 = _RotatingJsonlWriter(telem, prefix="traces", rotate_hours=1, retention_count=10)
+    writer3._now = lambda: 1_700_000_000.0  # type: ignore[method-assign]
+    assert writer3.write_line('{"case": "c"}') is True
+    assert live_outside.read_text(encoding="utf-8") == "do-not-touch\n"
+    assert existing_reg.read_text(encoding="utf-8") == "existing\n"
+    assert (telem / f"traces-{stamp}.6.jsonl").read_text(encoding="utf-8").strip() == '{"case": "c"}'
+    writer3.close()
+
+
+def test_writer_open_two_writers_same_second_and_suffix_exhaustion(tmp_path, caplog, monkeypatch):
+    w1 = _RotatingJsonlWriter(tmp_path, prefix="traces", rotate_hours=1, retention_count=10)
+    w2 = _RotatingJsonlWriter(tmp_path, prefix="traces", rotate_hours=1, retention_count=10)
+    w1._now = lambda: 1_700_000_000.0  # type: ignore[method-assign]
+    w2._now = lambda: 1_700_000_000.0  # type: ignore[method-assign]
+    assert w1.write_line('{"writer": 1}') is True
+    assert w2.write_line('{"writer": 2}') is True
+    p1, p2 = w1._active_path, w2._active_path
+    w1.close()
+    w2.close()
+    assert p1 is not None and p2 is not None and p1 != p2
+    assert p1.read_text(encoding="utf-8").strip() == '{"writer": 1}'
+    assert p2.read_text(encoding="utf-8").strip() == '{"writer": 2}'
+
+    # Suffix exhaustion sets _broken and logs one warning
+    monkeypatch.setattr("arlogi.otel._files._MAX_COLLISION_SUFFIX", 1)
+    w3 = _RotatingJsonlWriter(tmp_path, prefix="traces", rotate_hours=1, retention_count=10)
+    w3._now = lambda: 1_700_000_000.0  # type: ignore[method-assign]
+    with caplog.at_level(logging.WARNING):
+        assert w3.write_line('{"writer": 3}') is False
+    assert w3._broken is True
+    assert sum("Telemetry file writer disabled" in r.message for r in caplog.records) == 1
+    w3.close()

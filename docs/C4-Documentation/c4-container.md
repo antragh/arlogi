@@ -79,8 +79,7 @@ This container deploys the following component:
 - Logger Factory (LoggerFactory, TraceLogger)
 - Handler Implementations (ColoredConsoleHandler, JSONHandler, JSONFileHandler, ArlogiSyslogHandler)
 - Type Definitions (LoggerProtocol, custom TRACE level)
-- Public API Functions (get_logger, get_json_logger, get_syslog_logger)
-- Legacy Helpers (`setup_logging`)
+- Public API Functions (get_logger, get_json_logger, get_syslog_logger, setup_logging)
 
 #### Interfaces
 
@@ -93,11 +92,12 @@ This container deploys the following component:
 **Endpoints**:
 
 - `arlogi.LoggingConfig` - Configuration dataclass
+- `arlogi.LoggingConfigBuilder` - Fluent configuration builder
 - `arlogi.LoggerFactory` - Logger factory class
 - `arlogi.get_logger(name, level=None)` - Get standard logger
-- `arlogi.get_json_logger(name, json_file_name=None)` - Get JSON-only logger
-- `arlogi.get_syslog_logger(name, address="/dev/log")` - Get syslog-only logger
-- `arlogi.setup_logging(**kwargs)` - Legacy configuration helper (Deprecated)
+- `arlogi.get_json_logger(name, json_file_name=None, base_dir=None)` - Get JSON-only logger
+- `arlogi.get_syslog_logger(name, address="/dev/log", syslog_format="text")` - Get syslog-only logger
+- `arlogi.setup_logging(config=None, **kwargs)` - Root logging configuration entrypoint
 - `arlogi.HandlerFactory` - Handler factory class
 - `arlogi.TRACE` - Custom TRACE log level constant
 
@@ -105,7 +105,7 @@ This container deploys the following component:
 
 **Protocol**: JSON Lines (JSONL) format
 **Description**: Structured log format for log aggregation systems
-**Specification**: [API Reference - JSON Output Format](../API_REFERENCE.md#jsonhandler)
+**Specification**: [API Reference - JSON Output Format](../API_REFERENCE.md#jsonhandler-and-jsonformatter)
 
 **Schema**:
 
@@ -113,12 +113,15 @@ This container deploys the following component:
 {
   "timestamp": "string (ISO 8601)",
   "level": "string (level name)",
+  "logger_name": "string (logger name)",
   "message": "string (log message)",
-  "file": "string (file path)",
-  "line": "number (line number)",
+  "module": "string (module name)",
   "function": "string (function name)",
-  "caller": "string | null (caller function)",
-  "extra": "object (custom fields)"
+  "line_number": "number (line number)",
+  "exception": "string | null (formatted traceback when present)",
+  "trace_id": "string (optional 32-hex OTEL trace ID)",
+  "span_id": "string (optional 16-hex OTEL span ID)",
+  "extra": "object (colliding custom fields only; non-colliding fields sit at top level)"
 }
 ```
 
@@ -353,8 +356,8 @@ tests/
 - **Name**: Documentation Site
 - **Description**: Automated documentation generation and static website deployment providing API reference, user guides, and architectural documentation
 - **Type**: Static Website / Documentation Infrastructure
-- **Technology**: MkDocs 1.5+, Material Theme 9.7.1+, MkDocstrings 1.0+, Python 3.10+
-- **Deployment**: nginx web server at <http://192.168.168.5/cpaiops/>
+- **Technology**: MkDocs 1.6+, Material Theme 9.7+, MkDocstrings 1.0+, Python 3.13+
+- **Deployment**: GitHub Pages at <https://antragh.github.io/arlogi/> via `.github/workflows/deploy-docs.yml`
 - **Build Output**: Static HTML/CSS/JS in `site/` directory
 
 #### Purpose
@@ -376,40 +379,33 @@ This container deploys the following component:
 
 **[Documentation System](./c4-component-documentation.md)** - Documentation infrastructure
 
-- Reference Page Generator (`docs/scripts/gen_ref_pages.py`)
-- MkDocs Builder (`mkdocs build`, `mkdocs serve`)
+- MkDocs Builder (`uv run --no-sync mkdocs build --strict`)
 - API Reference Docs (`docs/reference/*.md`)
 - User Documentation (`docs/*.md`)
-- Deployment Scripts (`docs/scripts/build_pub.sh`)
+- GitHub Actions Pages Workflow (`.github/workflows/deploy-docs.yml`)
 
 #### Interfaces
 
 ##### Command Line Interface
 
 **Protocol**: Shell commands
-**Description**: Build, serve, and deploy documentation
+**Description**: Build and serve documentation
 
 **Commands**:
 
 ```bash
-# Generate API reference pages
-python docs/scripts/gen_ref_pages.py
-
-# Build documentation site
-mkdocs build
+# Build documentation site strictly
+uv run mkdocs build --strict
 
 # Serve locally for development
-mkdocs serve
-
-# Deploy to remote server
-./docs/scripts/build_pub.sh
+uv run mkdocs serve
 ```
 
 ##### Web Interface
 
-**Protocol**: HTTP/HTTPS
+**Protocol**: HTTPS
 **Description**: User-facing documentation website
-**Access**: <http://192.168.168.5/cpaiops/> (production) or <http://localhost:8000> (development)
+**Access**: <https://antragh.github.io/arlogi/> (production) or <http://localhost:8000> (development)
 
 **Features**:
 
@@ -451,10 +447,8 @@ mkdocs serve
   - Mermaid diagram rendering
   - SuperFences for custom blocks
 
-- **nginx Web Server**: Production hosting
-  - Static file serving
-  - HTTP/HTTPS support
-  - Document root: `/opt/c/nginx/html/arlogi`
+- **GitHub Pages**: Production hosting
+  - Static file serving over HTTPS via `.github/workflows/deploy-docs.yml`
 
 #### Infrastructure
 
@@ -464,15 +458,13 @@ mkdocs serve
 - **Custom CSS**: `extra.css`
 - **Source Files**: `docs/` directory with markdown files
 - **Build Output**: `site/` directory (static HTML)
-- **Remote Server**: 192.168.168.5 via SSH/rsync
+- **Deployment Target**: GitHub Pages (`https://antragh.github.io/arlogi/`)
 
 **Build Commands**:
 
 ```bash
-# Generate API reference
-python docs/scripts/gen_ref_pages.py
-
-# Build site
+# Build site strictly
+uv run mkdocs build --strict
 mkdocs build
 
 # Serve locally (development)

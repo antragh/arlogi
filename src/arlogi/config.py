@@ -7,11 +7,55 @@ following the Builder pattern for flexible construction.
 import logging
 import sys
 from dataclasses import dataclass, fields
-from typing import Any, Literal
+from pathlib import Path
+from typing import Any, Literal, cast
 
 from .levels import TRACE_LEVEL_NUM
 
 RotateSchedule = Literal["hour", "day", "week", "month"]
+VALID_ROTATE_SCHEDULES: frozenset[str] = frozenset({"hour", "day", "week", "month"})
+SyslogFormat = Literal["text", "json"]
+VALID_SYSLOG_FORMATS: frozenset[str] = frozenset({"text", "json"})
+
+
+def validate_syslog_format(value: Any) -> SyslogFormat:
+    """Validate and narrow a syslog_format value to SyslogFormat."""
+    if not isinstance(value, str) or value not in VALID_SYSLOG_FORMATS:
+        valid = ", ".join(sorted(VALID_SYSLOG_FORMATS))
+        raise ValueError(f"Invalid syslog_format: {value!r}. Valid values: {valid}")
+    return cast("SyslogFormat", value)
+
+
+def validate_json_file_name(value: Any) -> str:
+    """Validate a non-None JSON log file name."""
+    if not isinstance(value, str) or not value.strip() or "\x00" in value:
+        raise ValueError("json_file_name must be a non-empty string when provided")
+    return value
+
+
+def validate_base_dir(value: Any) -> str | Path:
+    """Validate a non-None base_dir containment path."""
+    if isinstance(value, bool) or not isinstance(value, (str, Path)):
+        raise ValueError("base_dir must be a non-empty path when provided")
+    text = str(value)
+    if not text.strip() or "\x00" in text:
+        raise ValueError("base_dir must be a non-empty path when provided")
+    return value
+
+
+def validate_rotate_schedule(value: Any) -> RotateSchedule:
+    """Validate a non-None rotation schedule."""
+    if not isinstance(value, str) or value not in VALID_ROTATE_SCHEDULES:
+        valid = ", ".join(sorted(VALID_ROTATE_SCHEDULES))
+        raise ValueError(f"Invalid rotate_schedule: {value!r}. Valid values: {valid}")
+    return cast("RotateSchedule", value)
+
+
+def validate_rotate_retention_count(value: Any) -> int:
+    """Validate a non-None rotation retention count."""
+    if isinstance(value, bool) or not isinstance(value, int) or value < 1:
+        raise ValueError("rotate_retention_count must be >= 1 when provided")
+    return value
 
 
 @dataclass(frozen=True)
@@ -26,6 +70,7 @@ class LoggingConfig:
         json_file_only: If True, only output to JSON (no console)
         use_syslog: Enable syslog output
         syslog_address: Syslog server address (default: "/dev/log")
+        syslog_format: Syslog output format ("text" or "json", default: "text")
         rotate_schedule: Optional time-window schedule for file rotation
         rotate_retention_count: Optional retention count for rotated files
         show_time: Show timestamps in console output
@@ -40,6 +85,7 @@ class LoggingConfig:
     json_file_only: bool = False
     use_syslog: bool = False
     syslog_address: str | tuple[str, int] = "/dev/log"
+    syslog_format: SyslogFormat = "text"
     rotate_schedule: RotateSchedule | None = None
     rotate_retention_count: int | None = None
     show_time: bool = False
@@ -51,6 +97,9 @@ class LoggingConfig:
         # Validate level
         self._validate_level(self.level)
 
+        # Validate syslog format eagerly even when use_syslog is False
+        validate_syslog_format(self.syslog_format)
+
         # Validate module levels if provided
         if self.module_levels:
             for name, m_level in self.module_levels.items():
@@ -58,22 +107,21 @@ class LoggingConfig:
                     raise ValueError(f"Invalid module name: {name!r}")
                 self._validate_level(m_level)
 
+        # Validate JSON file name
+        if self.json_file_name is not None:
+            validate_json_file_name(self.json_file_name)
+
+        # Validate JSON base directory
+        if self.json_file_base_dir is not None:
+            validate_base_dir(self.json_file_base_dir)
+
         # Validate rotation schedule
         if self.rotate_schedule is not None:
-            valid_schedules = {"hour", "day", "week", "month"}
-            if self.rotate_schedule not in valid_schedules:
-                raise ValueError(
-                    f"Invalid rotate_schedule: {self.rotate_schedule!r}. "
-                    f"Valid values: {', '.join(sorted(valid_schedules))}"
-                )
+            validate_rotate_schedule(self.rotate_schedule)
 
         # Validate rotation retention count
-        if self.rotate_retention_count is not None and (
-            isinstance(self.rotate_retention_count, bool)
-            or not isinstance(self.rotate_retention_count, int)
-            or self.rotate_retention_count < 1
-        ):
-            raise ValueError("rotate_retention_count must be >= 1 when provided")
+        if self.rotate_retention_count is not None:
+            validate_rotate_retention_count(self.rotate_retention_count)
 
     @staticmethod
     def _parse_level(level: int | str) -> int:
@@ -198,6 +246,13 @@ class LoggingConfig:
             )
 
         return cls(**kwargs)
+
+
+def resolve_logger_level(level: int | str) -> int:
+    """Resolve a per-logger level override, accepting case-insensitive 'NOTSET'."""
+    if isinstance(level, str) and level.upper() == "NOTSET":
+        return logging.NOTSET
+    return LoggingConfig._parse_level(level)
 
 
 def is_test_mode() -> bool:

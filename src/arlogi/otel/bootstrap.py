@@ -26,6 +26,22 @@ _tracer_provider: TracerProvider | None = None
 _meter_provider: MeterProvider | None = None
 
 
+def _validate_netloc_port(parsed: Any, endpoint: str) -> None:
+    """Reject dangling empty ports and out-of-range ports including port 0."""
+    hostport = parsed.netloc.rsplit("@", 1)[-1]
+    if hostport.startswith("["):
+        if "]:" in hostport and not hostport.rsplit("]:", 1)[1]:
+            raise ValueError(f"Invalid OTLP endpoint: {endpoint!r}")
+    elif ":" in hostport and not hostport.rsplit(":", 1)[1]:
+        raise ValueError(f"Invalid OTLP endpoint: {endpoint!r}")
+    try:
+        port = parsed.port
+    except ValueError as exc:
+        raise ValueError(f"Invalid OTLP endpoint: {endpoint!r}") from exc
+    if port is not None and port < 1:
+        raise ValueError(f"Invalid OTLP endpoint: {endpoint!r}")
+
+
 def _validate_otlp_endpoint(endpoint: str) -> str:
     """Validate an OTLP HTTP endpoint before it is handed to an exporter.
 
@@ -40,7 +56,7 @@ def _validate_otlp_endpoint(endpoint: str) -> str:
     """
     if not isinstance(endpoint, str) or not endpoint:
         raise ValueError(f"Invalid OTLP endpoint: {endpoint!r}")
-    if any(ch.isspace() or ord(ch) < 32 or ord(ch) == 127 for ch in endpoint):
+    if any(ch.isspace() or ord(ch) < 32 or ord(ch) == 127 or ch in "?#;" for ch in endpoint):
         raise ValueError(f"Invalid OTLP endpoint: {endpoint!r}")
 
     parsed = urlparse(endpoint)
@@ -48,10 +64,7 @@ def _validate_otlp_endpoint(endpoint: str) -> str:
         raise ValueError(f"Invalid OTLP endpoint: {endpoint!r}")
     if parsed.params or parsed.query or parsed.fragment:
         raise ValueError(f"Invalid OTLP endpoint: {endpoint!r}")
-    try:
-        _ = parsed.port
-    except ValueError as exc:
-        raise ValueError(f"Invalid OTLP endpoint: {endpoint!r}") from exc
+    _validate_netloc_port(parsed, endpoint)
     return endpoint.rstrip("/")
 
 
@@ -74,6 +87,19 @@ def _clear_global_tracer_provider() -> None:
         logger.warning("could not release the global TracerProvider; re-initialisation may be ignored")
 
 
+def _reset_proxy_meters_locked(proxy: Any) -> None:
+    """Reset cached real meters and instruments on proxy meters under proxy._lock."""
+    for meter in getattr(proxy, "_meters", ()):
+        meter_lock = getattr(meter, "_lock", None)
+        if meter_lock is None or not hasattr(meter, "_real_meter"):
+            continue
+        with meter_lock:
+            meter._real_meter = None
+            for inst in getattr(meter, "_instruments", ()):
+                if hasattr(inst, "_real_instrument"):
+                    inst._real_instrument = None
+
+
 def _clear_global_meter_provider() -> None:
     """Release OpenTelemetry's process-global MeterProvider slot (see above)."""
     try:
@@ -87,6 +113,15 @@ def _clear_global_meter_provider() -> None:
             return
         internal._METER_PROVIDER_SET_ONCE = Once()
         internal._METER_PROVIDER = None
+
+        proxy = getattr(internal, "_PROXY_METER_PROVIDER", None)
+        proxy_lock = getattr(proxy, "_lock", None)
+        if proxy is None or proxy_lock is None or not hasattr(proxy, "_real_meter_provider"):
+            logger.warning("could not release the global MeterProvider; re-initialisation may be ignored")
+        else:
+            with proxy_lock:
+                proxy._real_meter_provider = None
+                _reset_proxy_meters_locked(proxy)
     except Exception:  # pragma: no cover - upstream internals moved
         logger.warning("could not release the global MeterProvider; re-initialisation may be ignored")
 
@@ -124,7 +159,9 @@ def setup_tracing(
             logger.warning("setup_tracing() called more than once; keeping existing provider")
             return _tracer_provider
 
-        validated_otlp = _validate_otlp_endpoint(otlp_endpoint) if otlp_endpoint else None
+        validated_otlp = (
+            _validate_otlp_endpoint(otlp_endpoint) if otlp_endpoint is not None and otlp_endpoint != "" else None
+        )
         file_exporter = RotatingJsonlSpanExporter(
             file_dir, prefix=file_prefix, rotate_hours=rotate_hours, retention_count=retention_count
         )
@@ -157,16 +194,20 @@ def shutdown_tracing() -> None:
     """Shut down and unregister the global TracerProvider.
 
     A no-op when tracing was never set up, so it is safe to call unconditionally
-    (and repeatedly) from host-application cleanup paths. After this returns,
-    :func:`setup_tracing` builds a fresh, working provider.
+    (and repeatedly) from host-application cleanup paths. Cached and global
+    provider state is always cleared even if ``provider.shutdown()`` raises,
+    so :func:`setup_tracing` can still build a fresh, working provider.
     """
     global _tracer_provider
     with _lock:
-        if _tracer_provider is None:
+        provider = _tracer_provider
+        if provider is None:
             return
-        _tracer_provider.shutdown()
-        _tracer_provider = None
-        _clear_global_tracer_provider()
+        try:
+            provider.shutdown()
+        finally:
+            _tracer_provider = None
+            _clear_global_tracer_provider()
 
 
 def _child_factories(node: Any) -> list[Any]:
@@ -178,6 +219,9 @@ def _child_factories(node: Any) -> list[Any]:
             children.append(child)
     if isinstance(node, functools.partial):
         children.append(node.func)
+        children.extend(arg for arg in node.args if callable(arg))
+        if node.keywords:
+            children.extend(val for val in node.keywords.values() if callable(val))
     if isinstance(node, types.FunctionType):
         for cell in node.__closure__ or ():
             try:
@@ -258,7 +302,9 @@ def setup_metrics(
             logger.warning("setup_metrics() called more than once; keeping existing provider")
             return _meter_provider
 
-        validated_otlp = _validate_otlp_endpoint(otlp_endpoint) if otlp_endpoint else None
+        validated_otlp = (
+            _validate_otlp_endpoint(otlp_endpoint) if otlp_endpoint is not None and otlp_endpoint != "" else None
+        )
         file_exporter = RotatingJsonlMetricExporter(
             file_dir, prefix=file_prefix, rotate_hours=rotate_hours, retention_count=retention_count
         )
@@ -299,13 +345,17 @@ def shutdown_metrics() -> None:
     """Shut down and unregister the global MeterProvider.
 
     A no-op when metrics were never set up, so it is safe to call unconditionally
-    (and repeatedly) from host-application cleanup paths. After this returns,
-    :func:`setup_metrics` builds a fresh, working provider.
+    (and repeatedly) from host-application cleanup paths. Cached and global
+    provider state is always cleared even if ``provider.shutdown()`` raises,
+    so :func:`setup_metrics` can still build a fresh, working provider.
     """
     global _meter_provider
     with _lock:
-        if _meter_provider is None:
+        provider = _meter_provider
+        if provider is None:
             return
-        _meter_provider.shutdown()
-        _meter_provider = None
-        _clear_global_meter_provider()
+        try:
+            provider.shutdown()
+        finally:
+            _meter_provider = None
+            _clear_global_meter_provider()

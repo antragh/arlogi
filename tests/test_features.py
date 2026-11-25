@@ -181,3 +181,16 @@ def test_caller_attribution_renders_without_backslash_on_console_and_json(tmp_pa
     handler.emit(rec)
     assert "[emit_with_attr()]" in buf.getvalue()
     assert r"\[emit_with_attr()]" not in buf.getvalue()
+
+
+def test_negative_and_boolean_caller_depth_disables_attribution(caplog):
+    caplog.set_level(logging.INFO)
+    logger = get_logger("test.bad_caller_depth")
+
+    for bad_depth in (-1, -2, -3, -4, -5, True, False):
+        caplog.clear()
+        logger.info("test", caller_depth=bad_depth)
+        assert len(caplog.records) == 1
+        rec = caplog.records[0]
+        assert rec.message == "test"
+        assert not hasattr(rec, "_arlogi_attribution")

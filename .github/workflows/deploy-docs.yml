@@ -29,10 +29,10 @@ jobs:
         uses: astral-sh/setup-uv@v5
 
       - name: Install dependencies
-        run: uv sync --frozen --group docs
+        run: uv sync --frozen --no-dev --group docs
 
       - name: Build documentation
-        run: uv run mkdocs build --strict
+        run: uv run --no-sync mkdocs build --strict
 
       - name: Prevent Jekyll processing
         run: touch site/.nojekyll

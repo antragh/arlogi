@@ -7,7 +7,7 @@ easier testing.
 
 import logging
 
-from .config import LoggingConfig
+from .config import LoggingConfig, validate_json_file_name
 from .handlers import (
     ArlogiSyslogHandler,
     ColoredConsoleHandler,
@@ -71,8 +71,9 @@ class HandlerFactory:
             >>> config = LoggingConfig(json_file_name="logs/app.jsonl")
             >>> handler = HandlerFactory.create_json_file(config)
         """
-        if not config.json_file_name:
+        if config.json_file_name is None:
             raise ValueError("json_file_name must be set in config")
+        validate_json_file_name(config.json_file_name)
 
         return JSONFileHandler(
             config.json_file_name,
@@ -103,7 +104,7 @@ class HandlerFactory:
             >>> config2 = LoggingConfig(json_file_only=True)
             >>> handler2 = HandlerFactory.create_json_handler(config2)
         """
-        if config.json_file_name:
+        if config.json_file_name is not None:
             return HandlerFactory.create_json_file(config)
         return HandlerFactory.create_json_stream()
 
@@ -121,7 +122,10 @@ class HandlerFactory:
             >>> config = LoggingConfig(use_syslog=True, syslog_address="/dev/log")
             >>> handler = HandlerFactory.create_syslog(config)
         """
-        return ArlogiSyslogHandler(address=config.syslog_address)
+        return ArlogiSyslogHandler(
+            address=config.syslog_address,
+            syslog_format=config.syslog_format,
+        )
 
     @classmethod
     def create_handlers(cls, config: LoggingConfig) -> list[logging.Handler]:
@@ -145,13 +149,13 @@ class HandlerFactory:
         handlers: list[logging.Handler] = []
         try:
             # JSON file handler
-            if config.json_file_name:
+            if config.json_file_name is not None:
                 handlers.append(cls.create_json_file(config))
 
             # Console handler (show unless json_file_only)
             if config.show_console:
                 handlers.append(cls.create_console(config))
-            elif config.json_file_only and not config.json_file_name:
+            elif config.json_file_only and config.json_file_name is None:
                 # JSON on console when json_file_only=True but no file specified
                 handlers.append(cls.create_json_stream())
 

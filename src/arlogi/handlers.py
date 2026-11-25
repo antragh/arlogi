@@ -19,6 +19,21 @@ from typing import Any
 from rich.console import Console
 from rich.logging import RichHandler
 
+from ._rotation import prune_archives
+from .config import (
+    SyslogFormat,
+    validate_base_dir,
+    validate_json_file_name,
+    validate_rotate_retention_count,
+    validate_rotate_schedule,
+    validate_syslog_format,
+)
+
+
+def _is_system_stream(stream: Any) -> bool:
+    """Return True if stream is one of the standard system streams."""
+    return stream in (sys.stderr, sys.stdout, sys.__stderr__, sys.__stdout__)
+
 
 class ColoredConsoleHandler(RichHandler):
     """A logging handler that uses rich for colored console output.
@@ -378,7 +393,7 @@ class JSONHandler(logging.StreamHandler):
             System streams (sys.stderr, sys.stdout) are not closed.
         """
         # Track whether we own the stream for cleanup purposes
-        self._owns_stream = stream is not None
+        self._owns_stream = stream is not None and not _is_system_stream(stream)
         self._closed = False
         super().__init__(stream)
         self.setFormatter(JSONFormatter())
@@ -393,18 +408,28 @@ class JSONHandler(logging.StreamHandler):
             if self._closed:
                 return
             self._closed = True
+            stream = self.stream
             try:
-                stream = self.stream
                 if stream is not None and not getattr(stream, "closed", False):
                     self.flush()
-
-                if self._owns_stream and stream is not None and hasattr(stream, "close"):
-                    if stream not in (sys.stderr, sys.stdout):
-                        if not getattr(stream, "closed", False):
+            finally:
+                try:
+                    if self._owns_stream and stream is not None and not _is_system_stream(stream):
+                        if hasattr(stream, "close") and not getattr(stream, "closed", False):
                             stream.close()
                         self.stream = None
-            finally:
-                super().close()
+                finally:
+                    super().close()
+        finally:
+            self.release()
+
+    def emit(self, record: logging.LogRecord) -> None:
+        """Emit a formatted JSON log record unless the handler is closed."""
+        self.acquire()
+        try:
+            if getattr(self, "_closed", False):
+                return
+            super().emit(record)
         finally:
             self.release()
 
@@ -446,6 +471,9 @@ class JSONFileHandler(logging.FileHandler):
             ValueError: If ``base_dir`` is set and the resolved log path
                 escapes it (directory traversal attempt).
         """
+        self._validate_rotation_params(rotate_schedule, rotate_retention_count)
+        validate_json_file_name(filename)
+
         if base_dir is not None:
             resolved = self._resolve_within_base(filename, base_dir)
         else:
@@ -463,10 +491,27 @@ class JSONFileHandler(logging.FileHandler):
         self.rotate_schedule = rotate_schedule
         # Retention default is only applied when schedule is enabled.
         self.rotate_retention_count = (
-            rotate_retention_count if rotate_retention_count is not None else (7 if rotate_schedule else None)
+            rotate_retention_count
+            if rotate_retention_count is not None
+            else (7 if rotate_schedule is not None else None)
         )
-        self._active_period_key = self._compute_period_key(self._now_local()) if self.rotate_schedule else None
+        self._active_period_key = (
+            self._compute_period_key(self._now_local()) if self.rotate_schedule is not None else None
+        )
+        stem, ext = os.path.splitext(os.path.basename(self.baseFilename))
+        self._archive_pattern = re.compile(
+            rf"^{re.escape(stem)}-(?P<stamp>\d{{4}}-\d{{2}}(?:-\d{{2}}(?:-\d{{2}})?)?|\d{{4}}-W\d{{2}})"
+            rf"(?:\.(?P<suffix>\d+))?{re.escape(ext)}$"
+        )
         self.setFormatter(JSONFormatter())
+
+    @staticmethod
+    def _validate_rotation_params(rotate_schedule: str | None, rotate_retention_count: int | None) -> None:
+        """Validate rotation arguments before creating directories or opening files."""
+        if rotate_schedule is not None:
+            validate_rotate_schedule(rotate_schedule)
+        if rotate_retention_count is not None:
+            validate_rotate_retention_count(rotate_retention_count)
 
     def close(self) -> None:
         """Close the handler and mark it closed so it will not reopen."""
@@ -489,11 +534,11 @@ class JSONFileHandler(logging.FileHandler):
             The resolved absolute path inside ``base_dir``
 
         Raises:
-            ValueError: If ``filename`` is empty, equals ``base_dir``, or
+            ValueError: If ``filename`` or ``base_dir`` is invalid, equals ``base_dir``, or
                 escapes ``base_dir``
         """
-        if not filename or not filename.strip():
-            raise ValueError("JSONFileHandler: filename must be a non-empty path")
+        validate_json_file_name(filename)
+        validate_base_dir(base_dir)
         base = os.path.realpath(os.path.abspath(str(base_dir)))
         candidate = os.path.normpath(filename) if os.path.isabs(filename) else os.path.join(base, filename)
         resolved = os.path.realpath(candidate)
@@ -543,40 +588,13 @@ class JSONFileHandler(logging.FileHandler):
         """Prune old rotated files based on retention count."""
         if self.rotate_retention_count is None:
             return
-
         parent_dir = os.path.dirname(self.baseFilename) or "."
-        stem, ext = os.path.splitext(os.path.basename(self.baseFilename))
-        archive_pattern = re.compile(
-            rf"^{re.escape(stem)}-(?:\d{{4}}-\d{{2}}(?:-\d{{2}}(?:-\d{{2}})?)?|\d{{4}}-W\d{{2}})"
-            rf"(?:\.\d+)?{re.escape(ext)}$"
+        prune_archives(
+            parent_dir,
+            self._archive_pattern,
+            self.rotate_retention_count,
+            active_path=self.baseFilename,
         )
-        base_abs = os.path.abspath(self.baseFilename)
-
-        try:
-            candidates: list[tuple[float, str]] = []
-            with os.scandir(parent_dir) as entries:
-                for entry in entries:
-                    if not archive_pattern.match(entry.name):
-                        continue
-                    if os.path.abspath(entry.path) == base_abs:
-                        continue
-                    try:
-                        candidates.append((entry.stat().st_mtime, entry.path))
-                    except OSError:
-                        continue
-
-            if len(candidates) <= self.rotate_retention_count:
-                return
-
-            candidates.sort(key=lambda item: item[0], reverse=True)
-            for _, old_path in candidates[self.rotate_retention_count :]:
-                try:
-                    os.remove(old_path)
-                except OSError:
-                    # Pruning failures should never fail application logging.
-                    continue
-        except OSError:
-            return
 
     def _rotation_key_for_emit(self) -> tuple[str, str] | None:
         """Return (archive_period_key, next_active_period_key) when emit should rotate."""
@@ -596,12 +614,13 @@ class JSONFileHandler(logging.FileHandler):
         if self.stream is None:
             self.stream = self._open()
 
-    def _try_ensure_stream_open(self) -> None:
+    def _try_ensure_stream_open(self, *, report_error: bool = True) -> None:
         """Best-effort stream reopen that never raises out of rotation recovery."""
         try:
             self._ensure_stream_open()
         except OSError:
-            self._report_rotation_error()
+            if report_error:
+                self._report_rotation_error()
 
     def _report_rotation_error(self) -> None:
         """Report an internal rotation error via handleError."""
@@ -632,14 +651,15 @@ class JSONFileHandler(logging.FileHandler):
     ) -> bool:
         """Rotate current file under lock. Returns True on successful rotation."""
         if period_key is None:
-            if self.rotate_schedule:
-                period_key = self._compute_period_key(self._now_local())
-            elif self._active_period_key:
-                period_key = self._active_period_key
+            if self.rotate_schedule is not None:
+                current_key = self._compute_period_key(self._now_local())
+                period_key = self._active_period_key or current_key
+                next_key: str | None = current_key
             else:
                 period_key = self._now_local().strftime("%Y-%m-%d-%H")
-
-        next_key = next_active_period_key if next_active_period_key is not None else period_key
+                next_key = None
+        else:
+            next_key = next_active_period_key if next_active_period_key is not None else period_key
 
         if not self._has_rotatable_content():
             self._active_period_key = next_key
@@ -655,9 +675,9 @@ class JSONFileHandler(logging.FileHandler):
                 self.stream = None
 
             os.replace(self.baseFilename, target)
-            self.stream = self._open()
             self._active_period_key = next_key
             self._prune_rotated_files()
+            self.stream = self._open()
             return True
         except PermissionError:
             # Windows: OS briefly holds the file after close (antivirus, open reader).
@@ -666,7 +686,7 @@ class JSONFileHandler(logging.FileHandler):
             return False
         except Exception:
             # Keep logging alive by restoring stream best-effort.
-            self._try_ensure_stream_open()
+            self._try_ensure_stream_open(report_error=False)
             self._report_rotation_error()
             return False
 
@@ -698,20 +718,39 @@ class JSONFileHandler(logging.FileHandler):
             self.handleError(record)
 
 
+class SyslogJSONFormatter(JSONFormatter):
+    """Syslog formatter that prefixes single-line JSON payloads with RFC 3164 TAG[PID]."""
+
+    def format(self, record: logging.LogRecord) -> str:
+        """Format log record as ``<name>[<process>]: <json_payload>``."""
+        payload = super().format(record)
+        return f"{record.name}[{record.process}]: {payload}"
+
+
+def _build_syslog_formatter(syslog_format: SyslogFormat) -> logging.Formatter:
+    """Build the configured syslog formatter for text or json mode."""
+    if syslog_format == "json":
+        return SyslogJSONFormatter()
+    return logging.Formatter("%(name)s[%(process)d]: %(levelname)s: %(message)s")
+
+
 class ArlogiSyslogHandler(logging.handlers.SysLogHandler):
     """A robust syslog handler with standard formatting and automatic fallback.
 
     Features:
-    - Standard arlogi formatting for consistent syslog messages
+    - Standard arlogi text or structured JSON formatting for consistent syslog messages
     - Automatic fallback to UDP on localhost:514 if /dev/log fails
     - Graceful degradation - won't crash the application if syslog is unavailable
     """
+
+    priority_map = {**logging.handlers.SysLogHandler.priority_map, "TRACE": "debug"}
 
     def __init__(
         self,
         address: str | tuple[str, int] = "/dev/log",
         facility: int | str = logging.handlers.SysLogHandler.LOG_USER,
         socktype: int | None = None,
+        syslog_format: SyslogFormat = "text",
     ):
         """Initialize the syslog handler.
 
@@ -719,42 +758,111 @@ class ArlogiSyslogHandler(logging.handlers.SysLogHandler):
             address: Syslog server address (default: "/dev/log" for Unix socket)
             facility: Syslog facility (default: LOG_USER)
             socktype: Socket type (SOCK_STREAM or SOCK_DGRAM)
+            syslog_format: Syslog output format ("text" or "json", default: "text")
         """
+        self.syslog_format: SyslogFormat = validate_syslog_format(syslog_format)
+        formatter = _build_syslog_formatter(self.syslog_format)
         self._failed = False
-        target_address = address
-        # Proactively check /dev/log so systems without it fall back to localhost:514
-        if address == "/dev/log" and not os.path.exists("/dev/log"):
-            target_address = ("localhost", 514)
+        self._closed = False
+        target_address = ("localhost", 514) if address == "/dev/log" and not os.path.exists("/dev/log") else address
 
         try:
-            super().__init__(address=target_address, facility=facility, socktype=socktype)
-            self.setFormatter(logging.Formatter("%(name)s[%(process)d]: %(levelname)s: %(message)s"))
+            self._init_syslog_socket(target_address, facility, socktype, formatter)
         except Exception as e:
             if address == "/dev/log":
-                if target_address != ("localhost", 514):
-                    try:
-                        super().__init__(address=("localhost", 514), facility=facility, socktype=socktype)
-                        self.setFormatter(logging.Formatter("%(name)s[%(process)d]: %(levelname)s: %(message)s"))
-                        return
-                    except Exception:
-                        pass
-                logging.Handler.__init__(self)
-                self._failed = True
+                self._init_dev_log_fallback(target_address, facility, socktype, formatter)
             else:
                 raise e
 
-    def emit(self, record: logging.LogRecord) -> None:
-        """Emit a record, silently dropping it if syslog is unavailable."""
-        if getattr(self, "_failed", False):
-            return
+    def _has_live_socket(self) -> bool:
+        """Return True if the handler holds an open socket with a valid descriptor."""
+        sock = getattr(self, "socket", None)
+        if sock is None:
+            return False
         try:
-            super().emit(record)
-        except Exception:
+            return sock.fileno() != -1
+        except OSError:
+            return False
+
+    def _init_syslog_socket(
+        self,
+        address: str | tuple[str, int],
+        facility: int | str,
+        socktype: int | None,
+        formatter: logging.Formatter,
+    ) -> None:
+        """Initialize SysLogHandler and reject silent Unix socket connection failures."""
+        super().__init__(address=address, facility=facility, socktype=socktype)
+        if isinstance(address, str) and not self._has_live_socket():
+            self._close_socket_locked()
+            raise OSError(f"Failed to connect to syslog Unix socket: {address!r}")
+        self.setFormatter(formatter)
+
+    def _init_dev_log_fallback(
+        self,
+        initial_target: str | tuple[str, int],
+        facility: int | str,
+        socktype: int | None,
+        formatter: logging.Formatter,
+    ) -> None:
+        """Fall back to localhost:514 UDP or degrade to a non-fatal no-op handler."""
+        if initial_target != ("localhost", 514):
+            try:
+                self._init_syslog_socket(("localhost", 514), facility, socktype, formatter)
+                return
+            except Exception:
+                pass
+        logging.Handler.__init__(self)
+        self.setFormatter(formatter)
+        self.socket = None  # type: ignore[assignment]
+        self._failed = True
+        self._closed = False
+
+    def _close_socket_locked(self) -> None:
+        """Close and clear any underlying syslog socket under handler lock."""
+        self.acquire()
+        try:
+            sock = getattr(self, "socket", None)
+            if sock is not None:
+                try:
+                    sock.close()
+                except OSError:
+                    pass
+                self.socket = None  # type: ignore[assignment]
+        finally:
+            self.release()
+
+    def handleError(self, record: logging.LogRecord) -> None:
+        """Latch failed state and close socket on transport OSError instead of flooding stderr."""
+        exc_type = sys.exc_info()[0]
+        if exc_type is not None and issubclass(exc_type, OSError):
             self._failed = True
+            self._close_socket_locked()
+            return
+        super().handleError(record)
+
+    def emit(self, record: logging.LogRecord) -> None:
+        """Emit a record, silently dropping it if closed or syslog is unavailable."""
+        self.acquire()
+        try:
+            if getattr(self, "_closed", False) or getattr(self, "_failed", False):
+                return
+            try:
+                super().emit(record)
+            except Exception:
+                self._failed = True
+                self._close_socket_locked()
+        finally:
+            self.release()
 
     def close(self) -> None:
         """Close the handler safely even if initialization failed."""
-        if getattr(self, "_failed", False):
-            logging.Handler.close(self)
-            return
-        super().close()
+        self.acquire()
+        try:
+            self._closed = True
+            if getattr(self, "socket", None) is not None:
+                super().close()
+            else:
+                logging.Handler.close(self)
+        finally:
+            self.release()

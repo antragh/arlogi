@@ -18,10 +18,10 @@ jobs:
       matrix:
         include:
           - name: Core Only (no-otel)
-            sync-args: "--frozen --group test"
+            sync-args: "--frozen --no-dev --group test"
             run-lint: "false"
           - name: Full Suite + Lint (otel)
-            sync-args: "--frozen --group test --extra otel"
+            sync-args: "--frozen --no-dev --group test --extra otel"
             run-lint: "true"
     steps:
       - uses: actions/checkout@v4
@@ -40,8 +40,8 @@ jobs:
       - name: Run ruff check and format check
         if: matrix.run-lint == 'true'
         run: |
-          uv run ruff check src/ tests/
-          uv run ruff format --check src/ tests/
+          uv run --no-sync ruff check src/ tests/
+          uv run --no-sync ruff format --check src/ tests/
 
       - name: Run pytest
-        run: uv run pytest
+        run: uv run --no-sync pytest

@@ -12,6 +12,7 @@ Complete user guide for the arlogi logging library. Learn how to install, config
 - [Configuration](#configuration)
 - [Caller Attribution](#caller-attribution)
 - [Output Handlers](#output-handlers)
+- [OpenTelemetry Integration (`arlogi[otel]`)](#opentelemetry-integration-arlogiotel)
 - [Common Patterns](#common-patterns)
 - [Troubleshooting](#troubleshooting)
 
@@ -222,13 +223,16 @@ setup_logging(
 ```python
 from arlogi import setup_logging
 
-# Add syslog to root logger
+# Add syslog to root logger (plain text by default)
 setup_logging(
     level="INFO",
     use_syslog=True,
-    syslog_address="/dev/log"  # or ("localhost", 514)
+    syslog_address="/dev/log",  # or ("localhost", 514)
+    syslog_format="json",       # "text" (default) or "json" (<name>[<pid>]: {...})
 )
 ```
+
+When `syslog_format="json"`, `ArlogiSyslogHandler` uses `SyslogJSONFormatter` to emit single-line `<name>[<pid>]: {...}` messages compatible with `syslog-ng`, `rsyslog`, `systemd-journald`, `Promtail`/`Alloy`, `Vector`, and `Fluent Bit`. For large payloads or tracebacks, prefer `/dev/log` or TCP (`socktype=socket.SOCK_STREAM`) over UDP.
 
 ### Complete Configuration
 
@@ -360,9 +364,70 @@ json_logger.info("Structured log", extra={"key": "value"})
 ```python
 from arlogi import get_syslog_logger
 
-# Dedicated syslog logger
-security_logger = get_syslog_logger("security")
-security_logger.warning("Brute force attempt", extra={"ip": "192.168.1.1"})
+# Dedicated syslog logger (plain text by default, or structured JSON)
+security_logger = get_syslog_logger("security", syslog_format="json")
+security_logger.warning("Brute force attempt", ip="192.168.1.1")
+```
+
+---
+
+## OpenTelemetry Integration (`arlogi[otel]`)
+
+Install the optional OpenTelemetry extra when you need tracing, metrics, or log correlation (`rich` remains the sole dependency for core-only installs):
+
+```bash
+pip install "arlogi[otel]"
+# or
+uv add "arlogi[otel]"
+```
+
+### Lazy Import Boundary
+
+`arlogi.otel` loads SDK-backed helpers lazily via `__getattr__`, and `arlogi.otel.decorator` imports only `opentelemetry-api`. Importing `arlogi.otel` or using `@traced` / `set_trace_modules` in a library without `opentelemetry-sdk` installed does not pull in the SDK:
+
+```python
+from arlogi.otel.decorator import set_trace_modules, traced
+```
+
+### Public Exports (`arlogi.otel`)
+
+`arlogi.otel` exports 9 public symbols:
+
+- `setup_tracing`, `shutdown_tracing`: configure and tear down the process `TracerProvider` (state is cleared even if shutdown raises, allowing clean in-process restarts)
+- `setup_metrics`, `shutdown_metrics`: configure and tear down the process `MeterProvider` (releasing the proxy delegate cleanly on shutdown)
+- `install_log_correlation`: stamp active `trace_id` and `span_id` onto `LogRecord`s idempotently
+- `set_trace_modules`: enable or disable `@traced` spans per dotted module prefix
+- `traced`: decorator for sync functions, async coroutines, sync generators, and async generators (preserving `send`/`asend`, `throw`/`athrow`, and `close`/`aclose` cleanup inside the span even when gated off)
+- `RotatingJsonlSpanExporter`, `RotatingJsonlMetricExporter`: rotating OTLP-JSONL file exporters
+
+```python
+from arlogi.otel import (
+    RotatingJsonlMetricExporter,
+    RotatingJsonlSpanExporter,
+    install_log_correlation,
+    set_trace_modules,
+    setup_metrics,
+    setup_tracing,
+    shutdown_metrics,
+    shutdown_tracing,
+    traced,
+)
+
+setup_tracing("my-service", file_dir="logs", file_prefix="traces")
+setup_metrics("my-service", file_dir="logs", file_prefix="metrics")
+install_log_correlation()
+set_trace_modules({"my_app": True, "my_app.noisy": False})
+
+@traced(name="billing.charge", attrs={"component": "payments"})
+def charge_card(order_id: str) -> None:
+    ...
+
+# Direct exporter usage for custom SDK pipelines:
+span_exporter = RotatingJsonlSpanExporter("logs", prefix="custom-traces")
+metric_exporter = RotatingJsonlMetricExporter("logs", prefix="custom-metrics")
+
+shutdown_tracing()
+shutdown_metrics()
 ```
 
 ---
@@ -715,12 +780,14 @@ with log_context("database_migration"):
 ### Lazy Log Evaluation
 
 ```python
+import logging
 from arlogi import get_logger
 
 logger = get_logger(__name__)
 
-# Use lambda for expensive operations
-logger.debug(lambda: expensive_debug_info())
+# Guard expensive evaluation with isEnabledFor() or use lazy %s formatting
+if logger.isEnabledFor(logging.DEBUG):
+    logger.debug("Expensive debug info: %s", expensive_debug_info())
 ```
 
 ---
@@ -747,13 +814,13 @@ logger.debug(lambda: expensive_debug_info())
 
 ## Performance Tips
 
-1. **Use lazy evaluation for expensive operations**
+1. **Use `%s`-style deferred formatting to avoid eager string building**
 
    ```python
-   logger.debug(lambda: expensive_debug_info())
+   logger.debug("Expensive debug info: %s", cheap_or_lazily_formatted_arg)
    ```
 
-2. **Check log level before complex operations**
+2. **Check log level before expensive operations**
 
    ```python
    if logger.isEnabledFor(logging.DEBUG):

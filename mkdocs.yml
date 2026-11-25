@@ -1,4 +1,7 @@
 site_name: arlogi docs
+validation:
+  links:
+    anchors: warn
 exclude_docs: |
   .Notes/*
   _Notes_/*
@@ -87,5 +90,3 @@ nav:
       - Code - Tests: C4-Documentation/c4-code-tests.md
       - Code - Tests Example: C4-Documentation/c4-code-tests-example.md
       - Code - Docs Reference: C4-Documentation/c4-code-docs-reference.md
-      - Code - Docs Scripts: C4-Documentation/c4-code-docs-scripts.md
-      - Code - Subdir: C4-Documentation/c4-code-subdir.md

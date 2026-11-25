@@ -28,8 +28,6 @@ C4-Documentation/
 ├── c4-code-tests.md                   # Test suite code documentation
 ├── c4-code-tests-example.md           # Example tests code documentation
 ├── c4-code-docs-reference.md          # API reference docs structure
-├── c4-code-docs-scripts.md            # Documentation build scripts
-├── c4-code-subdir.md                  # Subdirectory test module
 └── apis/                              # API specifications
     └── arlogi-api.yaml                # OpenAPI 3.1.0 specification
 ```
@@ -58,9 +56,7 @@ C4-Documentation/
 - **[Source Code (src/arlogi)](c4-code-src-arlogi.md)** - Core library implementation
 - **[Test Suite (tests)](c4-code-tests.md)** - Test implementations
 - **[Example Tests (tests/example)](c4-code-tests-example.md)** - Example usage
-- **[Documentation Scripts (docs/scripts)](c4-code-docs-scripts.md)** - Build automation
 - **[API Reference (docs/reference)](c4-code-docs-reference.md)** - Generated documentation
-- **[Subdir Tests (subdir)](c4-code-subdir.md)** - Additional test module
 
 ### API Specifications
 
@@ -164,7 +160,7 @@ When making changes to the arlogi codebase:
 - **[API Reference](../API_REFERENCE.md)** - Complete API documentation
 - **[Developer Guide](../DEVELOPER_GUIDE.md)** - Contribution guidelines
 - **[Configuration Guide](../CONFIGURATION_GUIDE.md)** - Configuration options
-- **[Live Documentation](http://192.168.168.5/cpaiops/)** - Deployed documentation site
+- **[Live Documentation](https://antragh.github.io/arlogi/)** - Deployed documentation site
 
 ## License
 

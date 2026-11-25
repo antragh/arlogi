@@ -58,7 +58,6 @@ This component contains the following code-level elements:
 
 - [c4-code-tests.md](./c4-code-tests.md) - Main test suite documentation covering unit tests for core functionality and features, including test_core.py and test_features.py modules
 - [c4-code-tests-example.md](./c4-code-tests-example.md) - Integration examples directory documentation demonstrating practical usage patterns including multi-module logging and caller attribution
-- [c4-code-subdir.md](./c4-code-subdir.md) - Subdirectory test module documentation validating library behavior when imported from nested locations
 
 ## Interfaces
 

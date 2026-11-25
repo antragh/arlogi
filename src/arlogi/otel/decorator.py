@@ -37,36 +37,57 @@ def _module_enabled(module: str) -> bool:
 
 def _make_tracer_getter(module: str) -> Callable[[], trace.Tracer]:
     """Return a provider-keyed tracer lookup that tracks global provider restarts."""
-    cached_provider: Any = None
-    cached_tracer: trace.Tracer | None = None
+    cache: tuple[Any, trace.Tracer] | None = None
 
     def get_tracer() -> trace.Tracer:
-        nonlocal cached_provider, cached_tracer
+        nonlocal cache
         current_provider = trace.get_tracer_provider()
-        if current_provider is not cached_provider or cached_tracer is None:
-            cached_provider = current_provider
-            cached_tracer = trace.get_tracer(module)
-        return cached_tracer
+        if isinstance(current_provider, trace.ProxyTracerProvider):
+            return current_provider.get_tracer(module)
+        entry = cache
+        if entry is not None and entry[0] is current_provider:
+            return entry[1]
+        tracer = current_provider.get_tracer(module)
+        cache = (current_provider, tracer)
+        return tracer
 
     return get_tracer
 
 
-def _record_span_error(span: trace.Span, exc: BaseException) -> None:
+def _record_span_error(span: trace.Span | None, exc: BaseException) -> None:
     """Record an exception and ERROR status on an active span."""
+    if span is None:
+        return
     span.record_exception(exc)
     span.set_status(trace.StatusCode.ERROR, str(exc))
 
 
 async def _step_async_gen(
     gen: Any,
-    span: trace.Span,
+    span: trace.Span | None,
     pending_exc: BaseException | None,
     send_val: Any,
 ) -> Any:
+    if span is None:
+        if pending_exc is not None:
+            return await gen.athrow(pending_exc)
+        return await gen.asend(send_val)
     with trace.use_span(span, end_on_exit=False, record_exception=False, set_status_on_exception=False):
         if pending_exc is not None:
             return await gen.athrow(pending_exc)
         return await gen.asend(send_val)
+
+
+async def _close_async_gen(gen: Any, span: trace.Span | None) -> None:
+    if span is None:
+        await gen.aclose()
+        return
+    try:
+        with trace.use_span(span, end_on_exit=False, record_exception=False, set_status_on_exception=False):
+            await gen.aclose()
+    except Exception as exc:
+        _record_span_error(span, exc)
+        raise
 
 
 def _step_sync_gen(
@@ -81,6 +102,15 @@ def _step_sync_gen(
         return gen.send(send_val)
 
 
+def _close_sync_gen(gen: Any, span: trace.Span) -> None:
+    try:
+        with trace.use_span(span, end_on_exit=False, record_exception=False, set_status_on_exception=False):
+            gen.close()
+    except Exception as exc:
+        _record_span_error(span, exc)
+        raise
+
+
 def _wrap_async_gen(
     fn: Callable[..., Any],
     span_name: str,
@@ -90,12 +120,8 @@ def _wrap_async_gen(
 ) -> Callable[..., Any]:
     @functools.wraps(fn)
     async def agen_wrapper(*args: Any, **kwargs: Any) -> Any:
-        if not _module_enabled(module):
-            async for item in fn(*args, **kwargs):
-                yield item
-            return
         gen = fn(*args, **kwargs)
-        span = get_tracer().start_span(span_name, attributes=attrs)
+        span = get_tracer().start_span(span_name, attributes=attrs) if _module_enabled(module) else None
         pending_exc: BaseException | None = None
         send_val: Any = None
         try:
@@ -118,9 +144,10 @@ def _wrap_async_gen(
             raise
         finally:
             try:
-                await gen.aclose()
+                await _close_async_gen(gen, span)
             finally:
-                span.end()
+                if span is not None:
+                    span.end()
 
     return agen_wrapper
 
@@ -160,7 +187,7 @@ def _wrap_sync_gen(
             raise
         finally:
             try:
-                gen.close()
+                _close_sync_gen(gen, span)
             finally:
                 span.end()
 

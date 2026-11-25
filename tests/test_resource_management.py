@@ -193,6 +193,109 @@ class TestJSONHandlerResourceManagement:
         assert bytes_stream.closed
         assert bytes_handler.stream is None
 
+    def test_json_handler_close_releases_owned_stream_on_flush_error(self):
+        from arlogi.handlers import JSONHandler
+
+        class FlushFailStream(StringIO):
+            def flush(self):
+                raise BrokenPipeError("broken pipe")
+
+        failing_stream = FlushFailStream()
+        handler = JSONHandler(stream=failing_stream)
+
+        with pytest.raises(BrokenPipeError):
+            handler.close()
+
+        assert failing_stream.closed
+        assert handler.stream is None
+        handler.close()  # second close is an idempotent no-op
+
+    def test_json_handler_close_never_closes_system_stream_under_redirection(self):
+        import contextlib
+        import sys
+
+        from arlogi.handlers import JSONHandler
+
+        original_stderr = sys.stderr
+        handler = JSONHandler(stream=original_stderr)
+        with contextlib.redirect_stderr(StringIO()):
+            handler.close()
+
+        assert not original_stderr.closed
+
+    def test_json_handler_post_close_emit_is_silent_noop(self, capsys):
+        import sys
+
+        from arlogi.handlers import JSONHandler
+
+        custom_stream = StringIO()
+        handler = JSONHandler(stream=custom_stream)
+        handler.close()
+        record = logging.LogRecord("test", logging.INFO, "test.py", 1, "after close", (), None)
+        handler.handle(record)
+
+        assert capsys.readouterr().err == ""
+
+        stderr_handler = JSONHandler(stream=sys.stderr)
+        stderr_handler.close()
+        stderr_handler.handle(record)
+        assert capsys.readouterr().err == ""
+
+
+class TestSyslogHandlerResourceManagement:
+    """Test ArlogiSyslogHandler socket cleanup on failure and close."""
+
+    def test_syslog_handler_releases_socket_when_emit_marks_failed(self):
+        from unittest.mock import patch
+
+        from arlogi.handlers import ArlogiSyslogHandler
+
+        handler = ArlogiSyslogHandler(address=("localhost", 514))
+        sock = handler.socket
+        assert sock is not None
+
+        record = logging.LogRecord("test", logging.INFO, "test.py", 1, "msg", (), None)
+        with patch.object(logging.handlers.SysLogHandler, "emit", side_effect=ValueError("closed stderr")):
+            handler.emit(record)
+
+        assert handler._failed is True
+        handler.close()
+        assert handler.socket is None
+        assert sock.fileno() == -1
+
+    def test_syslog_handler_failed_init_close_is_idempotent(self):
+        from unittest.mock import patch
+
+        from arlogi.handlers import ArlogiSyslogHandler
+
+        with patch("logging.handlers.SysLogHandler.__init__", side_effect=OSError("unavailable")):
+            handler = ArlogiSyslogHandler(address="/dev/log")
+            assert handler._failed is True
+            assert handler.socket is None
+            handler.close()
+            handler.close()
+
+    def test_syslog_handler_post_close_emit_does_not_reopen_socket(self):
+        import gc
+        import warnings
+
+        from arlogi.handlers import ArlogiSyslogHandler
+
+        handler = ArlogiSyslogHandler(address=("localhost", 514))
+        handler.close()
+        assert handler._closed is True
+
+        record = logging.LogRecord("test", logging.INFO, "test.py", 1, "after close", (), None)
+        gc.collect()
+        with warnings.catch_warnings(record=True) as caught:
+            warnings.simplefilter("always", ResourceWarning)
+            handler.handle(record)
+            assert handler.socket is None
+            del handler
+            gc.collect()
+
+        assert not any(issubclass(w.category, ResourceWarning) for w in caught)
+
 
 class TestJSONFileHandlerResourceManagement:
     """Test JSONFileHandler's file management."""

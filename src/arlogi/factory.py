@@ -8,29 +8,30 @@ and caller attribution features.
 import logging
 import threading
 from collections.abc import Mapping
+from enum import Enum, auto
 from pathlib import Path
 from typing import Any
 
-from .config import LoggingConfig, get_default_level, is_test_mode
+from .config import (
+    LoggingConfig,
+    SyslogFormat,
+    get_default_level,
+    is_test_mode,
+    resolve_logger_level,
+    validate_base_dir,
+    validate_json_file_name,
+)
 from .handler_factory import HandlerFactory
 from .handlers import ArlogiSyslogHandler, JSONFileHandler, JSONHandler
 from .levels import TRACE_LEVEL_NUM, register_trace_level
 from .types import LoggerProtocol
 
-_SETUP_DEFAULTS: dict[str, Any] = {
-    "level": logging.INFO,
-    "module_levels": None,
-    "json_file_name": None,
-    "json_file_base_dir": None,
-    "json_file_only": False,
-    "use_syslog": False,
-    "syslog_address": "/dev/log",
-    "rotate_schedule": None,
-    "rotate_retention_count": None,
-    "show_time": False,
-    "show_level": True,
-    "show_path": True,
-}
+
+class _Unset(Enum):
+    UNSET = auto()
+
+
+_UNSET = _Unset.UNSET
 
 
 class TraceLogger(logging.Logger):
@@ -70,10 +71,12 @@ class TraceLogger(logging.Logger):
 
     def _apply_caller_attribution(self, msg: Any, caller_depth_val: Any) -> tuple[Any, str | None]:
         """Append caller attribution suffix to msg when caller_depth is provided."""
-        if caller_depth_val is None:
+        if caller_depth_val is None or isinstance(caller_depth_val, bool):
             return msg, None
         try:
             depth = int(caller_depth_val)
+            if depth < 0:
+                return msg, None
             m0, _ = self._get_caller_info(0)
             mN, nN = self._get_caller_info(depth)
 
@@ -201,39 +204,43 @@ class LoggerFactory:
     @classmethod
     def setup(
         cls,
-        level: int | str = logging.INFO,
-        module_levels: dict[str, str | int] | None = None,
-        json_file_name: str | None = None,
-        json_file_only: bool = False,
-        use_syslog: bool = False,
-        syslog_address: str | tuple[str, int] = "/dev/log",
-        rotate_schedule: str | None = None,
-        rotate_retention_count: int | None = None,
-        show_time: bool = False,
-        show_level: bool = True,
-        show_path: bool = True,
+        level: int | str | _Unset = _UNSET,
+        module_levels: dict[str, str | int] | None | _Unset = _UNSET,
+        json_file_name: str | None | _Unset = _UNSET,
+        json_file_only: bool | _Unset = _UNSET,
+        use_syslog: bool | _Unset = _UNSET,
+        syslog_address: str | tuple[str, int] | _Unset = _UNSET,
+        rotate_schedule: str | None | _Unset = _UNSET,
+        rotate_retention_count: int | None | _Unset = _UNSET,
+        show_time: bool | _Unset = _UNSET,
+        show_level: bool | _Unset = _UNSET,
+        show_path: bool | _Unset = _UNSET,
         *,
-        json_file_base_dir: str | None = None,
+        json_file_base_dir: str | None | _Unset = _UNSET,
+        syslog_format: SyslogFormat | _Unset = _UNSET,
         config: LoggingConfig | None = None,
     ) -> None:
         """Centralized logging setup for arlogi.
 
         This method configures the root logger with the specified handlers
         and levels. It can be called multiple times to update configuration.
+        Unspecified parameters default to the corresponding ``LoggingConfig``
+        field defaults.
 
         Args:
-            level: Global root log level
-            module_levels: Per-module level overrides
-            json_file_name: Path to JSON log file
-            json_file_only: If True, only output JSON (no console)
-            use_syslog: Enable syslog output
-            syslog_address: Syslog server address
-            rotate_schedule: Optional rotation schedule for JSON file logging
-            rotate_retention_count: Optional number of rotated files to retain
-            show_time: Show timestamps in console output
-            show_level: Show log levels in console output
-            show_path: Show file paths in console output
-            json_file_base_dir: Optional base directory the JSON log file must stay within
+            level: Global root log level (default: logging.INFO)
+            module_levels: Per-module level overrides (default: None)
+            json_file_name: Path to JSON log file (default: None)
+            json_file_only: If True, only output JSON without console (default: False)
+            use_syslog: Enable syslog output (default: False)
+            syslog_address: Syslog server address (default: "/dev/log")
+            rotate_schedule: Optional rotation schedule for JSON file logging (default: None)
+            rotate_retention_count: Optional number of rotated files to retain (default: None)
+            show_time: Show timestamps in console output (default: False)
+            show_level: Show log levels in console output (default: True)
+            show_path: Show file paths in console output (default: True)
+            json_file_base_dir: Optional base directory the JSON log file must stay within (default: None)
+            syslog_format: Syslog output format ("text" or "json", default: "text")
             config: Optional pre-built LoggingConfig (cannot be combined with explicit overrides)
         """
         raw_params: dict[str, Any] = {
@@ -244,6 +251,7 @@ class LoggerFactory:
             "json_file_only": json_file_only,
             "use_syslog": use_syslog,
             "syslog_address": syslog_address,
+            "syslog_format": syslog_format,
             "rotate_schedule": rotate_schedule,
             "rotate_retention_count": rotate_retention_count,
             "show_time": show_time,
@@ -251,16 +259,15 @@ class LoggerFactory:
             "show_path": show_path,
         }
         if config is not None:
-            overridden = [
-                k for k, v in raw_params.items() if v != _SETUP_DEFAULTS[k] or type(v) is not type(_SETUP_DEFAULTS[k])
-            ]
+            overridden = [k for k, v in raw_params.items() if v is not _UNSET]
             if overridden:
                 raise ValueError(f"Cannot combine 'config' with explicit keyword arguments: {', '.join(overridden)}")
             cls.apply_config(config)
             return
 
+        explicit_params = {k: v for k, v in raw_params.items() if v is not _UNSET}
         with cls._init_lock:
-            built_config = LoggingConfig.from_kwargs(**raw_params)
+            built_config = LoggingConfig.from_kwargs(**explicit_params)
             cls._apply_configuration(built_config)
 
     @classmethod
@@ -304,6 +311,20 @@ class LoggerFactory:
         root = logging.getLogger()
         root.setLevel(config.resolved_level)
 
+    @staticmethod
+    def _swap_handlers(logger: logging.Logger, new_handlers: list[logging.Handler]) -> None:
+        """Atomically replace a logger's handler list, then close detached handlers."""
+        deduped = list(dict.fromkeys(new_handlers))
+        old_handlers = logger.handlers
+        logger.handlers = deduped
+        kept = set(deduped)
+        for handler in old_handlers:
+            if handler not in kept:
+                try:
+                    handler.close()
+                except Exception:
+                    pass
+
     @classmethod
     def _clear_and_add_handlers(cls, config: LoggingConfig) -> None:
         """Clear existing handlers and add configured ones atomically.
@@ -316,19 +337,7 @@ class LoggerFactory:
         """
         root = logging.getLogger()
         new_handlers = HandlerFactory.create_handlers(config)
-        old_handlers = root.handlers[:]
-
-        for handler in old_handlers:
-            root.removeHandler(handler)
-
-        for handler in new_handlers:
-            root.addHandler(handler)
-
-        for handler in old_handlers:
-            try:
-                handler.close()
-            except Exception:
-                pass
+        cls._swap_handlers(root, new_handlers)
 
     @staticmethod
     def _get_existing_logger(logger_name: str) -> logging.Logger | None:
@@ -340,28 +349,13 @@ class LoggerFactory:
 
     @staticmethod
     def _replace_logger_handlers(logger: logging.Logger, new_handler: logging.Handler) -> None:
-        """Detach old handlers, attach replacement, then close old handlers."""
-        old_handlers = logger.handlers[:]
-        for handler in old_handlers:
-            logger.removeHandler(handler)
-        logger.addHandler(new_handler)
-        for handler in old_handlers:
-            try:
-                handler.close()
-            except Exception:
-                pass
+        """Atomically replace handlers on a dedicated logger, then close old handlers."""
+        LoggerFactory._swap_handlers(logger, [new_handler])
 
     @staticmethod
     def _detach_and_close_handlers(logger: logging.Logger) -> None:
-        """Detach all handlers from a logger before closing them."""
-        old_handlers = logger.handlers[:]
-        for handler in old_handlers:
-            logger.removeHandler(handler)
-        for handler in old_handlers:
-            try:
-                handler.close()
-            except Exception:
-                pass
+        """Atomically detach all handlers from a logger before closing them."""
+        LoggerFactory._swap_handlers(logger, [])
 
     @classmethod
     def _configure_module_levels(cls, config: LoggingConfig) -> None:
@@ -403,14 +397,15 @@ class LoggerFactory:
         Returns:
             A logger instance supporting caller attribution
         """
+        resolved_level = resolve_logger_level(level) if level is not None else None
         if not cls._initialized:
             with cls._init_lock:
                 if not cls._initialized:
                     cls.setup(level=get_default_level())
 
         logger = logging.getLogger(name)
-        if level is not None:
-            logger.setLevel(level)
+        if resolved_level is not None:
+            logger.setLevel(resolved_level)
 
         return logger  # type: ignore
 
@@ -434,12 +429,17 @@ class LoggerFactory:
         with cls._init_lock:
             cls._initialize_trace_level()
 
-        if base_dir is not None and not json_file_name:
-            raise ValueError("base_dir cannot be specified when json_file_name is None")
+        if json_file_name is not None:
+            validate_json_file_name(json_file_name)
+
+        if base_dir is not None:
+            if json_file_name is None:
+                raise ValueError("base_dir cannot be specified when json_file_name is None")
+            validate_base_dir(base_dir)
 
         with cls._dedicated_lock:
             new_handler: logging.Handler = (
-                JSONFileHandler(json_file_name, base_dir=base_dir) if json_file_name else JSONHandler()
+                JSONFileHandler(json_file_name, base_dir=base_dir) if json_file_name is not None else JSONHandler()
             )
             logger = logging.getLogger(f"arlogi.json.{name}")
             logger.propagate = False
@@ -448,12 +448,18 @@ class LoggerFactory:
             return logger  # type: ignore
 
     @classmethod
-    def get_syslog_logger(cls, name: str = "syslog", address: str | tuple[str, int] = "/dev/log") -> LoggerProtocol:
+    def get_syslog_logger(
+        cls,
+        name: str = "syslog",
+        address: str | tuple[str, int] = "/dev/log",
+        syslog_format: SyslogFormat = "text",
+    ) -> LoggerProtocol:
         """Get a logger that only outputs to Syslog, bypassing root handlers.
 
         Args:
             name: Logger name suffix
             address: Syslog server address
+            syslog_format: Syslog output format ("text" or "json", default: "text")
 
         Returns:
             A syslog-only logger instance
@@ -462,7 +468,7 @@ class LoggerFactory:
             cls._initialize_trace_level()
 
         with cls._dedicated_lock:
-            new_handler = ArlogiSyslogHandler(address=address)
+            new_handler = ArlogiSyslogHandler(address=address, syslog_format=syslog_format)
             logger = logging.getLogger(f"arlogi.syslog.{name}")
             logger.propagate = False
             cls._replace_logger_handlers(logger, new_handler)
@@ -525,38 +531,41 @@ class LoggerFactory:
 
 
 def setup_logging(
-    level: int | str = logging.INFO,
-    module_levels: dict[str, str | int] | None = None,
-    json_file_name: str | None = None,
-    json_file_only: bool = False,
-    use_syslog: bool = False,
-    syslog_address: str | tuple[str, int] = "/dev/log",
-    rotate_schedule: str | None = None,
-    rotate_retention_count: int | None = None,
-    show_time: bool = False,
-    show_level: bool = True,
-    show_path: bool = True,
+    level: int | str | _Unset = _UNSET,
+    module_levels: dict[str, str | int] | None | _Unset = _UNSET,
+    json_file_name: str | None | _Unset = _UNSET,
+    json_file_only: bool | _Unset = _UNSET,
+    use_syslog: bool | _Unset = _UNSET,
+    syslog_address: str | tuple[str, int] | _Unset = _UNSET,
+    rotate_schedule: str | None | _Unset = _UNSET,
+    rotate_retention_count: int | None | _Unset = _UNSET,
+    show_time: bool | _Unset = _UNSET,
+    show_level: bool | _Unset = _UNSET,
+    show_path: bool | _Unset = _UNSET,
     *,
-    json_file_base_dir: str | None = None,
+    json_file_base_dir: str | None | _Unset = _UNSET,
+    syslog_format: SyslogFormat | _Unset = _UNSET,
     config: LoggingConfig | None = None,
 ) -> None:
     """Set up arlogi logging with the specified configuration.
 
-    This is a convenience wrapper around LoggerFactory.setup().
+    This is a convenience wrapper around LoggerFactory.setup(). Unspecified
+    parameters default to the corresponding ``LoggingConfig`` field defaults.
 
     Args:
-        level: Global root log level
-        module_levels: Per-module level overrides
-        json_file_name: Path to JSON log file
-        json_file_only: If True, only output JSON (no console)
-        use_syslog: Enable syslog output
-        syslog_address: Syslog server address
-        rotate_schedule: Optional rotation schedule for JSON file logging
-        rotate_retention_count: Optional number of rotated files to retain
-        show_time: Show timestamps in console output
-        show_level: Show log levels in console output
-        show_path: Show file paths in console output
-        json_file_base_dir: Optional base directory the JSON log file must stay within
+        level: Global root log level (default: logging.INFO)
+        module_levels: Per-module level overrides (default: None)
+        json_file_name: Path to JSON log file (default: None)
+        json_file_only: If True, only output JSON without console (default: False)
+        use_syslog: Enable syslog output (default: False)
+        syslog_address: Syslog server address (default: "/dev/log")
+        rotate_schedule: Optional rotation schedule for JSON file logging (default: None)
+        rotate_retention_count: Optional number of rotated files to retain (default: None)
+        show_time: Show timestamps in console output (default: False)
+        show_level: Show log levels in console output (default: True)
+        show_path: Show file paths in console output (default: True)
+        json_file_base_dir: Optional base directory the JSON log file must stay within (default: None)
+        syslog_format: Syslog output format ("text" or "json", default: "text")
         config: Optional pre-built LoggingConfig (cannot be combined with explicit overrides)
     """
     LoggerFactory.setup(
@@ -572,6 +581,7 @@ def setup_logging(
         show_level=show_level,
         show_path=show_path,
         json_file_base_dir=json_file_base_dir,
+        syslog_format=syslog_format,
         config=config,
     )
 
@@ -627,17 +637,22 @@ def rotate_json_logger(name: str = "json") -> int:
         return rotated
 
 
-def get_syslog_logger(name: str = "syslog", address: str | tuple[str, int] = "/dev/log") -> LoggerProtocol:
+def get_syslog_logger(
+    name: str = "syslog",
+    address: str | tuple[str, int] = "/dev/log",
+    syslog_format: SyslogFormat = "text",
+) -> LoggerProtocol:
     """Get a dedicated syslog-only logger.
 
     Args:
         name: Logger name suffix
         address: Syslog server address
+        syslog_format: Syslog output format ("text" or "json", default: "text")
 
     Returns:
         A syslog-only logger instance
     """
-    return LoggerFactory.get_syslog_logger(name, address)
+    return LoggerFactory.get_syslog_logger(name, address, syslog_format=syslog_format)
 
 
 def cleanup_json_logger(name: str = "json") -> None:

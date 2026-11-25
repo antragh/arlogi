@@ -46,8 +46,10 @@ process_data(42)
 **Output:**
 
 ```text
-INFO    [process_data()]                          Processing data started
-INFO    [process_data()]                          Processing completed, result=84
+I  Processing data started
+   [process_data()]
+I  Processing completed
+   [process_data()]
 ```
 
 ### Using `caller_depth=1` (Immediate Caller)
@@ -60,7 +62,7 @@ from arlogi import get_logger
 logger = get_logger("example")
 
 def helper_function():
-    # Shows [from main_function()] - the function that called helper_function
+    # Shows [from .main_function()] - the function that called helper_function
     logger.info("Helper operation completed", caller_depth=1)
     logger.info("Helper operation details", caller_depth=1, operation_type="compute")
 
@@ -78,10 +80,14 @@ main_function()
 **Output:**
 
 ```text
-INFO    [main_function()]                        Main started
-INFO    [from main_function()]                   Helper operation completed
-INFO    [from main_function()]                   Helper operation details, operation_type=compute
-INFO    [main_function()]                        Main completed
+I  Main started
+   [main_function()]
+I  Helper operation completed
+   [from .main_function()]
+I  Helper operation details
+   [from .main_function()]
+I  Main completed
+   [main_function()]
 ```
 
 ### Using `caller_depth=2` (Caller's Caller)
@@ -94,7 +100,7 @@ from arlogi import get_logger
 logger = get_logger("example")
 
 def deep_function():
-    # Shows [from top_function()] - two levels up the call stack
+    # Shows [from .top_function()] - two levels up the call stack
     logger.info("Deep operation", caller_depth=2)
     logger.info("Deep details", caller_depth=2, depth="deep")
 
@@ -112,10 +118,14 @@ top_function()
 **Output:**
 
 ```text
-INFO    [top_function()]                        Top function
-INFO    [middle_function()]                      Middle function
-INFO    [from top_function()]                   Deep operation
-INFO    [from top_function()]                   Deep details, depth=deep
+I  Top function
+   [top_function()]
+I  Middle function
+   [middle_function()]
+I  Deep operation
+   [from .top_function()]
+I  Deep details
+   [from .top_function()]
 ```
 
 ## Cross-Module Attribution
@@ -129,7 +139,7 @@ from arlogi import get_logger
 logger = get_logger("app")
 
 def helper_function():
-    # Shows [from main_function()] - same module, relative path
+    # Shows [from .main_function()] - same module, relative attribution
     logger.info("Helper completed", caller_depth=1)
 
 def main_function():
@@ -143,9 +153,12 @@ main_function()
 **Output:**
 
 ```text
-INFO    [main_function()]                        Main started
-INFO    [from main_function()]                   Helper completed
-INFO    [main_function()]                        Main completed
+I  Main started
+   [main_function()]
+I  Helper completed
+   [from .main_function()]
+I  Main completed
+   [main_function()]
 ```
 
 ### Cross-Module Attribution
@@ -157,7 +170,7 @@ from arlogi import get_logger
 logger = get_logger("utils.helpers")
 
 def process_data(data):
-    # Shows [from app.main_function()] - different module, full path
+    # Shows [from app.main.main_function()] - different module, full path
     logger.info("Processing data", caller_depth=1, data_id=data.get("id"))
     return {"status": "processed"}
 
@@ -178,9 +191,12 @@ main_function()
 **Output:**
 
 ```text
-INFO    [app.main_function()]                    Starting main
-INFO    [from app.main_function()]               Processing data, data_id=123
-INFO    [app.main_function()]                    Main completed, result={'status': 'processed'}
+I  Starting main
+   [main_function()]
+I  Processing data
+   [from app.main.main_function()]
+I  Main completed
+   [main_function()]
 ```
 
 ## Real-World Application Examples
@@ -395,12 +411,12 @@ class UserService:
         return f"user_{uuid.uuid4().hex[:8]}"
 
     def _save_user(self, user_id, user_data):
-        # Shows [from create_user()] - grandparent method
+        # Shows [from .application_logic()] - grandparent method
         logger.debug("Saving user to database", caller_depth=2, user_id=user_id)
         # Database save logic here
 
     def _send_welcome_email(self, user_data):
-        # Shows [from create_user()] - grandparent method
+        # Shows [from .application_logic()] - grandparent method
         logger.info("Sending welcome email", caller_depth=2, email=user_data.get("email"))
         # Email sending logic here
 
@@ -536,7 +552,7 @@ def test_function_call_attribution(caplog):
         test_function()
 
         # Check that the log contains caller attribution
-        assert "from test_function_call_attribution" in caplog.text
+        assert "[from .test_function_call_attribution()]" in caplog.text
 
 def test_deep_call_attribution(caplog):
     logger = get_logger("test_module")
@@ -554,7 +570,7 @@ def test_deep_call_attribution(caplog):
         top_function()
 
         # Check that the log shows top_function as caller
-        assert "from test_deep_call_attribution" in caplog.text
+        assert "[from .top_function()]" in caplog.text
 ```
 
 ## Best Practices

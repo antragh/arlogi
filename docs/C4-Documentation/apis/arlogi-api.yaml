@@ -83,7 +83,7 @@ paths:
           in: query
           schema:
             type: string
-          description: JSON log file path (null for stdout)
+          description: JSON log file path (null for stderr)
       responses:
         '200':
           description: JSON logger instance created
@@ -217,12 +217,9 @@ paths:
                   type: array
                   items: {}
                   description: Message formatting arguments
-                from_caller:
+                caller_depth:
                   type: integer
                   description: Stack depth for caller attribution
-                from_:
-                  type: integer
-                  description: Alternative parameter for caller attribution
                 extra:
                   type: object
                   description: Additional log record attributes
@@ -507,14 +504,10 @@ components:
           type: array
           items: {}
           description: Message formatting arguments (for % formatting)
-        from_caller:
+        caller_depth:
           type: integer
           minimum: 0
           description: Stack depth for caller attribution (0 = call site, 1 = caller of call site)
-        from_:
-          type: integer
-          minimum: 0
-          description: Alternative parameter name for caller attribution
         extra:
           type: object
           description: Additional attributes to add to the LogRecord
@@ -522,7 +515,7 @@ components:
       example:
         message: "User {user} performed action {action}"
         args: ["john_doe", "login"]
-        from_caller: 1
+        caller_depth: 1
         extra:
           user_id: 123
           ip_address: "192.168.1.1"
@@ -568,7 +561,7 @@ examples:
     summary: TRACE level logging with caller attribution
     value:
       message: "Entering user authentication"
-      from_caller: 2
+      caller_depth: 2
       extra:
         user_id: 12345
 

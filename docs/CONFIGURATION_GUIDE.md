@@ -60,6 +60,7 @@ logger.info("Production logging configured")
 | `json_file_only`         | `bool`                                         | `False`      | Output only to JSON file (no console) |
 | `use_syslog`             | `bool`                                         | `False`      | Enable syslog output                  |
 | `syslog_address`         | `str \| tuple[str, int]`                       | `"/dev/log"` | Syslog server address                 |
+| `syslog_format`          | `"text" \| "json"`                             | `"text"`     | Syslog output format (`"text"` or `"json"`) |
 | `rotate_schedule`        | `"hour" \| "day" \| "week" \| "month" \| None` | `None`       | File rotation schedule                |
 | `rotate_retention_count` | `int \| None`                                  | `None`       | Number of rotated log files to retain |
 | `show_time`              | `bool`                                         | `False`      | Show timestamps in console output     |
@@ -107,6 +108,34 @@ config = LoggingConfig(
     },
 )
 setup_logging(config=config)
+```
+
+### Fluent Builder (`LoggingConfigBuilder`) & Base-Directory Containment
+
+Use `LoggingConfigBuilder` with `setup_logging(config=...)` or `LoggerFactory.apply_config(config)` for fluent configuration and strict `json_file_base_dir` / `base_dir` path containment:
+
+```python
+from arlogi import LoggerFactory, LoggingConfigBuilder, get_json_logger, rotate_json_logger, setup_logging
+
+config = (
+    LoggingConfigBuilder()
+    .with_level("INFO")
+    .with_module_levels({"app.db": "DEBUG"})
+    .with_json_file("app.jsonl")
+    .with_json_base_dir("/var/log/myapp")
+    .with_rotation("day", retention_count=7)
+    .build()
+)
+
+# Apply via setup_logging(config=...) or LoggerFactory.apply_config(config)
+# Note: setup_logging(config=...) raises ValueError if combined with any explicit override.
+setup_logging(config=config)
+LoggerFactory.apply_config(config)
+
+# Dedicated JSON logger with base_dir containment and manual rotation
+audit = get_json_logger("audit", "audit.jsonl", base_dir="/var/log/myapp")
+audit.info("Audit event", user_id=42)
+rotate_json_logger("audit")
 ```
 
 ### Module Hierarchy Matching
@@ -222,27 +251,44 @@ custom_logger.info("Custom JSON logging", custom_field="value")
 ### Syslog Configuration (Modern)
 
 ```python
-from arlogi import setup_logging
+from arlogi import LoggingConfigBuilder, get_syslog_logger, setup_logging
 
-# Local syslog
+# Local syslog (default text format)
 setup_logging(
     level="INFO",
     use_syslog=True,
     syslog_address="/dev/log"  # Default
 )
 
-# Remote syslog server
+# Remote syslog server with structured JSON payload (<name>[<pid>]: {...})
 setup_logging(
     level="INFO",
     use_syslog=True,
-    syslog_address=("syslog.example.com", 514)
+    syslog_address=("syslog.example.com", 514),
+    syslog_format="json",
 )
 
-# Syslog-only logger
-from arlogi import get_syslog_logger
-syslog_logger = get_syslog_logger("security")
-syslog_logger.error("Security event detected")
+# Fluent builder with JSON syslog
+config = (
+    LoggingConfigBuilder()
+    .with_level("INFO")
+    .with_syslog(("syslog.example.com", 514), syslog_format="json")
+    .build()
+)
+setup_logging(config=config)
+
+# Syslog-only logger with JSON formatting
+syslog_logger = get_syslog_logger("security", syslog_format="json")
+syslog_logger.error("Security event detected", user_id=42)
 ```
+
+When `syslog_format="json"` is selected, `ArlogiSyslogHandler` uses `SyslogJSONFormatter` to emit single-line RFC 3164 TAG+JSON frames:
+
+```text
+arlogi.syslog.security[12345]: {"timestamp": "2026-01-15T10:30:00.123456", "level": "ERROR", "logger_name": "arlogi.syslog.security", "message": "Security event detected", "module": "auth", "function": "check_login", "line_number": 42, "user_id": 42}
+```
+
+> **Note:** `syslog_format` accepts only exact lowercase `"text"` or `"json"` (default `"text"`). For large JSON payloads or multi-line exception tracebacks, prefer a local Unix socket (`/dev/log`) or TCP (`socktype=socket.SOCK_STREAM`) rather than UDP to avoid datagram MTU truncation.
 
 #### Syslog Handler Details
 
@@ -251,8 +297,8 @@ import socket
 
 from arlogi.handlers import ArlogiSyslogHandler
 
-# Local Unix domain socket
-handler = ArlogiSyslogHandler(address="/dev/log")
+# Local Unix domain socket with JSON formatting
+handler = ArlogiSyslogHandler(address="/dev/log", syslog_format="json")
 
 # Remote UDP syslog
 handler = ArlogiSyslogHandler(
@@ -261,11 +307,12 @@ handler = ArlogiSyslogHandler(
     socktype=socket.SOCK_DGRAM,
 )
 
-# Remote TCP syslog
+# Remote TCP syslog with JSON formatting (recommended for large JSON payloads)
 handler = ArlogiSyslogHandler(
     address=("logs.example.com", 514),
     facility="daemon",
     socktype=socket.SOCK_STREAM,
+    syslog_format="json",
 )
 
 # Custom facility
@@ -366,10 +413,10 @@ class LoggingSetup:
             setup_logging(
                 level="WARNING",  # Less verbose in production
                 module_levels={
+                    **module_levels,
                     f"{app_name}.auth": "ERROR",      # Only auth errors
                     f"{app_name}.api": "WARNING",     # API warnings
                     f"{app_name}.business": "INFO",   # Business events
-                    **module_levels
                 },
                 json_file_name=f"logs/{app_name}.jsonl",
                 use_syslog=True,
@@ -657,6 +704,7 @@ audit_logger.info("Audit trail entry")         # Goes to audit.jsonl
 
 ```python
 import logging
+from arlogi import get_logger
 from arlogi.handlers import ColoredConsoleHandler
 
 # Create custom console handler
@@ -686,6 +734,7 @@ logger.info("Custom formatted message")
 
 ```python
 import logging
+from arlogi import get_logger
 
 class BusinessEventFilter(logging.Filter):
     """Filter to only allow business event logs"""
@@ -697,9 +746,8 @@ class BusinessEventFilter(logging.Filter):
 logger = get_logger("business")
 business_filter = BusinessEventFilter()
 
-# Add filter to all handlers
-for handler in logger.handlers:
-    handler.addFilter(business_filter)
+# Attach filter to the logger
+logger.addFilter(business_filter)
 
 # These will be logged
 logger.info("User registered", event_type="user_signup")

@@ -7,7 +7,7 @@ less error-prone than direct constructor calls.
 
 import logging
 
-from .config import LoggingConfig, RotateSchedule
+from .config import LoggingConfig, RotateSchedule, SyslogFormat
 
 
 class LoggingConfigBuilder:
@@ -31,6 +31,7 @@ class LoggingConfigBuilder:
         self._json_file_only = False
         self._use_syslog = False
         self._syslog_address: str | tuple[str, int] = "/dev/log"
+        self._syslog_format: SyslogFormat = "text"
         self._rotate_schedule: RotateSchedule | None = None
         self._rotate_retention_count: int | None = None
         self._show_time = False
@@ -118,14 +119,18 @@ class LoggingConfigBuilder:
             >>> builder.with_json_console_only()
         """
         self._json_file_name = None
+        self._json_file_base_dir = None
         self._json_file_only = True
         return self
 
-    def with_syslog(self, address: str | tuple[str, int] = "/dev/log") -> "LoggingConfigBuilder":
+    def with_syslog(
+        self, address: str | tuple[str, int] = "/dev/log", syslog_format: SyslogFormat = "text"
+    ) -> "LoggingConfigBuilder":
         """Enable syslog output.
 
         Args:
             address: Syslog server address (default: "/dev/log" for Unix socket)
+            syslog_format: Syslog output format ("text" or "json", default: "text")
 
         Returns:
             Self for method chaining
@@ -134,11 +139,12 @@ class LoggingConfigBuilder:
             >>> # Unix socket
             >>> builder.with_syslog()
             >>>
-            >>> # Remote syslog server
-            >>> builder.with_syslog(("192.168.1.1", 514))
+            >>> # Remote syslog server with JSON payload
+            >>> builder.with_syslog(("192.168.1.1", 514), syslog_format="json")
         """
         self._use_syslog = True
         self._syslog_address = address
+        self._syslog_format = syslog_format
         return self
 
     def with_console_format(
@@ -199,6 +205,7 @@ class LoggingConfigBuilder:
             json_file_only=self._json_file_only,
             use_syslog=self._use_syslog,
             syslog_address=self._syslog_address,
+            syslog_format=self._syslog_format,
             rotate_schedule=self._rotate_schedule,
             rotate_retention_count=self._rotate_retention_count,
             show_time=self._show_time,

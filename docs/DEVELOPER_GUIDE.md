@@ -46,17 +46,14 @@ uv sync
 # Run tests
 uv run pytest
 
-# Run tests with coverage
-uv run pytest --cov=src/arlogi --cov-report=html
-
 # Run linter
-uv run ruff check src/arlogi tests
+uv run ruff check src/ tests/
 
-# Format code
-uv run ruff format src/arlogi tests
+# Check formatting
+uv run ruff format --check src/ tests/
 
-# Check with radon (complexity analysis)
-uv run radon cc src/arlogi -a -nb
+# Build documentation strictly
+uv run mkdocs build --strict
 ```
 
 ---
@@ -249,13 +246,16 @@ def test_test_mode_detection():
 
 ```bash
 # Check for issues
-uv run ruff check src/arlogi tests
+uv run ruff check src/ tests/
 
 # Auto-fix issues
-uv run ruff check --fix src/arlogi tests
+uv run ruff check --fix src/ tests/
+
+# Check formatting
+uv run ruff format --check src/ tests/
 
 # Format code
-uv run ruff format src/arlogi tests
+uv run ruff format src/ tests/
 ```
 
 ### Ruff Configuration
@@ -267,7 +267,6 @@ Key rules from `.ruff.toml`:
 | C901 | Complexity limit (10) | Error    |
 | F401 | Unused imports        | Error    |
 | F841 | Unused variables      | Error    |
-| SIM  | Simplify code         | Warning  |
 
 ### Complexity Limits
 
@@ -347,13 +346,16 @@ Create `.git/hooks/pre-commit`:
 set -e
 
 echo "Running ruff check..."
-uv run ruff check src/arlogi tests
+uv run ruff check src/ tests/
 
 echo "Running ruff format..."
-uv run ruff format --check src/arlogi tests
+uv run ruff format --check src/ tests/
 
 echo "Running tests..."
-uv run pytest tests/ -q
+uv run pytest
+
+echo "Building docs strictly..."
+uv run mkdocs build --strict
 
 echo "All checks passed!"
 ```
@@ -378,55 +380,32 @@ Arlogi uses semantic versioning: `MAJOR.MINOR.PATCH`
 
 ### Release Checklist
 
-1. **Update Version**
+Releases are managed with Commitizen (`cz`) and published automatically to PyPI via `.github/workflows/publish.yml` when a matching `v*` tag is pushed:
+
+1. **Run Full Quality Gates**
 
    ```bash
-   # Update pyproject.toml
-   version = "0.513.0"
+   uv run ruff check src/ tests/
+   uv run ruff format --check src/ tests/
+   uv run pytest
+   uv run mkdocs build --strict
    ```
 
-2. **Update Changelog**
-
-   ```markdown
-   ## [0.513.0] - 2025-12-28
-
-   ### Added
-
-   - New feature X
-
-   ### Changed
-
-   - Improved Y
-
-   ### Fixed
-
-   - Bug Z
-   ```
-
-3. **Run Full Test Suite**
+2. **Bump Version and Changelog with Commitizen**
 
    ```bash
-   uv run pytest --cov=src/arlogi
+   uv run cz bump
    ```
 
-4. **Create Git Tag**
+   (`cz bump` updates `pyproject.toml`, `CHANGELOG.md`, and creates the release commit and `vX.Y.Z` tag.)
+
+3. **Push Commit and Tag to Trigger Release Workflow**
 
    ```bash
-   git tag -a v0.513.0 -m "Release v0.513.0"
-   git push origin v0.513.0
+   git push origin master --tags
    ```
 
-5. **Build Distribution**
-
-   ```bash
-   uv build
-   ```
-
-6. **Publish to PyPI**
-
-   ```bash
-   uv publish
-   ```
+   `.github/workflows/publish.yml` verifies `refs/tags/v*` matches `pyproject.toml` version, builds `sdist`/`wheel`, and publishes via trusted publishing.
 
 ### Release Notes Template
 
@@ -485,8 +464,10 @@ See [MIGRATION.md](docs/MIGRATION.md) for upgrade instructions.
 4. **Run Quality Checks**
 
    ```bash
-   uv run ruff check src/arlogi tests
-   uv run pytest tests/
+   uv run ruff check src/ tests/
+   uv run ruff format --check src/ tests/
+   uv run pytest
+   uv run mkdocs build --strict
    ```
 
 5. **Commit Changes**
@@ -726,19 +707,35 @@ on:
       - master
   pull_request:
 
+permissions:
+  contents: read
+
 jobs:
   lint-and-test:
+    name: ${{ matrix.name }}
     runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - name: Core Only (no-otel)
+            sync-args: "--frozen --no-dev --group test"
+            run-lint: "false"
+          - name: Full Suite + Lint (otel)
+            sync-args: "--frozen --no-dev --group test --extra otel"
+            run-lint: "true"
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
         with:
           python-version: "3.13"
       - uses: astral-sh/setup-uv@v5
-      - run: uv sync --frozen --group test --extra otel
-      - run: uv run ruff check src/ tests/
-      - run: uv run ruff format --check src/ tests/
-      - run: uv run pytest
+      - run: uv sync ${{ matrix.sync-args }}
+      - if: matrix.run-lint == 'true'
+        run: |
+          uv run --no-sync ruff check src/ tests/
+          uv run --no-sync ruff format --check src/ tests/
+      - run: uv run --no-sync pytest
 ```
 
 ---

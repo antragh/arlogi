@@ -158,7 +158,7 @@ INFO    Hello, Arlogi!        [module()]
 | Handler | Purpose | Documentation |
 |---------|---------|---------------|
 | `ColoredConsoleHandler` | Rich console output | [API Reference](API_REFERENCE.md#coloredconsolehandler) |
-| `JSONHandler` | JSON to stderr | [API Reference](API_REFERENCE.md#jsonhandler) |
+| `JSONHandler` | JSON to stderr | [API Reference](API_REFERENCE.md#jsonhandler-and-jsonformatter) |
 | `JSONFileHandler` | JSON to file | [API Reference](API_REFERENCE.md#jsonfilehandler) |
 | `ArlogiSyslogHandler` | Syslog output | [API Reference](API_REFERENCE.md#arlogisysloghandler) |
 

@@ -193,6 +193,162 @@ class TestConcurrentLoggerCreation:
             cleanup_json_logger("same_name_race")
             assert len(raw_logger.handlers) == 0
 
+    def test_concurrent_dedicated_reconfiguration_has_no_last_resort_leak(self):
+        import sys
+
+        from arlogi import cleanup_json_logger
+
+        class _CountingHandler(logging.Handler):
+            def __init__(self) -> None:
+                super().__init__()
+                self.count = 0
+                self.lock = threading.Lock()
+
+            def emit(self, record: logging.LogRecord) -> None:
+                with self.lock:
+                    self.count += 1
+
+        last_resort_spy = _CountingHandler()
+        orig_interval = sys.getswitchinterval()
+        sys.setswitchinterval(1e-6)
+        try:
+            with tempfile.TemporaryDirectory() as tmpdir:
+                path = os.path.join(tmpdir, "audit.jsonl")
+                logger = get_json_logger("audit_window", path)
+                stop = threading.Event()
+                errors: list[Exception] = []
+
+                def emitter() -> None:
+                    try:
+                        for i in range(200):
+                            logger.warning(f"warn-{i}")
+                    except Exception as exc:
+                        errors.append(exc)
+
+                def reconfigurator() -> None:
+                    try:
+                        while not stop.is_set():
+                            get_json_logger("audit_window", path)
+                    except Exception as exc:
+                        errors.append(exc)
+
+                with patch.object(logging, "lastResort", last_resort_spy):
+                    t_emit = threading.Thread(target=emitter)
+                    t_reconf = threading.Thread(target=reconfigurator)
+                    t_reconf.start()
+                    t_emit.start()
+                    t_emit.join()
+                    stop.set()
+                    t_reconf.join()
+
+                assert not errors
+                assert last_resort_spy.count == 0
+                cleanup_json_logger("audit_window")
+        finally:
+            sys.setswitchinterval(orig_interval)
+
+    def test_concurrent_syslog_logger_swap_does_not_reopen_closed_sockets(self):
+        import gc
+        import sys
+        import warnings
+
+        from arlogi import cleanup_syslog_logger, get_syslog_logger
+
+        orig_interval = sys.getswitchinterval()
+        sys.setswitchinterval(1e-6)
+        try:
+            logger = get_syslog_logger("syslog_race", address=("127.0.0.1", 5140))
+            stop = threading.Event()
+            errors: list[Exception] = []
+
+            def emitter() -> None:
+                try:
+                    for i in range(150):
+                        logger.info(f"msg-{i}")
+                except Exception as exc:
+                    errors.append(exc)
+
+            def reconfigurator() -> None:
+                try:
+                    while not stop.is_set():
+                        get_syslog_logger("syslog_race", address=("127.0.0.1", 5140))
+                except Exception as exc:
+                    errors.append(exc)
+
+            with warnings.catch_warnings(record=True) as caught:
+                warnings.simplefilter("always", ResourceWarning)
+                t_emit = threading.Thread(target=emitter)
+                t_reconf = threading.Thread(target=reconfigurator)
+                t_reconf.start()
+                t_emit.start()
+                t_emit.join()
+                stop.set()
+                t_reconf.join()
+                cleanup_syslog_logger("syslog_race")
+                gc.collect()
+
+            assert not errors
+            assert not any(issubclass(w.category, ResourceWarning) for w in caught)
+        finally:
+            sys.setswitchinterval(orig_interval)
+
+    def test_concurrent_root_swap_delivers_to_all_handlers(self):
+        import sys
+
+        root = logging.getLogger()
+        orig_root_handlers = root.handlers[:]
+        orig_interval = sys.getswitchinterval()
+        per_record_hits: list[int] = []
+        hits_lock = threading.Lock()
+
+        class _TrackedHandler(logging.Handler):
+            def __init__(self) -> None:
+                super().__init__()
+                self.count = 0
+
+            def emit(self, record: logging.LogRecord) -> None:
+                with hits_lock:
+                    self.count += 1
+                    record._hit_count = getattr(record, "_hit_count", 0) + 1  # type: ignore[attr-defined]
+
+        stop_root = threading.Event()
+        root_errors: list[Exception] = []
+
+        def root_emitter() -> None:
+            try:
+                for i in range(200):
+                    rec = root.makeRecord("root.swap", logging.WARNING, __file__, 1, f"m-{i}", (), None)
+                    root.handle(rec)
+                    per_record_hits.append(getattr(rec, "_hit_count", 0))
+            except Exception as exc:
+                root_errors.append(exc)
+
+        def root_swapper() -> None:
+            try:
+                while not stop_root.is_set():
+                    LoggerFactory._swap_handlers(root, [_TrackedHandler(), _TrackedHandler(), _TrackedHandler()])
+            except Exception as exc:
+                root_errors.append(exc)
+
+        sys.setswitchinterval(1e-6)
+        try:
+            LoggerFactory._swap_handlers(root, [_TrackedHandler(), _TrackedHandler(), _TrackedHandler()])
+            last_resort_spy = _TrackedHandler()
+            with patch.object(logging, "lastResort", last_resort_spy):
+                t1 = threading.Thread(target=root_emitter)
+                t2 = threading.Thread(target=root_swapper)
+                t2.start()
+                t1.start()
+                t1.join()
+                stop_root.set()
+                t2.join()
+            assert last_resort_spy.count == 0
+            assert not root_errors
+            assert per_record_hits and all(h == 3 for h in per_record_hits)
+        finally:
+            LoggerFactory._swap_handlers(root, orig_root_handlers)
+            sys.setswitchinterval(orig_interval)
+
     def test_concurrent_logger_with_levels(self):
         """Test concurrent logger creation with different levels."""
         errors = []

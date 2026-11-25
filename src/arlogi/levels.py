@@ -31,21 +31,22 @@ def register_trace_level() -> None:
         if _trace_registered:
             return
 
-        # Check if already registered by someone else (e.g., another library)
-        if hasattr(logging, TRACE_LEVEL_NAME):
-            _trace_registered = True
-            return
+        # Register each TRACE piece independently so partial third-party definitions are repaired.
+        if logging.getLevelName(TRACE_LEVEL_NUM) != TRACE_LEVEL_NAME:
+            logging.addLevelName(TRACE_LEVEL_NUM, TRACE_LEVEL_NAME)
 
-        # Register the TRACE level
-        logging.addLevelName(TRACE_LEVEL_NUM, TRACE_LEVEL_NAME)
-        setattr(logging, TRACE_LEVEL_NAME, TRACE_LEVEL_NUM)
+        if not hasattr(logging, TRACE_LEVEL_NAME):
+            setattr(logging, TRACE_LEVEL_NAME, TRACE_LEVEL_NUM)
 
-        def trace(self: logging.Logger, message: str, *args: Any, **kws: Any) -> None:
-            """Log a message with TRACE level."""
-            if self.isEnabledFor(TRACE_LEVEL_NUM):
-                raw_sl = kws.get("stacklevel", 1)
-                kws["stacklevel"] = (raw_sl + 1) if isinstance(raw_sl, int) and not isinstance(raw_sl, bool) else 2
-                self._log(TRACE_LEVEL_NUM, message, args, **kws)
+        if not hasattr(logging.Logger, "trace"):
 
-        logging.Logger.trace = trace  # type: ignore
+            def trace(self: logging.Logger, msg: Any, *args: Any, **kws: Any) -> None:
+                """Log a message with TRACE level."""
+                if self.isEnabledFor(TRACE_LEVEL_NUM):
+                    raw_sl = kws.get("stacklevel", 1)
+                    kws["stacklevel"] = (raw_sl + 1) if isinstance(raw_sl, int) and not isinstance(raw_sl, bool) else 2
+                    self._log(TRACE_LEVEL_NUM, msg, args, **kws)
+
+            logging.Logger.trace = trace  # type: ignore
+
         _trace_registered = True

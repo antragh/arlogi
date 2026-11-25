@@ -8,7 +8,7 @@ Arlogi is a robust, type-safe Python logging library that provides enhanced colo
 
 ### Long Description
 
-Arlogi extends Python's standard logging module with modern features designed to solve the problem of inadequate logging capabilities in production applications. The system provides a custom TRACE log level (level 5) for ultra-detailed debugging, premium colored console output using the Rich library, structured JSON logging for log aggregation systems, and enterprise-grade syslog integration. The library's unique caller attribution feature allows developers to trace log calls across function boundaries using depth parameters (from_, from_caller, or **{"from": depth}), making it easier to understand the flow of complex applications. Arlogi is designed as a drop-in replacement for the standard logging module while maintaining full backward compatibility, prioritizing modern type-safe configuration objects (LoggingConfig) and provides legacy support for simple helper functions (setup_logging). The system ensures test-mode awareness for seamless pytest integration and follows SOLID principles for maintainability and clear separation of concerns.
+Arlogi extends Python's standard logging module with modern features designed to solve the problem of inadequate logging capabilities in production applications. The system provides a custom TRACE log level (level 5) for ultra-detailed debugging, premium colored console output using the Rich library, structured JSON logging for log aggregation systems, and enterprise-grade syslog integration. The library's unique caller attribution feature allows developers to trace log calls across function boundaries using `caller_depth`, making it easier to understand the flow of complex applications. Arlogi is designed as a drop-in replacement for the standard logging module while maintaining full backward compatibility, prioritizing modern type-safe configuration objects (`LoggingConfig` and `LoggingConfigBuilder`) applied via `setup_logging(config=...)` or `LoggerFactory.apply_config(config)` alongside keyword-based `setup_logging(...)`. The system ensures test-mode awareness for seamless pytest integration and follows SOLID principles for maintainability and clear separation of concerns.
 
 ---
 
@@ -47,7 +47,7 @@ Arlogi extends Python's standard logging module with modern features designed to
   - Provide lazy initialization patterns for logging
 - **Key Features Used**:
   - get_logger() for library logging
-  - Caller attribution with from_=1 to show caller context
+  - Caller attribution with `caller_depth=1` to show caller context
   - TRACE level for detailed debugging
   - Lazy logger initialization with LoggerProtocol
   - Safe logging patterns that work with or without arlogi setup
@@ -220,7 +220,7 @@ Arlogi extends Python's standard logging module with modern features designed to
    logger = get_logger(__name__)
 
    def fetch_user(user_id):
-       logger.info("Fetching user", from_=1)  # Show caller, not this function
+       logger.info("Fetching user", caller_depth=1)  # Show caller, not this function
        # ... fetch logic
        return user
    ```
@@ -240,7 +240,7 @@ Arlogi extends Python's standard logging module with modern features designed to
 4. **Deep Stack Tracing**: Developer uses deeper attribution for complex call stacks
 
    ```python
-   logger.debug("Processing", from_=2)  # Show caller's caller
+   logger.debug("Processing", caller_depth=2)  # Show caller's caller
    ```
 
 ### Application Developer: TRACE Logging Journey
@@ -256,9 +256,9 @@ Arlogi extends Python's standard logging module with modern features designed to
 2. **Use TRACE Logs**: Developer adds ultra-detailed logging
 
    ```python
-   logger.trace("Variable x = %s, y = %s", x, y, from_=0)
+   logger.trace("Variable x = %s, y = %s", x, y, caller_depth=0)
    logger.trace("Entering function complex_calculation")
-   logger.trace("Step 1: Initialize", from_=1)
+   logger.trace("Step 1: Initialize", caller_depth=1)
    logger.trace("Step 2: Validate inputs")
    logger.trace("Step 3: Perform calculation")
    logger.trace("Exiting function complex_calculation")
@@ -271,7 +271,7 @@ Arlogi extends Python's standard logging module with modern features designed to
        level="INFO",
        module_levels={"app.complex": "TRACE"}
    )
-   LoggerFactory._apply_configuration(config)
+   LoggerFactory.apply_config(config)
    ```
 
    - System: Python Package → TRACE level registration (logging.addLevelName)
@@ -280,7 +280,7 @@ Arlogi extends Python's standard logging module with modern features designed to
 
    ```python
    config = LoggingConfig(level="TRACE")
-   LoggerFactory._apply_configuration(config)
+   LoggerFactory.apply_config(config)
    ```
 
 ### Application Developer: Module Configuration Journey
@@ -304,7 +304,7 @@ Arlogi extends Python's standard logging module with modern features designed to
            "app.security": "WARNING"
        }
    )
-   LoggerFactory._apply_configuration(config)
+   LoggerFactory.apply_config(config)
    ```
 
    - System: Python Package → LoggingConfig → LoggerFactory._configure_module_levels()
@@ -384,10 +384,10 @@ Arlogi extends Python's standard logging module with modern features designed to
 2. **Apply Configuration**: Developer applies configuration to logging system
 
    ```python
-   LoggerFactory._apply_configuration(config)
+   LoggerFactory.apply_config(config)
    ```
 
-   - System: Python Package → LoggerFactory._apply_configuration()
+   - System: Python Package → LoggerFactory.apply_config()
 
 3. **Validate Configuration**: Developer benefits from automatic validation
    - Invalid log levels raise ValueError
@@ -457,7 +457,7 @@ Arlogi extends Python's standard logging module with modern features designed to
        use_syslog=True,
        syslog_address="/dev/log"
    )
-   LoggerFactory._apply_configuration(config)
+   LoggerFactory.apply_config(config)
    ```
 
    - System: Python Package → ArlogiSyslogHandler → Unix socket → Syslog Daemon
@@ -476,15 +476,14 @@ Arlogi extends Python's standard logging module with modern features designed to
        syslog_address=("syslog.example.com", 514),
        use_syslog=True
    )
-   LoggerFactory._apply_configuration(config)
+   LoggerFactory.apply_config(config)
    ```
 
    - System: ArlogiSyslogHandler → UDP → Remote Syslog Server
 
-5. **Automatic Fallback**: System gracefully handles syslog unavailability
-   - Try: Unix socket (/dev/log)
-   - Fallback 1: UDP on localhost:514
-   - Fallback 2: Silent (no errors, application continues)
+5. **Address-Specific Fallback**: Default `/dev/log` degrades gracefully; custom addresses fail fast
+   - Default `/dev/log`: Try Unix socket `/dev/log`, then UDP `localhost:514`, then degrade cleanly without raising
+   - Custom address (such as `("syslog.example.com", 514)`): Raises connection/initialization errors directly to the caller
 
 6. **Monitor Logs**: DevOps engineer views logs in syslog dashboard or SIEM tool
 
@@ -494,7 +493,7 @@ Arlogi extends Python's standard logging module with modern features designed to
 
 1. **Access Documentation**: User navigates to documentation website
    - System: Documentation Site (MkDocs) → Web Browser
-   - URL: <http://192.168.168.5/cpaiops/> (production) or <http://localhost:8000> (development)
+   - URL: <https://antragh.github.io/arlogi/> (production) or <http://localhost:8000> (development)
 
 2. **Browse API Reference**: User clicks "API Reference" in navigation menu
    - System: Documentation Site → API Reference Page
@@ -545,39 +544,27 @@ Arlogi extends Python's standard logging module with modern features designed to
 
    - System: Python Package Source Code
 
-2. **Generate API Reference**: Contributor runs documentation generation script
+2. **Build Documentation Site**: Contributor builds static HTML documentation
 
    ```bash
-   python docs/scripts/gen_ref_pages.py
-   ```
-
-   - System: gen_ref_pages.py → Scans src/arlogi/ → Extracts classes/functions/docstrings → Creates markdown files
-
-3. **Build Documentation Site**: Contributor builds static HTML documentation
-
-   ```bash
-   mkdocs build
+   uv run mkdocs build --strict
    ```
 
    - System: MkDocs → Reads markdown files → Runs MkDocstrings → Generates static HTML
 
-4. **Serve Locally**: Contributor previews documentation locally
+3. **Serve Locally**: Contributor previews documentation locally
 
    ```bash
-   mkdocs serve
+   uv run mkdocs serve
    ```
 
    - System: MkDocs dev server → <http://localhost:8000>
 
-5. **Deploy to Production**: Contributor deploys documentation to web server
+4. **Deploy to Production**: GitHub Actions deploys documentation on push to `master`
 
-   ```bash
-   docs/scripts/build_pub.sh
-   ```
+   - Workflow: `.github/workflows/deploy-docs.yml` → `uv run --no-sync mkdocs build --strict` → GitHub Pages (`https://antragh.github.io/arlogi/`)
 
-   - System: build_pub.sh → rsync → nginx Web Server (192.168.168.5)
-
-6. **Verify Deployment**: Contributor verifies documentation is accessible at production URL
+5. **Verify Deployment**: Contributor verifies documentation is accessible at production URL
 
 ---
 
@@ -646,19 +633,11 @@ Arlogi extends Python's standard logging module with modern features designed to
 - **Integration Type**: Documentation generation plugin
 - **Purpose**: Automatically extracts API documentation from Python source code (docstrings, type hints, function signatures) and generates markdown reference pages. Keeps documentation synchronized with code changes.
 
-### nginx Web Server
-
-- **Type**: Web Server (External System)
-- **Description**: High-performance HTTP server and reverse proxy
-- **Integration Type**: Static file hosting
-- **Purpose**: Documentation Site container deploys static HTML documentation to nginx web server at <http://192.168.168.5/cpaiops/>. Serves documentation files to users via HTTP/HTTPS. Enables public or internal access to documentation.
-
-### SSH/rsync (Deployment Tools)
-
-- **Type**: Network Protocol/File Transfer (External System)
-- **Description**: Secure Shell protocol and rsync file synchronization utility
-- **Integration Type**: Remote file transfer
-- **Purpose**: build_pub.sh script uses SSH/rsync to deploy documentation site to remote nginx server. Securely transfers files from development machine to production web server. Enables automated documentation deployment.
+### GitHub Pages
+- **Type**: Web Hosting (External System)
+- **Description**: Static site hosting for published project documentation
+- **Integration Type**: Static file hosting via `.github/workflows/deploy-docs.yml`
+- **Purpose**: Documentation Site container deploys static HTML documentation to GitHub Pages at <https://antragh.github.io/arlogi/>. Serves documentation files to users via HTTPS.
 
 ### JSON Log Files
 

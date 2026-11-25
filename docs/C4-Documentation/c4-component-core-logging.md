@@ -17,7 +17,7 @@ The Core Logging Library implements a complete logging infrastructure that addre
 
 1. **Enhanced Console Output**: Provides beautiful, colored console output using the Rich library with project root detection for relative file paths, making logs easier to read and understand.
 
-2. **Structured JSON Logging**: Outputs log records in JSON format with standard fields (timestamp, level, message, file, line, function) plus support for custom extra fields, ideal for log aggregation and analysis systems.
+2. **Structured JSON Logging**: Outputs log records in JSON format with canonical envelope fields (`timestamp`, `level`, `logger_name`, `message`, `module`, `function`, `line_number`, `exception`, plus optional `trace_id`/`span_id`) and support for custom fields, ideal for log aggregation and analysis systems.
 
 3. **Syslog Integration**: Offers native syslog integration with graceful fallback on systems where syslog is unavailable, making it suitable for production deployments.
 
@@ -64,7 +64,7 @@ The Core Logging Library provides the following software features:
 
 - **JSON Stream Output**: Structured JSON output to stderr for log aggregation
 - **JSON File Output**: Structured JSON output to rotating log files
-- **Standard Fields**: Automatic inclusion of timestamp, level, message, file, line number, function name
+- **Standard Fields**: Automatic inclusion of `timestamp`, `level`, `logger_name`, `message`, `module`, `function`, `line_number`, `exception` (plus `trace_id`/`span_id` when log correlation is active)
 - **Custom Extra Fields**: Support for adding custom fields to JSON log records
 - **Automatic Directory Creation**: JSON file handlers automatically create required directories
 
@@ -79,7 +79,7 @@ The Core Logging Library provides the following software features:
 - **Caller Attribution**: Automatic detection and display of calling function names
 - **Cross-Module Attribution**: Tracks call chains across module boundaries
 - **Stack Inspection**: Uses Python's stack inspection to determine log origin
-- **Custom Attribution**: Manual override of attribution using `from_caller` or `from_` parameters
+- **Custom Attribution**: Explicit stack depth attribution using `caller_depth` parameter
 
 ### Configuration Features
 
@@ -135,13 +135,13 @@ The Core Logging Library exposes multiple interfaces for different use cases:
 setup_logging(level: int | str = logging.INFO, **kwargs) -> None
 ```
 
-- **Description**: Configure the root logging system with specified level and options (Legacy/Deprecated)
+- **Description**: Configure the root logging system with specified `LoggingConfig` or keyword options
 - **Parameters**:
   - `level`: Global logging level (default: INFO)
   - `**kwargs**: Additional configuration options (module_levels, json_file_name, use_syslog, etc.)
 - **Returns**: None
 - **Example**: `setup_logging(level="DEBUG", json_file_name="app.jsonl")`
-- **Note**: This is a legacy helper that internally calls `LoggingConfig` and `LoggerFactory._apply_configuration`.
+- **Note**: Convenience wrapper that constructs `LoggingConfig` and delegates to `LoggerFactory.apply_config`.
 
 ```python
 get_logger(name: str, level: int | str | None = None) -> LoggerProtocol
@@ -184,24 +184,24 @@ get_syslog_logger(name: str = "syslog", address: str | tuple[str, int] = "/dev/l
 **Operations**:
 
 ```python
-trace(msg: Any, *args: Any, from_caller: str | None = None, from_: str | None = None, **kwargs: Any) -> None
+trace(msg: Any, *args: Any, caller_depth: int | None = None, **kwargs: Any) -> None
 ```
 
 - **Description**: Log a TRACE level message (below DEBUG)
 - **Parameters**:
   - `msg`: Log message (can be string or any object)
   - `*args`: Format arguments for message
-  - `from_caller`: Override caller function name
-  - `from_`: Alias for from_caller
+  - `caller_depth`: Stack depth for caller attribution (`0` = current, `1` = caller)
   - `**kwargs`: Extra fields for JSON handlers
 - **Returns**: None
 
 ```python
-debug(msg: Any, *args: Any, from_caller: str | None = None, from_: str | None = None, **kwargs: Any) -> None
-info(msg: Any, *args: Any, from_caller: str | None = None, from_: str | None = None, **kwargs: Any) -> None
-warning(msg: Any, *args: Any, from_caller: str | None = None, from_: str | None = None, **kwargs: Any) -> None
-error(msg: Any, *args: Any, from_caller: str | None = None, from_: str | None = None, **kwargs: Any) -> None
-critical(msg: Any, *args: Any, from_caller: str | None = None, from_: str | None = None, **kwargs: Any) -> None
+debug(msg: Any, *args: Any, caller_depth: int | None = None, **kwargs: Any) -> None
+info(msg: Any, *args: Any, caller_depth: int | None = None, **kwargs: Any) -> None
+warning(msg: Any, *args: Any, caller_depth: int | None = None, **kwargs: Any) -> None
+error(msg: Any, *args: Any, caller_depth: int | None = None, **kwargs: Any) -> None
+critical(msg: Any, *args: Any, caller_depth: int | None = None, **kwargs: Any) -> None
+fatal(msg: Any, *args: Any, caller_depth: int | None = None, **kwargs: Any) -> None
 ```
 
 - **Description**: Log messages at standard levels with caller attribution
@@ -209,7 +209,7 @@ critical(msg: Any, *args: Any, from_caller: str | None = None, from_: str | None
 - **Returns**: None
 
 ```python
-exception(msg: Any, *args: Any, from_caller: str | None = None, from_: str | None = None, **kwargs: Any) -> None
+exception(msg: Any, *args: Any, caller_depth: int | None = None, **kwargs: Any) -> None
 ```
 
 - **Description**: Log an exception with traceback information
@@ -217,7 +217,7 @@ exception(msg: Any, *args: Any, from_caller: str | None = None, from_: str | Non
 - **Returns**: None
 
 ```python
-log(level: int, msg: Any, *args: Any, from_caller: str | None = None, from_: str | None = None, **kwargs: Any) -> None
+log(level: int, msg: Any, *args: Any, caller_depth: int | None = None, **kwargs: Any) -> None
 ```
 
 - **Description**: Log a message at a custom level
@@ -320,7 +320,7 @@ LoggingConfig.to_dict() -> dict[str, Any]
 **Operations**:
 
 ```python
-LoggerFactory._apply_configuration(config: LoggingConfig) -> None
+LoggerFactory.apply_config(config: LoggingConfig) -> None
 ```
 
 - **Description**: Configure the root logging system using a configuration object (Recommended)
@@ -385,12 +385,15 @@ LoggerFactory.is_test_mode() -> bool
 {
   "timestamp": "string (ISO 8601 format)",
   "level": "string (level name)",
+  "logger_name": "string (logger name)",
   "message": "string (log message)",
-  "file": "string (file path)",
-  "line": "number (line number)",
+  "module": "string (module name)",
   "function": "string (function name)",
-  "caller": "string | null (caller function name if available)",
-  "extra": "object (custom fields from **kwargs)"
+  "line_number": "number (line number)",
+  "exception": "string | null (formatted traceback when present)",
+  "trace_id": "string (optional 32-hex OTEL trace ID)",
+  "span_id": "string (optional 16-hex OTEL span ID)",
+  "extra": "object (colliding custom fields only; non-colliding fields sit at top level)"
 }
 ```
 
@@ -400,15 +403,14 @@ LoggerFactory.is_test_mode() -> bool
 {
   "timestamp": "2025-12-28T20:30:45.123456",
   "level": "INFO",
+  "logger_name": "app.auth",
   "message": "User logged in successfully",
-  "file": "app/auth.py",
-  "line": 42,
+  "module": "auth",
   "function": "login",
-  "caller": "process_login",
-  "extra": {
-    "user_id": 12345,
-    "ip_address": "192.168.1.100"
-  }
+  "line_number": 42,
+  "exception": null,
+  "user_id": 12345,
+  "ip_address": "192.0.2.100"
 }
 ```
 
@@ -491,7 +493,7 @@ C4Component
         Component(handler_factory, "HandlerFactory", "Factory", "Creates and configures log handlers")
         Component(trace_logger, "TraceLogger", "Logger", "Custom logger with TRACE level and caller attribution")
         Component(logger_factory, "LoggerFactory", "Factory", "Creates and configures logger instances")
-        Component(api, "Public API", "Functions", "High-level convenience functions: get_logger, setup_logging (legacy), etc.")
+        Component(api, "Public API", "Functions", "High-level convenience functions: get_logger, setup_logging, etc.")
     }
 
     Person(user, "Application Developer", "Developer using arlogi")
@@ -524,14 +526,14 @@ flowchart TB
     end
 
     subgraph API["Public API"]
-        Setup["setup_logging() (legacy)"]
+        Setup["setup_logging()"]
         GetLogger["get_logger()"]
     end
 
     subgraph Factory["LoggerFactory"]
         SetupMethod["setup()"]
         GetLoggerMethod["get_logger()"]
-        ApplyConfig["_apply_configuration()"]
+        ApplyConfig["apply_config()"]
     end
 
     subgraph Config["Configuration"]

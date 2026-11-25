@@ -43,14 +43,10 @@ docs = [
     "mkdocstrings-python>=1.16.2",
     "pymdown-extensions>=10.19.1",
 ]
-graph = [
-    "graphifyy",
-    "radon>=6.0.1",
-]
 dev = [
     { include-group = "test" },
     { include-group = "docs" },
-    { include-group = "graph" },
+    "radon>=6.0.1",
     "commitizen>=4.0.0",
 ]
 
@@ -62,9 +58,6 @@ version_provider = "pep621"
 version_files = ["pyproject.toml"]
 update_changelog_on_bump = true
 changelog_file = "CHANGELOG.md"
-
-[tool.uv.sources]
-graphifyy = { git = "https://github.com/Graphify-Labs/graphify" }
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]

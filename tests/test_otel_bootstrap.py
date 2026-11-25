@@ -117,6 +117,26 @@ def test_install_log_correlation_is_idempotent(reset_otel_globals):
     install_log_correlation()
     assert logging.getLogRecordFactory() is third_party
 
+    # Chained third-party functools.partial wrappers (positional & keyword) must also be detected
+    import functools
+
+    def partial_pos(prev, *args: object, **kwargs: object) -> logging.LogRecord:
+        return prev(*args, **kwargs)
+
+    wrapped_pos = functools.partial(partial_pos, once)
+    logging.setLogRecordFactory(wrapped_pos)
+    install_log_correlation()
+    assert logging.getLogRecordFactory() is wrapped_pos
+
+    def partial_kw(*args: object, prev: object = None, **kwargs: object) -> logging.LogRecord:
+        assert callable(prev)
+        return prev(*args, **kwargs)  # type: ignore[operator]
+
+    wrapped_kw = functools.partial(partial_kw, prev=once)
+    logging.setLogRecordFactory(wrapped_kw)
+    install_log_correlation()
+    assert logging.getLogRecordFactory() is wrapped_kw
+
     # Proxy object whose __getattr__ raises must not break correlation detection
     class RaisingProxy:
         def __getattr__(self, name: str) -> object:
@@ -134,13 +154,24 @@ def test_install_log_correlation_is_idempotent(reset_otel_globals):
 @pytest.mark.parametrize(
     "bad_endpoint",
     [
+        " ",
+        "   ",
+        0,
+        False,
         "ftp://localhost:4318",
         "http://:4318",
         "http://user@",
         "http://   ",
         "http://localhost:99999",
+        "http://localhost:0",
+        "http://[::1]:0",
+        "http://localhost:",
+        "http://[::1]:",
         "http://localhost:abc",
         "http://localhost:4318\r\nfoo",
+        "http://collector:4318?",
+        "http://collector:4318#",
+        "http://collector:4318/otlp;",
         "http://collector:4318?token=abc",
         "http://collector:4318#frag",
     ],
@@ -161,6 +192,18 @@ def test_setup_tracing_and_metrics_reject_bad_endpoints_without_leaking_threads(
     assert threads_after - threads_before == set()
 
 
+def test_setup_tracing_and_metrics_treat_empty_string_otlp_endpoint_as_disabled(tmp_path, reset_otel_globals):
+    from arlogi.otel import setup_metrics, shutdown_metrics
+
+    tp = setup_tracing("svc", file_dir=tmp_path / "traces", otlp_endpoint="")
+    assert len(tp._active_span_processor._span_processors) == 1
+    shutdown_tracing()
+
+    mp = setup_metrics("svc", file_dir=tmp_path / "metrics", otlp_endpoint="")
+    assert len(mp._metric_readers) == 1
+    shutdown_metrics()
+
+
 def test_setup_tracing_preserves_external_global_provider(tmp_path, reset_otel_globals):
     from opentelemetry.sdk.trace import TracerProvider
 
@@ -171,3 +214,40 @@ def test_setup_tracing_preserves_external_global_provider(tmp_path, reset_otel_g
     assert returned is ext
     shutdown_tracing()
     assert trace.get_tracer_provider() is ext
+
+
+def test_shutdown_tracing_clears_state_when_processor_shutdown_raises(tmp_path, reset_otel_globals, monkeypatch):
+    from arlogi.otel import traced
+
+    first = setup_tracing("svc", file_dir=tmp_path / "run1", file_prefix="t1")
+    processor = first._active_span_processor._span_processors[0]
+    shutdown_calls = 0
+
+    def failing_shutdown(*args, **kwargs):
+        nonlocal shutdown_calls
+        shutdown_calls += 1
+        raise RuntimeError("processor shutdown boom")
+
+    monkeypatch.setattr(processor, "shutdown", failing_shutdown)
+
+    with pytest.raises(RuntimeError, match="processor shutdown boom"):
+        shutdown_tracing()
+    assert shutdown_calls == 1
+
+    # Repeated shutdown is a no-op and does not re-invoke the dead processor
+    shutdown_tracing()
+    assert shutdown_calls == 1
+
+    second = setup_tracing("svc", file_dir=tmp_path / "run2", file_prefix="t2")
+    assert second is not first
+    assert trace.get_tracer_provider() is second
+
+    @traced
+    def after_fail() -> str:
+        return "ok"
+
+    assert after_fail() == "ok"
+    shutdown_tracing()
+
+    payload = json.loads(next((tmp_path / "run2").glob("t2-*.jsonl")).read_text(encoding="utf-8").strip())
+    assert payload["resourceSpans"][0]["scopeSpans"][0]["spans"][0]["name"].endswith("after_fail")

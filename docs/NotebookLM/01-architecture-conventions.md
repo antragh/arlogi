@@ -258,16 +258,17 @@ MIT License - see [LICENSE](LICENSE) file for details.
 
 ## FILE: CLAUDE.md
 
-## Graphify
+## Source of truth
 
-This project has a graphify knowledge graph at graphify-out/.
+- Live source code under `src/` and OpenSpec specifications under `openspec/specs/` are the authoritative sources of truth for behavior, architecture, and invariants.
+- Keep documentation under `docs/` and `README.md` synchronized with `src/` and `openspec/specs/`.
 
-Rules:
+## Release & Publishing
 
-- Before answering architecture or codebase questions, read graphify-out/GRAPH_REPORT.md for god nodes and community structure
-- If graphify-out/wiki/index.md exists, navigate it instead of reading raw files
-- After modifying code files in this session, run `uv run python3 -c "from graphify.watch import _rebuild_code; from pathlib import Path; _rebuild_code(Path('.'))"` to keep the graph current
-- Always treat AST-based structure in graph.json as the source of truth if it conflicts with documentation in docs/
+- Use Conventional Commits (`feat: ...`, `fix: ...`, `docs: ...`, or `uv run cz commit`)
+- To release a new version:
+  1. Run `uv run cz bump` (bumps `pyproject.toml`, updates `CHANGELOG.md`, creates release commit & `vX.Y.Z` tag)
+  2. Run `git push origin master --tags` (triggers GitHub Actions to run tests, publish to PyPI, create GitHub Release, and deploy docs)
 
 ---
 
@@ -276,7 +277,7 @@ Rules:
 ```toml
 [project]
 name = "arlogi"
-version = "0.606.22"
+version = "0.611.25"
 description = "Robust, type-safe and highly configurable logging library for Python"
 readme = "README.md"
 authors = [
@@ -284,37 +285,65 @@ authors = [
 ]
 requires-python = ">=3.13"
 dependencies = [
-    "graphifyy",
     "rich>=14.2.0",
+]
+
+[project.optional-dependencies]
+otel = [
+    "opentelemetry-sdk>=1.30.0",
+    "opentelemetry-exporter-otlp-proto-http>=1.30.0",
 ]
 
 [build-system]
 requires = ["hatchling"]
 build-backend = "hatchling.build"
 
+[tool.hatch.build.targets.sdist]
+include = [
+    "/src",
+    "/tests",
+    "/README.md",
+    "/LICENSE",
+    "/pyproject.toml",
+]
+
 [dependency-groups]
-dev = [
+test = [
     "pytest>=9.0.2",
     "pytest-cov>=7.0.0",
-    "radon>=6.0.1",
     "ruff>=0.14.10",
-    "mkdocs-git-revision-date-localized-plugin>=1.5.0",
-    "mkdocs-minify-plugin>=0.8.0",
+    "psutil>=7.2.1",
+]
+docs = [
     "mkdocs-material>=9.7.1",
     "mkdocstrings>=1.0.0",
     "mkdocstrings-python>=1.16.2",
     "pymdown-extensions>=10.19.1",
-    "psutil>=7.2.1",
+]
+dev = [
+    { include-group = "test" },
+    { include-group = "docs" },
+    "radon>=6.0.1",
+    "commitizen>=4.0.0",
 ]
 
-[tool.uv.sources]
-graphifyy = { git = "https://github.com/Graphify-Labs/graphify" }
+[tool.commitizen]
+name = "cz_conventional_commits"
+tag_format = "v$version"
+version_scheme = "pep440"
+version_provider = "pep621"
+version_files = ["pyproject.toml"]
+update_changelog_on_bump = true
+changelog_file = "CHANGELOG.md"
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
 pythonpath = ["src"]
+addopts = "--cov=src/arlogi --cov-report=term-missing --cov-report=json"
 
-
+[tool.coverage.run]
+source = ["src/arlogi"]
+branch = true
 ```
 
 ---

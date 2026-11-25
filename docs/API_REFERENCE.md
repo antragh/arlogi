@@ -17,20 +17,49 @@ Complete API reference for the arlogi logging library v0.611.25.
 
 ## Modern Configuration
 
-### `LoggingConfig`
+### `LoggingConfig` and `LoggingConfigBuilder`
 
-The primary way to configure `arlogi` is using `setup_logging(...)` or `LoggerFactory.setup()`, which construct and apply a `LoggingConfig` dataclass.
+The primary way to configure `arlogi` is using `setup_logging(...)`, `LoggerFactory.setup()`, or constructing a `LoggingConfig` (directly or via `LoggingConfigBuilder`) and passing it to `setup_logging(config=...)` or `LoggerFactory.apply_config(config)`.
 
 ```python
-from arlogi import setup_logging
+from arlogi import LoggerFactory, LoggingConfigBuilder, setup_logging
 
-# Apply configuration
+# Keyword-based configuration
 setup_logging(
     level="INFO",
     module_levels={"app.db": "DEBUG"},
-    json_file_name="logs/app.jsonl"
+    json_file_name="app.jsonl",
+    json_file_base_dir="logs",
 )
+
+# Fluent builder + apply_config()
+config = (
+    LoggingConfigBuilder()
+    .with_level("INFO")
+    .with_module_levels({"app.db": "DEBUG"})
+    .with_json_file("app.jsonl")
+    .with_json_base_dir("/var/log/myapp")
+    .with_rotation("day", retention_count=7)
+    .build()
+)
+LoggerFactory.apply_config(config)
 ```
+
+> **Note:** `json_file_name`, when provided, must be a non-empty, non-whitespace `str`. Passing `config=...` together with any explicit configuration keyword argument to `setup_logging()` or `LoggerFactory.setup()` raises `ValueError`. `LoggingConfigBuilder.with_json_console_only()` clears both `json_file_name` and `json_file_base_dir`.
+
+**Builder Methods (`LoggingConfigBuilder`):**
+
+| Method | Description |
+| --- | --- |
+| `with_level(level)` | Set global root log level |
+| `with_module_levels(levels)` | Set per-module level overrides |
+| `with_json_file(file_name, console_also=True)` | Configure JSON file path and console toggle |
+| `with_json_base_dir(base_dir)` | Enforce `base_dir` containment for `json_file_name` |
+| `with_json_console_only()` | Clear `json_file_name` and `json_file_base_dir` and emit JSON to stderr |
+| `with_syslog(address="/dev/log", syslog_format="text")` | Enable syslog output and format |
+| `with_console_format(show_time=False, show_level=True, show_path=True)` | Configure Rich console formatting |
+| `with_rotation(schedule, retention_count=None)` | Configure JSON file rotation schedule and retention |
+| `build()` | Validate and return a frozen `LoggingConfig` |
 
 **Attributes:**
 
@@ -43,6 +72,7 @@ setup_logging(
 | `json_file_only` | `bool`                          | `False`        | Only JSON output      |
 | `use_syslog`     | `bool`                          | `False`        | Enable syslog         |
 | `syslog_address` | `str \| tuple[str, int]`        | `"/dev/log"`   | Syslog address        |
+| `syslog_format`  | `"text" \| "json"`              | `"text"`       | Syslog output format (`"text"` or `"json"`) |
 | `rotate_schedule` | `"hour" \| "day" \| "week" \| "month" \| None` | `None` | Rotation schedule |
 | `rotate_retention_count` | `int \| None`           | `None`         | Number of rotated log files to retain |
 | `show_time`      | `bool`                          | `False`        | Show timestamps       |
@@ -79,9 +109,31 @@ level_int = config.resolve_module_level("app.db", "DEBUG")
 
 ## Public API Functions
 
+### `setup_logging(..., *, json_file_base_dir=..., syslog_format=..., config=None)`
+
+Configure root logging using either keyword arguments or a pre-built `LoggingConfig` (never both: passing `config` alongside any explicit configuration keyword raises `ValueError`).
+
+```python
+from arlogi import LoggingConfigBuilder, setup_logging
+
+setup_logging(
+    level="INFO",
+    json_file_name="app.jsonl",
+    json_file_base_dir="/var/log/myapp",
+    rotate_schedule="day",
+    rotate_retention_count=7,
+)
+
+# Or using a pre-built config:
+cfg = LoggingConfigBuilder().with_level("DEBUG").build()
+setup_logging(config=cfg)
+```
+
+---
+
 ### `get_logger(name, level=None)`
 
-Get a logger instance with caller attribution support.
+Get a logger instance with caller attribution support. When `level` is provided, it accepts `int` (excluding `bool`), case-insensitive level names (`"trace"`, `"debug"`, `"NOTSET"`), or `TRACE`.
 
 ```python
 from arlogi import get_logger
@@ -101,45 +153,63 @@ logger.info("Application started", caller_depth=1)
 
 ---
 
-### `get_json_logger(name, json_file_name=None)`
+### `get_json_logger(name="json", json_file_name=None, base_dir=None)`
 
-Get a logger that only outputs JSON, bypassing root handlers.
+Get a logger that only outputs JSON, bypassing root handlers. When `json_file_name` is provided, it must be a non-empty string; `base_dir` enforces path containment within that directory.
 
 ```python
 from arlogi import get_json_logger
 
-audit_logger = get_json_logger("audit", "logs/audit.jsonl")
+audit_logger = get_json_logger("audit", "audit.jsonl", base_dir="logs")
 audit_logger.info("User logged in", extra={"user_id": 123})
 ```
 
 **Parameters:**
 
-| Parameter        | Type          | Default  | Description        |
-| ---------------- | ------------- | -------- | ------------------ |
-| `name`           | `str`         | `"json"` | Logger name suffix |
-| `json_file_name` | `str \| None` | `None`   | Optional file path |
+| Parameter        | Type                 | Default  | Description                                       |
+| ---------------- | -------------------- | -------- | ------------------------------------------------- |
+| `name`           | `str`                | `"json"` | Logger name suffix                                |
+| `json_file_name` | `str \| None`        | `None`   | Optional non-empty file path (stderr if `None`)   |
+| `base_dir`       | `str \| Path \| None` | `None`  | Optional base directory containment for the file  |
 
 **Returns:** `LoggerProtocol` - A JSON-only logger instance
 
 ---
 
-### `get_syslog_logger(name, address="/dev/log")`
+### `rotate_json_logger(name="json")`
 
-Get a logger that only outputs to Syslog.
+Manually rotate all `JSONFileHandler` instances attached to the dedicated JSON logger `arlogi.json.<name>`.
+
+```python
+from arlogi import get_json_logger, rotate_json_logger
+
+audit_logger = get_json_logger("audit", "logs/audit.jsonl")
+audit_logger.info("Audit event")
+rotated = rotate_json_logger("audit")  # Returns number of rotated handlers
+```
+
+**Returns:** `int` - Number of handlers successfully rotated
+
+---
+
+### `get_syslog_logger(name="syslog", address="/dev/log", syslog_format="text")`
+
+Get a logger that only outputs to Syslog. Invalid `syslog_format` values raise `ValueError` atomically without detaching any previously attached handler.
 
 ```python
 from arlogi import get_syslog_logger
 
-syslog_logger = get_syslog_logger("security")
-syslog_logger.warning("Unauthorized access attempt")
+syslog_logger = get_syslog_logger("security", syslog_format="json")
+syslog_logger.warning("Unauthorized access attempt", ip="203.0.113.10")
 ```
 
 **Parameters:**
 
-| Parameter | Type           | Default      | Description           |
-| --------- | -------------- | ------------ | --------------------- |
-| `name`    | `str`          | `"syslog"`   | Logger name suffix    |
-| `address` | `str \| tuple` | `"/dev/log"` | Syslog server address |
+| Parameter       | Type               | Default      | Description                                   |
+| --------------- | ------------------ | ------------ | --------------------------------------------- |
+| `name`          | `str`              | `"syslog"`   | Logger name suffix                            |
+| `address`       | `str \| tuple`     | `"/dev/log"` | Syslog server address                         |
+| `syslog_format` | `"text" \| "json"` | `"text"`     | Syslog output format (`"text"` or `"json"`)   |
 
 **Returns:** `LoggerProtocol` - A syslog-only logger instance
 
@@ -198,14 +268,15 @@ Protocol defining the interface for arlogi loggers.
 All methods support caller attribution via the `caller_depth` parameter.
 
 ```python
-logger.trace(msg, *args, caller_depth=0, **kwargs)
-logger.debug(msg, *args, caller_depth=0, **kwargs)
-logger.info(msg, *args, caller_depth=0, **kwargs)
-logger.warning(msg, *args, caller_depth=0, **kwargs)
-logger.error(msg, *args, caller_depth=0, **kwargs)
-logger.critical(msg, *args, caller_depth=0, **kwargs)
-logger.exception(msg, *args, caller_depth=0, **kwargs)
-logger.log(level, msg, *args, caller_depth=0, **kwargs)
+logger.trace(msg, *args, caller_depth=None, **kwargs)
+logger.debug(msg, *args, caller_depth=None, **kwargs)
+logger.info(msg, *args, caller_depth=None, **kwargs)
+logger.warning(msg, *args, caller_depth=None, **kwargs)
+logger.error(msg, *args, caller_depth=None, **kwargs)
+logger.critical(msg, *args, caller_depth=None, **kwargs)
+logger.fatal(msg, *args, caller_depth=None, **kwargs)
+logger.exception(msg, *args, caller_depth=None, **kwargs)
+logger.log(level, msg, *args, caller_depth=None, **kwargs)
 ```
 
 **Caller Attribution Parameter:**
@@ -249,13 +320,14 @@ handler = ColoredConsoleHandler(
 
 **Parameters:**
 
-| Parameter      | Type                     | Default         | Description            |
-| -------------- | ------------------------ | --------------- | ---------------------- |
-| `show_time`    | `bool`                   | `False`         | Show timestamps        |
-| `show_level`   | `bool`                   | `True`          | Show log levels        |
-| `show_path`    | `bool`                   | `True`          | Show file paths        |
-| `level_styles` | `Dict[str, str] \| None` | `None`          | Custom level colors    |
-| `project_root` | `str \| None`            | `auto-detected` | Project root for paths |
+| Parameter      | Type                     | Default         | Description                                     |
+| -------------- | ------------------------ | --------------- | ----------------------------------------------- |
+| `show_time`    | `bool`                   | `False`         | Show timestamps                                 |
+| `show_level`   | `bool`                   | `True`          | Show log levels                                 |
+| `show_path`    | `bool`                   | `True`          | Show file paths                                 |
+| `markup`       | `bool`                   | `False`         | Enable Rich markup in messages (default: False) |
+| `level_styles` | `Dict[str, str] \| None` | `None`          | Custom level colors                             |
+| `project_root` | `str \| None`            | `auto-detected` | Project root for paths                          |
 
 **Level Color Options:**
 
@@ -270,9 +342,9 @@ handler = ColoredConsoleHandler(
 
 ---
 
-### `JSONHandler`
+### `JSONHandler` and `JSONFormatter`
 
-Stream handler that outputs JSON to stderr.
+Stream handler that outputs structured JSON to stderr (or a caller-provided stream). `JSONFormatter` protects canonical top-level envelope keys (`timestamp`, `level`, `logger_name`, `message`, `module`, `function`, `line_number`, `exception`) by routing colliding user `extra` or keyword keys into a nested `"extra"` object, and emits valid fallback JSON if serialization raises.
 
 ```python
 from arlogi.handlers import JSONHandler
@@ -300,34 +372,52 @@ handler = JSONHandler()
 
 ### `JSONFileHandler`
 
-File handler that outputs JSON to a file.
+File handler that outputs JSON to a file, with optional schedule rotation, retention pruning, and `base_dir` path containment.
 
 ```python
 from arlogi.handlers import JSONFileHandler
 
 handler = JSONFileHandler(
-    filename="logs/app.jsonl",
+    filename="app.jsonl",
     mode="a",
-    encoding="utf-8"
+    encoding="utf-8",
+    rotate_schedule="day",
+    rotate_retention_count=7,
+    base_dir="logs",
 )
 ```
 
 **Parameters:**
 
-| Parameter  | Type          | Default    | Description        |
-| ---------- | ------------- | ---------- | ------------------ |
-| `filename` | `str`         | _required_ | Path to log file   |
-| `mode`     | `str`         | `"a"`      | File open mode     |
-| `encoding` | `str \| None` | `None`     | File encoding      |
-| `delay`    | `bool`        | `False`    | Delay file opening |
+| Parameter                | Type                  | Default    | Description                                                    |
+| ------------------------ | --------------------- | ---------- | -------------------------------------------------------------- |
+| `filename`               | `str`                 | _required_ | Path to log file                                               |
+| `mode`                   | `str`                 | `"a"`      | File open mode                                                 |
+| `encoding`               | `str \| None`         | `None`     | File encoding                                                  |
+| `delay`                  | `bool`                | `False`    | Delay file opening                                             |
+| `rotate_schedule`        | `str \| None`         | `None`     | Rotation schedule (`"hour"`, `"day"`, `"week"`, `"month"`)     |
+| `rotate_retention_count` | `int \| None`         | `None`     | Number of rotated archives to retain (`>= 1`, defaults to `7` when scheduled) |
+| `base_dir`               | `str \| Path \| None` | `None`     | Base directory the resolved log path must remain within        |
 
-**Note:** Parent directories are created automatically.
+**Note:** Parent directories are created automatically after validating parameters and `base_dir` containment.
+
+---
+
+### `SyslogJSONFormatter`
+
+Subclass of `JSONFormatter` used by `ArlogiSyslogHandler` when `syslog_format="json"`. Formats each record as a single-line RFC 3164 TAG+JSON frame (`<record.name>[<record.process>]: <json_payload>`), preserving `JSONFormatter`'s canonical envelope protection, nested `"extra"` routing, OpenTelemetry `trace_id`/`span_id` correlation fields, and non-raising fallback JSON.
+
+```python
+from arlogi.handlers import SyslogJSONFormatter
+
+formatter = SyslogJSONFormatter()
+```
 
 ---
 
 ### `ArlogiSyslogHandler`
 
-Syslog handler with automatic fallback support.
+Syslog handler with automatic fallback support for the default `/dev/log` socket.
 
 ```python
 from arlogi.handlers import ArlogiSyslogHandler
@@ -335,23 +425,27 @@ from arlogi.handlers import ArlogiSyslogHandler
 handler = ArlogiSyslogHandler(
     address="/dev/log",  # or ("localhost", 514)
     facility="user",
-    socktype=None
+    socktype=None,
+    syslog_format="text",  # or "json"
 )
 ```
 
 **Parameters:**
 
-| Parameter  | Type           | Default      | Description           |
-| ---------- | -------------- | ------------ | --------------------- |
-| `address`  | `str \| tuple` | `"/dev/log"` | Syslog server address |
-| `facility` | `int \| str`   | `LOG_USER`   | Syslog facility       |
-| `socktype` | `int \| None`  | `None`       | Socket type           |
+| Parameter       | Type               | Default      | Description                                 |
+| --------------- | ------------------ | ------------ | ------------------------------------------- |
+| `address`       | `str \| tuple`     | `"/dev/log"` | Syslog server address                       |
+| `facility`      | `int \| str`       | `LOG_USER`   | Syslog facility                             |
+| `socktype`      | `int \| None`      | `None`       | Socket type                                 |
+| `syslog_format` | `"text" \| "json"` | `"text"`     | Syslog output format (`"text"` or `"json"`) |
 
-**Fallback Behavior:**
+**Formatting & Fallback Behavior:**
 
-1. Tries the specified address
-2. If `/dev/log` fails, tries UDP on `localhost:514`
-3. If all fail, silently continues (won't crash the app)
+1. Validates `syslog_format` eagerly (exact lowercase `"text"` or `"json"`) before probing `/dev/log` or opening any socket; invalid values raise `ValueError`.
+2. `"text"` emits `%(name)s[%(process)d]: %(levelname)s: %(message)s"`; `"json"` attaches `SyslogJSONFormatter` emitting single-line `<name>[<pid>]: {...}` frames.
+3. When using the default `address="/dev/log"`, if `/dev/log` is missing or fails, falls back to UDP on `("localhost", 514)`, and degrades silently (`_failed = True`) if both fail while preserving the configured formatter.
+4. For custom addresses (such as a remote `(host, port)`), initialization errors (for example `OSError` / `socket.gaierror`) are raised to the caller instead of being swallowed.
+5. For large JSON records or stack traces, prefer a local Unix socket (`/dev/log`) or TCP (`socktype=socket.SOCK_STREAM`) to avoid UDP MTU truncation.
 
 ---
 
@@ -412,16 +506,17 @@ syslog_logger = LoggerFactory.get_syslog_logger("security")
 
 **Class Methods:**
 
-| Method                               | Description                      |
-| ------------------------------------ | -------------------------------- |
-| `setup(**kwargs)`                    | Configure logging (public entry) |
-| `get_logger(name, level)`            | Get a logger                     |
-| `get_json_logger(name, file)`        | Get JSON-only logger             |
-| `get_syslog_logger(name, addr)`      | Get syslog-only logger           |
-| `cleanup_json_logger(name)`          | Clean up JSON logger handlers    |
-| `cleanup_syslog_logger(name)`        | Clean up syslog logger handlers  |
-| `is_test_mode()`                     | Check if in test environment     |
-| `get_global_logger()`                | Get global application logger    |
+| Method                                  | Description                                      |
+| --------------------------------------- | ------------------------------------------------ |
+| `setup(**kwargs)`                       | Configure logging (public entry)                 |
+| `apply_config(config)`                  | Apply a pre-built `LoggingConfig` under lock     |
+| `get_logger(name, level)`               | Get a logger                                     |
+| `get_json_logger(name, file, base_dir)` | Get JSON-only logger with optional containment   |
+| `get_syslog_logger(name, addr, syslog_format)` | Get syslog-only logger                    |
+| `cleanup_json_logger(name)`             | Clean up JSON logger handlers                    |
+| `cleanup_syslog_logger(name)`           | Clean up syslog logger handlers                  |
+| `is_test_mode()`                        | Check if in test environment                     |
+| `get_global_logger()`                   | Get global application logger                    |
 
 **Internal Methods:**
 
@@ -560,7 +655,7 @@ def outer_function():
     logger.info("Processing data", caller_depth=1)
 
 def inner_function():
-    logger.debug("Step 1", caller_depth=0)  # Shows inner_function
+    logger.debug("Step 1")  # Shows inner_function (default caller_depth=None)
     logger.debug("Step 2", caller_depth=1)  # Shows outer_function
 ```
 
@@ -615,7 +710,7 @@ syslog.warning("Security event")
 All arlogi functions handle errors gracefully:
 
 - Invalid log levels raise `ValueError` with helpful messages
-- Syslog connection failures fall back automatically
+- Syslog connection failures fall back automatically only for the default `/dev/log` address; explicit custom addresses raise initialization errors to the caller
 - JSON file handler creates parent directories automatically
 - Test mode detection prevents double logging in pytest
 
