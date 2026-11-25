@@ -1486,62 +1486,6 @@
 
               
             
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../c4-code-docs-scripts/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Code - Docs Scripts
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../c4-code-subdir/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Code - Subdir
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
           </ul>
         </nav>
       
@@ -1890,7 +1834,7 @@
 <ul>
 <li><code>LoggingConfig.__post_init__(self) -&gt; None</code></li>
 <li>Description: Validates configuration after initialization, checking levels and module names</li>
-<li>Location: <code>/opt/Code/2026/_Libs/arlogi/src/arlogi/config.py:40</code></li>
+<li>Location: <code>src/arlogi/config.py:40</code></li>
 <li>
 <p>Dependencies: <code>_validate_level</code> method, <code>logging</code> module</p>
 </li>
@@ -1898,7 +1842,7 @@
 <p><code>LoggingConfig._validate_level(level: int | str) -&gt; None</code></p>
 </li>
 <li>Description: Validates a log level value, raising ValueError for invalid levels</li>
-<li>Location: <code>/opt/Code/2026/_Libs/arlogi/src/arlogi/config.py:52</code></li>
+<li>Location: <code>src/arlogi/config.py:52</code></li>
 <li>
 <p>Dependencies: <code>logging</code> module</p>
 </li>
@@ -1906,7 +1850,7 @@
 <p><code>LoggingConfig.resolved_level -&gt; int</code></p>
 </li>
 <li>Description: Property that returns the global level as an integer</li>
-<li>Location: <code>/opt/Code/2026/_Libs/arlogi/src/arlogi/config.py:80</code></li>
+<li>Location: <code>src/arlogi/config.py:80</code></li>
 <li>
 <p>Dependencies: <code>logging</code> module</p>
 </li>
@@ -1914,7 +1858,7 @@
 <p><code>LoggingConfig.show_console -&gt; bool</code></p>
 </li>
 <li>Description: Property that determines if console output should be shown</li>
-<li>Location: <code>/opt/Code/2026/_Libs/arlogi/src/arlogi/config.py:91</code></li>
+<li>Location: <code>src/arlogi/config.py:91</code></li>
 <li>
 <p>Dependencies: None</p>
 </li>
@@ -1922,7 +1866,7 @@
 <p><code>LoggingConfig.has_json_output -&gt; bool</code></p>
 </li>
 <li>Description: Property that determines if JSON output is configured</li>
-<li>Location: <code>/opt/Code/2026/_Libs/arlogi/src/arlogi/config.py:100</code></li>
+<li>Location: <code>src/arlogi/config.py:100</code></li>
 <li>
 <p>Dependencies: None</p>
 </li>
@@ -1930,7 +1874,7 @@
 <p><code>LoggingConfig.resolve_module_level(name: str, level: str | int) -&gt; int</code></p>
 </li>
 <li>Description: Resolves a module level to an integer</li>
-<li>Location: <code>/opt/Code/2026/_Libs/arlogi/src/arlogi/config.py:108</code></li>
+<li>Location: <code>src/arlogi/config.py:108</code></li>
 <li>
 <p>Dependencies: <code>logging</code> module</p>
 </li>
@@ -1938,7 +1882,7 @@
 <p><code>LoggingConfig.to_dict() -&gt; dict[str, Any]</code></p>
 </li>
 <li>Description: Converts configuration to a dictionary representation</li>
-<li>Location: <code>/opt/Code/2026/_Libs/arlogi/src/arlogi/config.py:122</code></li>
+<li>Location: <code>src/arlogi/config.py:122</code></li>
 <li>
 <p>Dependencies: None</p>
 </li>
@@ -1946,30 +1890,30 @@
 <p><code>LoggingConfig.from_kwargs(**kwargs: Any) -&gt; "LoggingConfig"</code></p>
 </li>
 <li>Description: Factory method to create LoggingConfig from keyword arguments</li>
-<li>Location: <code>/opt/Code/2026/_Libs/arlogi/src/arlogi/config.py:140</code></li>
+<li>Location: <code>src/arlogi/config.py:140</code></li>
 <li>
 <p>Dependencies: <code>LoggingConfig</code> class constructor</p>
 </li>
 <li>
 <p><code>is_test_mode() -&gt; bool</code></p>
 </li>
-<li>Description: Detects if running under a test runner (pytest, unittest)</li>
-<li>Location: <code>/opt/Code/2026/_Libs/arlogi/src/arlogi/config.py:169</code></li>
+<li>Description: Detects if running under a test runner (<code>pytest</code> or <code>unittest</code> in <code>sys.modules</code>)</li>
+<li>Location: <code>src/arlogi/config.py:255</code></li>
 <li>
-<p>Dependencies: <code>sys</code> module, <code>os</code> module</p>
+<p>Dependencies: <code>sys</code> module</p>
 </li>
 <li>
 <p><code>get_default_level() -&gt; int</code></p>
 </li>
 <li>Description: Returns DEBUG level in test mode, INFO otherwise</li>
-<li>Location: <code>/opt/Code/2026/_Libs/arlogi/src/arlogi/config.py:185</code></li>
+<li>Location: <code>src/arlogi/config.py:185</code></li>
 <li>Dependencies: <code>logging</code> module, <code>is_test_mode()</code> function</li>
 </ul>
 <h4 id="factorypy">factory.py</h4>
 <ul>
 <li><code>TraceLogger._get_caller_info(depth: int) -&gt; tuple[str, str]</code></li>
 <li>Description: Finds module and function names at specified stack depth</li>
-<li>Location: <code>/opt/Code/2026/_Libs/arlogi/src/arlogi/factory.py:27</code></li>
+<li>Location: <code>src/arlogi/factory.py:27</code></li>
 <li>
 <p>Dependencies: <code>sys</code> module</p>
 </li>
@@ -1977,7 +1921,7 @@
 <p><code>TraceLogger._process_params(msg: Any, kwargs: dict[str, Any]) -&gt; tuple[Any, dict[str, Any]]</code></p>
 </li>
 <li>Description: Processes caller attribution and moves custom kwargs to 'extra'</li>
-<li>Location: <code>/opt/Code/2026/_Libs/arlogi/src/arlogi/factory.py:52</code></li>
+<li>Location: <code>src/arlogi/factory.py:52</code></li>
 <li>
 <p>Dependencies: <code>rich.markup.escape</code> function</p>
 </li>
@@ -1985,7 +1929,7 @@
 <p><code>TraceLogger.trace(msg: Any, *args: Any, **kwargs: Any) -&gt; None</code></p>
 </li>
 <li>Description: Logs a message with TRACE level (below DEBUG)</li>
-<li>Location: <code>/opt/Code/2026/_Libs/arlogi/src/arlogi/factory.py:121</code></li>
+<li>Location: <code>src/arlogi/factory.py:121</code></li>
 <li>
 <p>Dependencies: <code>_process_params</code> method, <code>TRACE_LEVEL_NUM</code></p>
 </li>
@@ -1993,7 +1937,7 @@
 <p><code>TraceLogger.debug(msg: Any, *args: Any, **kwargs: Any) -&gt; None</code></p>
 </li>
 <li>Description: Logs a debug message with caller attribution support</li>
-<li>Location: <code>/opt/Code/2026/_Libs/arlogi/src/arlogi/factory.py:133</code></li>
+<li>Location: <code>src/arlogi/factory.py:133</code></li>
 <li>
 <p>Dependencies: <code>_process_params</code> method</p>
 </li>
@@ -2001,7 +1945,7 @@
 <p><code>TraceLogger.info(msg: Any, *args: Any, **kwargs: Any) -&gt; None</code></p>
 </li>
 <li>Description: Logs an info message with caller attribution support</li>
-<li>Location: <code>/opt/Code/2026/_Libs/arlogi/src/arlogi/factory.py:138</code></li>
+<li>Location: <code>src/arlogi/factory.py:138</code></li>
 <li>
 <p>Dependencies: <code>_process_params</code> method</p>
 </li>
@@ -2009,7 +1953,7 @@
 <p><code>TraceLogger.warning(msg: Any, *args: Any, **kwargs: Any) -&gt; None</code></p>
 </li>
 <li>Description: Logs a warning message with caller attribution support</li>
-<li>Location: <code>/opt/Code/2026/_Libs/arlogi/src/arlogi/factory.py:143</code></li>
+<li>Location: <code>src/arlogi/factory.py:143</code></li>
 <li>
 <p>Dependencies: <code>_process_params</code> method</p>
 </li>
@@ -2017,7 +1961,7 @@
 <p><code>TraceLogger.error(msg: Any, *args: Any, **kwargs: Any) -&gt; None</code></p>
 </li>
 <li>Description: Logs an error message with caller attribution support</li>
-<li>Location: <code>/opt/Code/2026/_Libs/arlogi/src/arlogi/factory.py:148</code></li>
+<li>Location: <code>src/arlogi/factory.py:148</code></li>
 <li>
 <p>Dependencies: <code>_process_params</code> method</p>
 </li>
@@ -2025,7 +1969,7 @@
 <p><code>TraceLogger.critical(msg: Any, *args: Any, **kwargs: Any) -&gt; None</code></p>
 </li>
 <li>Description: Logs a critical message with caller attribution support</li>
-<li>Location: <code>/opt/Code/2026/_Libs/arlogi/src/arlogi/factory.py:153</code></li>
+<li>Location: <code>src/arlogi/factory.py:153</code></li>
 <li>
 <p>Dependencies: <code>_process_params</code> method</p>
 </li>
@@ -2033,7 +1977,7 @@
 <p><code>TraceLogger.exception(msg: Any, *args: Any, **kwargs: Any) -&gt; None</code></p>
 </li>
 <li>Description: Logs an exception with traceback and caller attribution</li>
-<li>Location: <code>/opt/Code/2026/_Libs/arlogi/src/arlogi/factory.py:158</code></li>
+<li>Location: <code>src/arlogi/factory.py:158</code></li>
 <li>
 <p>Dependencies: <code>_process_params</code> method</p>
 </li>
@@ -2041,23 +1985,23 @@
 <p><code>TraceLogger.log(level: int, msg: Any, *args: Any, **kwargs: Any) -&gt; None</code></p>
 </li>
 <li>Description: Logs a message at specified level with caller attribution</li>
-<li>Location: <code>/opt/Code/2026/_Libs/arlogi/src/arlogi/factory.py:163</code></li>
+<li>Location: <code>src/arlogi/factory.py:163</code></li>
 <li>
 <p>Dependencies: <code>_process_params</code> method</p>
 </li>
 <li>
 <p><code>LoggerFactory.setup(level: int | str = logging.INFO, **kwargs) -&gt; None</code></p>
 </li>
-<li>Description: Centralized logging setup method that configures root logger (Legacy helper, calls _apply_configuration)</li>
-<li>Location: <code>/opt/Code/2026/_Libs/arlogi/src/arlogi/factory.py:179</code></li>
+<li>Description: Centralized logging setup method that configures root logger (accepts keyword arguments or <code>config=LoggingConfig</code>)</li>
+<li>Location: <code>src/arlogi/factory.py:179</code></li>
 <li>
-<p>Dependencies: <code>LoggingConfig</code>, <code>_apply_configuration</code> method</p>
+<p>Dependencies: <code>LoggingConfig</code>, <code>apply_config</code> method</p>
 </li>
 <li>
-<p><code>LoggerFactory._apply_configuration(config: LoggingConfig) -&gt; None</code></p>
+<p><code>LoggerFactory.apply_config(config: LoggingConfig) -&gt; None</code></p>
 </li>
-<li>Description: Applies a LoggingConfig to the root logger (Primary configuration method)</li>
-<li>Location: <code>/opt/Code/2026/_Libs/arlogi/src/arlogi/factory.py:221</code></li>
+<li>Description: Applies a LoggingConfig to the root logger under lock (Primary configuration method)</li>
+<li>Location: <code>src/arlogi/factory.py:221</code></li>
 <li>
 <p>Dependencies: <code>_initialize_trace_level</code>, <code>_configure_root_logger</code>, <code>_clear_and_add_handlers</code>, <code>_configure_module_levels</code></p>
 </li>
@@ -2065,7 +2009,7 @@
 <p><code>LoggerFactory._initialize_trace_level() -&gt; None</code></p>
 </li>
 <li>Description: Registers custom TRACE level with Python's logging module</li>
-<li>Location: <code>/opt/Code/2026/_Libs/arlogi/src/arlogi/factory.py:238</code></li>
+<li>Location: <code>src/arlogi/factory.py:238</code></li>
 <li>
 <p>Dependencies: <code>register_trace_level</code>, <code>logging.setLoggerClass</code></p>
 </li>
@@ -2073,7 +2017,7 @@
 <p><code>LoggerFactory._configure_root_logger(config: LoggingConfig) -&gt; None</code></p>
 </li>
 <li>Description: Configures the root logger level</li>
-<li>Location: <code>/opt/Code/2026/_Libs/arlogi/src/arlogi/factory.py:244</code></li>
+<li>Location: <code>src/arlogi/factory.py:244</code></li>
 <li>
 <p>Dependencies: <code>logging.getLogger</code>, <code>config.resolved_level</code></p>
 </li>
@@ -2081,7 +2025,7 @@
 <p><code>LoggerFactory._clear_and_add_handlers(config: LoggingConfig) -&gt; None</code></p>
 </li>
 <li>Description: Clears existing handlers and adds configured ones</li>
-<li>Location: <code>/opt/Code/2026/_Libs/arlogi/src/arlogi/factory.py:254</code></li>
+<li>Location: <code>src/arlogi/factory.py:254</code></li>
 <li>
 <p>Dependencies: <code>HandlerFactory.create_handlers</code></p>
 </li>
@@ -2089,7 +2033,7 @@
 <p><code>LoggerFactory._configure_module_levels(config: LoggingConfig) -&gt; None</code></p>
 </li>
 <li>Description: Applies module-specific log level overrides</li>
-<li>Location: <code>/opt/Code/2026/_Libs/arlogi/src/arlogi/factory.py:272</code></li>
+<li>Location: <code>src/arlogi/factory.py:272</code></li>
 <li>
 <p>Dependencies: <code>config.module_levels</code>, <code>config.resolve_module_level</code></p>
 </li>
@@ -2097,7 +2041,7 @@
 <p><code>LoggerFactory.is_test_mode() -&gt; bool</code></p>
 </li>
 <li>Description: Detects if running under a test runner (delegates to is_test_mode)</li>
-<li>Location: <code>/opt/Code/2026/_Libs/arlogi/src/arlogi/factory.py:287</code></li>
+<li>Location: <code>src/arlogi/factory.py:287</code></li>
 <li>
 <p>Dependencies: <code>is_test_mode()</code> function</p>
 </li>
@@ -2105,7 +2049,7 @@
 <p><code>LoggerFactory.get_logger(name: str, level: int | str | None = None) -&gt; LoggerProtocol</code></p>
 </li>
 <li>Description: Gets a logger instance with caller attribution support</li>
-<li>Location: <code>/opt/Code/2026/_Libs/arlogi/src/arlogi/factory.py:296</code></li>
+<li>Location: <code>src/arlogi/factory.py:296</code></li>
 <li>
 <p>Dependencies: <code>get_default_level()</code>, <code>logging.getLogger</code></p>
 </li>
@@ -2113,7 +2057,7 @@
 <p><code>LoggerFactory.get_json_logger(name: str = "json", json_file_name: str | None = None) -&gt; LoggerProtocol</code></p>
 </li>
 <li>Description: Gets a dedicated JSON-only logger bypassing root handlers</li>
-<li>Location: <code>/opt/Code/2026/_Libs/arlogi/src/arlogi/factory.py:318</code></li>
+<li>Location: <code>src/arlogi/factory.py:318</code></li>
 <li>
 <p>Dependencies: <code>JSONFileHandler</code>, <code>JSONHandler</code></p>
 </li>
@@ -2121,7 +2065,7 @@
 <p><code>LoggerFactory.get_syslog_logger(name: str = "syslog", address: str | tuple[str, int] = "/dev/log") -&gt; LoggerProtocol</code></p>
 </li>
 <li>Description: Gets a dedicated syslog-only logger bypassing root handlers</li>
-<li>Location: <code>/opt/Code/2026/_Libs/arlogi/src/arlogi/factory.py:342</code></li>
+<li>Location: <code>src/arlogi/factory.py:342</code></li>
 <li>
 <p>Dependencies: <code>ArlogiSyslogHandler</code></p>
 </li>
@@ -2129,15 +2073,15 @@
 <p><code>LoggerFactory.get_global_logger() -&gt; LoggerProtocol</code></p>
 </li>
 <li>Description: Gets or initializes the global logger instance</li>
-<li>Location: <code>/opt/Code/2026/_Libs/arlogi/src/arlogi/factory.py:361</code></li>
+<li>Location: <code>src/arlogi/factory.py:361</code></li>
 <li>
 <p>Dependencies: <code>get_logger()</code> method</p>
 </li>
 <li>
 <p><code>setup_logging(level: int | str = logging.INFO, **kwargs) -&gt; None</code></p>
 </li>
-<li>Description: Convenience wrapper around LoggerFactory.setup() (Legacy helper)</li>
-<li>Location: <code>/opt/Code/2026/_Libs/arlogi/src/arlogi/factory.py:374</code></li>
+<li>Description: Convenience entrypoint delegating to LoggerFactory.setup()</li>
+<li>Location: <code>src/arlogi/factory.py:374</code></li>
 <li>
 <p>Dependencies: <code>LoggerFactory.setup</code></p>
 </li>
@@ -2145,7 +2089,7 @@
 <p><code>get_logger(name: str, level: int | str | None = None) -&gt; LoggerProtocol</code></p>
 </li>
 <li>Description: Gets a logger instance with caller attribution support</li>
-<li>Location: <code>/opt/Code/2026/_Libs/arlogi/src/arlogi/factory.py:413</code></li>
+<li>Location: <code>src/arlogi/factory.py:413</code></li>
 <li>
 <p>Dependencies: <code>LoggerFactory.get_logger</code></p>
 </li>
@@ -2153,7 +2097,7 @@
 <p><code>get_json_logger(name: str = "json", json_file_name: str | None = None) -&gt; LoggerProtocol</code></p>
 </li>
 <li>Description: Gets a dedicated JSON-only logger</li>
-<li>Location: <code>/opt/Code/2026/_Libs/arlogi/src/arlogi/factory.py:426</code></li>
+<li>Location: <code>src/arlogi/factory.py:426</code></li>
 <li>
 <p>Dependencies: <code>LoggerFactory.get_json_logger</code></p>
 </li>
@@ -2161,14 +2105,14 @@
 <p><code>get_syslog_logger(name: str = "syslog", address: str | tuple[str, int] = "/dev/log") -&gt; LoggerProtocol</code></p>
 </li>
 <li>Description: Gets a dedicated syslog-only logger</li>
-<li>Location: <code>/opt/Code/2026/_Libs/arlogi/src/arlogi/factory.py:441</code></li>
+<li>Location: <code>src/arlogi/factory.py:441</code></li>
 <li>Dependencies: <code>LoggerFactory.get_syslog_logger</code></li>
 </ul>
 <h4 id="handler_factorypy">handler_factory.py</h4>
 <ul>
 <li><code>HandlerFactory.create_console(config: LoggingConfig) -&gt; ColoredConsoleHandler</code></li>
 <li>Description: Creates a colored console handler with configuration settings</li>
-<li>Location: <code>/opt/Code/2026/_Libs/arlogi/src/arlogi/handler_factory.py:26</code></li>
+<li>Location: <code>src/arlogi/handler_factory.py:26</code></li>
 <li>
 <p>Dependencies: <code>ColoredConsoleHandler</code>, <code>config</code> attributes</p>
 </li>
@@ -2176,7 +2120,7 @@
 <p><code>HandlerFactory.create_json_stream() -&gt; JSONHandler</code></p>
 </li>
 <li>Description: Creates a JSON stream handler (outputs to stderr)</li>
-<li>Location: <code>/opt/Code/2026/_Libs/arlogi/src/arlogi/handler_factory.py:47</code></li>
+<li>Location: <code>src/arlogi/handler_factory.py:47</code></li>
 <li>
 <p>Dependencies: <code>JSONHandler</code></p>
 </li>
@@ -2184,7 +2128,7 @@
 <p><code>HandlerFactory.create_json_file(config: LoggingConfig) -&gt; JSONFileHandler</code></p>
 </li>
 <li>Description: Creates a JSON file handler with file path from config</li>
-<li>Location: <code>/opt/Code/2026/_Libs/arlogi/src/arlogi/handler_factory.py:59</code></li>
+<li>Location: <code>src/arlogi/handler_factory.py:59</code></li>
 <li>
 <p>Dependencies: <code>JSONFileHandler</code>, <code>config.json_file_name</code></p>
 </li>
@@ -2192,7 +2136,7 @@
 <p><code>HandlerFactory.create_json_handler(config: LoggingConfig) -&gt; logging.Handler</code></p>
 </li>
 <li>Description: Creates appropriate JSON handler based on configuration (file or stream)</li>
-<li>Location: <code>/opt/Code/2026/_Libs/arlogi/src/arlogi/handler_factory.py:82</code></li>
+<li>Location: <code>src/arlogi/handler_factory.py:82</code></li>
 <li>
 <p>Dependencies: <code>create_json_file</code>, <code>create_json_stream</code></p>
 </li>
@@ -2200,7 +2144,7 @@
 <p><code>HandlerFactory.create_syslog(config: LoggingConfig) -&gt; ArlogiSyslogHandler</code></p>
 </li>
 <li>Description: Creates a syslog handler with configuration settings</li>
-<li>Location: <code>/opt/Code/2026/_Libs/arlogi/src/arlogi/handler_factory.py:107</code></li>
+<li>Location: <code>src/arlogi/handler_factory.py:107</code></li>
 <li>
 <p>Dependencies: <code>ArlogiSyslogHandler</code>, <code>config.syslog_address</code></p>
 </li>
@@ -2208,14 +2152,14 @@
 <p><code>HandlerFactory.create_handlers(config: LoggingConfig) -&gt; list[logging.Handler]</code></p>
 </li>
 <li>Description: Creates all handlers based on configuration (main factory method)</li>
-<li>Location: <code>/opt/Code/2026/_Libs/arlogi/src/arlogi/handler_factory.py:126</code></li>
+<li>Location: <code>src/arlogi/handler_factory.py:126</code></li>
 <li>Dependencies: Individual create methods for each handler type</li>
 </ul>
 <h4 id="handlerspy">handlers.py</h4>
 <ul>
 <li><code>ColoredConsoleHandler.__init__(show_time: bool = False, show_level: bool = True, show_path: bool = True, level_styles: dict[str, str] | None = None, project_root: str | None = None, *args: Any, **kwargs: Any)</code></li>
 <li>Description: Initializes colored console handler with Rich formatting</li>
-<li>Location: <code>/opt/Code/2026/_Libs/arlogi/src/arlogi/handlers.py:31</code></li>
+<li>Location: <code>src/arlogi/handlers.py:31</code></li>
 <li>
 <p>Dependencies: <code>Console</code>, <code>RichHandler</code>, <code>sys</code> module</p>
 </li>
@@ -2223,7 +2167,7 @@
 <p><code>ColoredConsoleHandler._find_project_root() -&gt; str</code></p>
 </li>
 <li>Description: Finds project root by looking for common indicators (.git, pyproject.toml, etc.)</li>
-<li>Location: <code>/opt/Code/2026/_Libs/arlogi/src/arlogi/handlers.py:86</code></li>
+<li>Location: <code>src/arlogi/handlers.py:86</code></li>
 <li>
 <p>Dependencies: <code>os</code> module</p>
 </li>
@@ -2231,7 +2175,7 @@
 <p><code>ColoredConsoleHandler.render(*, record: logging.LogRecord, traceback: Any, message_renderable: Any) -&gt; Any</code></p>
 </li>
 <li>Description: Override render method to show relative paths from project root</li>
-<li>Location: <code>/opt/Code/2026/_Libs/arlogi/src/arlogi/handlers.py:120</code></li>
+<li>Location: <code>src/arlogi/handlers.py:120</code></li>
 <li>
 <p>Dependencies: <code>pathlib.Path</code>, <code>os.path.relpath</code></p>
 </li>
@@ -2239,7 +2183,7 @@
 <p><code>ColoredConsoleHandler.get_level_text(record: logging.LogRecord) -&gt; Any</code></p>
 </li>
 <li>Description: Gets level text as single character with styling</li>
-<li>Location: <code>/opt/Code/2026/_Libs/arlogi/src/arlogi/handlers.py:164</code></li>
+<li>Location: <code>src/arlogi/handlers.py:164</code></li>
 <li>
 <p>Dependencies: <code>Text</code> from rich</p>
 </li>
@@ -2247,7 +2191,7 @@
 <p><code>ColoredConsoleHandler.render_message(record: logging.LogRecord, message: str) -&gt; Any</code></p>
 </li>
 <li>Description: Renders message text with level-specific styling</li>
-<li>Location: <code>/opt/Code/2026/_Libs/arlogi/src/arlogi/handlers.py:183</code></li>
+<li>Location: <code>src/arlogi/handlers.py:183</code></li>
 <li>
 <p>Dependencies: Super class method, level_styles</p>
 </li>
@@ -2255,7 +2199,7 @@
 <p><code>JSONFormatter.format(record: logging.LogRecord) -&gt; str</code></p>
 </li>
 <li>Description: Formats log record as JSON with standard fields and extra data</li>
-<li>Location: <code>/opt/Code/2026/_Libs/arlogi/src/arlogi/handlers.py:210</code></li>
+<li>Location: <code>src/arlogi/handlers.py:210</code></li>
 <li>
 <p>Dependencies: <code>json.dumps</code>, <code>datetime</code>, <code>formatException</code></p>
 </li>
@@ -2263,7 +2207,7 @@
 <p><code>JSONHandler.__init__(stream: Any = None)</code></p>
 </li>
 <li>Description: Initializes JSON stream handler with JSONFormatter</li>
-<li>Location: <code>/opt/Code/2026/_Libs/arlogi/src/arlogi/handlers.py:254</code></li>
+<li>Location: <code>src/arlogi/handlers.py:254</code></li>
 <li>
 <p>Dependencies: <code>JSONFormatter</code>, <code>sys.stderr</code></p>
 </li>
@@ -2271,7 +2215,7 @@
 <p><code>JSONFileHandler.__init__(filename: str, mode: str = "a", encoding: str | None = None, delay: bool = False)</code></p>
 </li>
 <li>Description: Initializes JSON file handler with automatic directory creation</li>
-<li>Location: <code>/opt/Code/2026/_Libs/arlogi/src/arlogi/handlers.py:270</code></li>
+<li>Location: <code>src/arlogi/handlers.py:270</code></li>
 <li>
 <p>Dependencies: <code>os.makedirs</code>, <code>os.path</code>, <code>JSONFormatter</code></p>
 </li>
@@ -2279,21 +2223,21 @@
 <p><code>ArlogiSyslogHandler.__init__(address: str | tuple[str, int] = "/dev/log", facility: int | str = logging.handlers.SysLogHandler.LOG_USER, socktype: int | None = None)</code></p>
 </li>
 <li>Description: Initializes syslog handler with graceful fallback for missing /dev/log</li>
-<li>Location: <code>/opt/Code/2026/_Libs/arlogi/src/arlogi/handlers.py:303</code></li>
+<li>Location: <code>src/arlogi/handlers.py:303</code></li>
 <li>Dependencies: <code>logging.handlers.SysLogHandler</code>, graceful fallback logic</li>
 </ul>
 <h4 id="levelspy">levels.py</h4>
 <ul>
 <li><code>register_trace_level() -&gt; None</code></li>
 <li>Description: Registers the custom TRACE level with Python's logging module</li>
-<li>Location: <code>/opt/Code/2026/_Libs/arlogi/src/arlogi/levels.py:7</code></li>
+<li>Location: <code>src/arlogi/levels.py:7</code></li>
 <li>Dependencies: <code>logging</code> module, adds <code>trace</code> method to <code>logging.Logger</code></li>
 </ul>
 <h4 id="typespy">types.py</h4>
 <ul>
 <li><code>LoggerProtocol</code> (Protocol class)</li>
 <li>Description: Runtime checkable protocol defining the interface for arlogi loggers</li>
-<li>Location: <code>/opt/Code/2026/_Libs/arlogi/src/arlogi/types.py:4</code></li>
+<li>Location: <code>src/arlogi/types.py:4</code></li>
 <li>Dependencies: <code>typing.Protocol</code>, <code>typing.runtime_checkable</code></li>
 </ul>
 <h3 id="classesmodules">Classes/Modules</h3>
@@ -2301,7 +2245,7 @@
 <ul>
 <li><code>LoggingConfig</code></li>
 <li>Description: Immutable dataclass configuration for logging setup with Builder pattern</li>
-<li>Location: <code>/opt/Code/2026/_Libs/arlogi/src/arlogi/config.py:14</code></li>
+<li>Location: <code>src/arlogi/config.py:14</code></li>
 <li>Methods: <code>__post_init__</code>, <code>_validate_level</code>, <code>resolved_level</code>, <code>show_console</code>, <code>has_json_output</code>, <code>resolve_module_level</code>, <code>to_dict</code>, <code>from_kwargs</code></li>
 <li>Dependencies: <code>dataclasses.dataclass</code>, <code>logging</code> module</li>
 </ul>
@@ -2309,7 +2253,7 @@
 <ul>
 <li><code>TraceLogger</code></li>
 <li>Description: Custom logger class extending Python's Logger with TRACE level and caller attribution</li>
-<li>Location: <code>/opt/Code/2026/_Libs/arlogi/src/arlogi/factory.py:18</code></li>
+<li>Location: <code>src/arlogi/factory.py:18</code></li>
 <li>Methods: <code>_get_caller_info</code>, <code>_process_params</code>, <code>trace</code>, <code>debug</code>, <code>info</code>, <code>warning</code>, <code>error</code>, <code>critical</code>, <code>exception</code>, <code>log</code></li>
 <li>
 <p>Dependencies: <code>logging.Logger</code>, <code>rich.markup.escape</code></p>
@@ -2318,15 +2262,15 @@
 <p><code>LoggerFactory</code></p>
 </li>
 <li>Description: Factory class for creating and configuring logger instances with global state management</li>
-<li>Location: <code>/opt/Code/2026/_Libs/arlogi/src/arlogi/factory.py:169</code></li>
-<li>Methods: <code>setup</code>, <code>_apply_configuration</code>, <code>_initialize_trace_level</code>, <code>_configure_root_logger</code>, <code>_clear_and_add_handlers</code>, <code>_configure_module_levels</code>, <code>is_test_mode</code>, <code>get_logger</code>, <code>get_json_logger</code>, <code>get_syslog_logger</code>, <code>get_global_logger</code></li>
+<li>Location: <code>src/arlogi/factory.py:169</code></li>
+<li>Methods: <code>setup</code>, <code>apply_config</code>, <code>_initialize_trace_level</code>, <code>_configure_root_logger</code>, <code>_clear_and_add_handlers</code>, <code>_configure_module_levels</code>, <code>is_test_mode</code>, <code>get_logger</code>, <code>get_json_logger</code>, <code>get_syslog_logger</code>, <code>get_global_logger</code></li>
 <li>Dependencies: <code>logging</code> module, <code>HandlerFactory</code>, various handler classes</li>
 </ul>
 <h4 id="handler_factorypy_1">handler_factory.py</h4>
 <ul>
 <li><code>HandlerFactory</code></li>
 <li>Description: Factory class for creating logging handlers with consistent creation logic</li>
-<li>Location: <code>/opt/Code/2026/_Libs/arlogi/src/arlogi/handler_factory.py:19</code></li>
+<li>Location: <code>src/arlogi/handler_factory.py:19</code></li>
 <li>Methods: <code>create_console</code>, <code>create_json_stream</code>, <code>create_json_file</code>, <code>create_json_handler</code>, <code>create_syslog</code>, <code>create_handlers</code></li>
 <li>Dependencies: <code>logging</code> module, various handler classes, <code>LoggingConfig</code></li>
 </ul>
@@ -2334,7 +2278,7 @@
 <ul>
 <li><code>ColoredConsoleHandler</code></li>
 <li>Description: Rich-based colored console handler with project root detection and custom formatting</li>
-<li>Location: <code>/opt/Code/2026/_Libs/arlogi/src/arlogi/handlers.py:21</code></li>
+<li>Location: <code>src/arlogi/handlers.py:21</code></li>
 <li>Methods: <code>__init__</code>, <code>_find_project_root</code>, <code>render</code>, <code>get_level_text</code>, <code>render_message</code></li>
 <li>
 <p>Dependencies: <code>RichHandler</code>, <code>rich.console.Console</code>, <code>rich.logging</code>, <code>rich.text.Text</code></p>
@@ -2343,7 +2287,7 @@
 <p><code>JSONFormatter</code></p>
 </li>
 <li>Description: JSON formatter for structured log output with standard fields and extra data</li>
-<li>Location: <code>/opt/Code/2026/_Libs/arlogi/src/arlogi/handlers.py:203</code></li>
+<li>Location: <code>src/arlogi/handlers.py:203</code></li>
 <li>Methods: <code>format</code></li>
 <li>
 <p>Dependencies: <code>json</code>, <code>datetime</code>, <code>logging.Formatter</code></p>
@@ -2352,7 +2296,7 @@
 <p><code>JSONHandler</code></p>
 </li>
 <li>Description: Stream handler that outputs log records as JSON to stderr</li>
-<li>Location: <code>/opt/Code/2026/_Libs/arlogi/src/arlogi/handlers.py:248</code></li>
+<li>Location: <code>src/arlogi/handlers.py:248</code></li>
 <li>Methods: <code>__init__</code></li>
 <li>
 <p>Dependencies: <code>logging.StreamHandler</code>, <code>JSONFormatter</code></p>
@@ -2361,7 +2305,7 @@
 <p><code>JSONFileHandler</code></p>
 </li>
 <li>Description: File handler that outputs log records as JSON to a file with auto directory creation</li>
-<li>Location: <code>/opt/Code/2026/_Libs/arlogi/src/arlogi/handlers.py:264</code></li>
+<li>Location: <code>src/arlogi/handlers.py:264</code></li>
 <li>Methods: <code>__init__</code></li>
 <li>
 <p>Dependencies: <code>logging.FileHandler</code>, <code>os.makedirs</code>, <code>JSONFormatter</code></p>
@@ -2370,7 +2314,7 @@
 <p><code>ArlogiSyslogHandler</code></p>
 </li>
 <li>Description: Robust syslog handler with standard formatting and automatic fallback to UDP</li>
-<li>Location: <code>/opt/Code/2026/_Libs/arlogi/src/arlogi/handlers.py:294</code></li>
+<li>Location: <code>src/arlogi/handlers.py:294</code></li>
 <li>Methods: <code>__init__</code></li>
 <li>Dependencies: <code>logging.handlers.SysLogHandler</code>, graceful fallback logic</li>
 </ul>
@@ -2385,7 +2329,7 @@
 <ul>
 <li><code>LoggerProtocol</code></li>
 <li>Description: Protocol defining the interface for arlogi loggers with caller attribution support</li>
-<li>Location: <code>/opt/Code/2026/_Libs/arlogi/src/arlogi/types.py:4</code></li>
+<li>Location: <code>src/arlogi/types.py:4</code></li>
 <li>Methods: Protocol-defined method signatures for logging operations</li>
 <li>Dependencies: <code>typing.Protocol</code>, <code>typing.runtime_checkable</code></li>
 </ul>
@@ -2425,7 +2369,7 @@ classDiagram
             -_initialized: bool
             -_global_logger: TraceLogger | None
             +setup(level, ...)
-            +_apply_configuration(config)
+            +apply_config(config)
             +get_logger(name, level)
             +get_json_logger(name, json_file_name)
             +get_syslog_logger(name, address)
@@ -2496,14 +2440,14 @@ classDiagram
     namespace protocol {
         interface LoggerProtocol {
             &lt;&lt;interface&gt;&gt;
-            +trace(msg, *args, from_caller, from_, **kwargs)
-            +debug(msg, *args, from_caller, from_, **kwargs)
-            +info(msg, *args, from_caller, from_, **kwargs)
-            +warning(msg, *args, from_caller, from_, **kwargs)
-            +error(msg, *args, from_caller, from_, **kwargs)
-            +critical(msg, *args, from_caller, from_, **kwargs)
-            +exception(msg, *args, from_caller, from_, **kwargs)
-            +log(level, msg, *args, from_caller, from_, **kwargs)
+            +trace(msg, *args, caller_depth, **kwargs)
+            +debug(msg, *args, caller_depth, **kwargs)
+            +info(msg, *args, caller_depth, **kwargs)
+            +warning(msg, *args, caller_depth, **kwargs)
+            +error(msg, *args, caller_depth, **kwargs)
+            +critical(msg, *args, caller_depth, **kwargs)
+            +exception(msg, *args, caller_depth, **kwargs)
+            +log(level, msg, *args, caller_depth, **kwargs)
             +setLevel(level)
             +isEnabledFor(level)
         }
@@ -2578,7 +2522,7 @@ flowchart TD
     handlers --&gt; sys
 
     config --&gt; logging
-    config --&gt; os
+    config --&gt; pathlib
     config --&gt; sys
 
     levels --&gt; logging

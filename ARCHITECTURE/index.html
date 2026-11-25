@@ -500,6 +500,17 @@
   
 </li>
         
+          <li class="md-nav__item">
+  <a href="#syslog-formatting-and-transport" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Syslog Formatting and Transport
+      
+    </span>
+  </a>
+  
+</li>
+        
       </ul>
     </nav>
   
@@ -583,6 +594,17 @@
     <span class="md-ellipsis">
       
         Core Modules
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#optional-opentelemetry-subpackage-arlogiotel" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Optional OpenTelemetry Subpackage (arlogi.otel)
       
     </span>
   </a>
@@ -1668,62 +1690,6 @@
 
               
             
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../C4-Documentation/c4-code-docs-scripts/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Code - Docs Scripts
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../C4-Documentation/c4-code-subdir/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Code - Subdir
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
           </ul>
         </nav>
       
@@ -1863,6 +1829,17 @@
   
 </li>
         
+          <li class="md-nav__item">
+  <a href="#syslog-formatting-and-transport" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Syslog Formatting and Transport
+      
+    </span>
+  </a>
+  
+</li>
+        
       </ul>
     </nav>
   
@@ -1946,6 +1923,17 @@
     <span class="md-ellipsis">
       
         Core Modules
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#optional-opentelemetry-subpackage-arlogiotel" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Optional OpenTelemetry Subpackage (arlogi.otel)
       
     </span>
   </a>
@@ -2419,6 +2407,7 @@
         +bool json_file_only
         +bool use_syslog
         +str|tuple syslog_address
+        +str syslog_format
         +str rotate_schedule
         +int rotate_retention_count
         +bool show_time
@@ -2445,10 +2434,11 @@
         &lt;&lt;factory&gt;&gt;
         _initialized: bool
         _global_logger: TraceLogger|None
-        +setup(level, module_levels, ...) None
+        +setup(level, module_levels, ..., config) None
+        +apply_config(config) None
         +get_logger(name, level) LoggerProtocol
-        +get_json_logger(name, file) LoggerProtocol
-        +get_syslog_logger(name, addr) LoggerProtocol
+        +get_json_logger(name, file, base_dir) LoggerProtocol
+        +get_syslog_logger(name, addr, syslog_format) LoggerProtocol
         +cleanup_json_logger(name) None
         +cleanup_syslog_logger(name) None
         +is_test_mode() bool
@@ -2507,8 +2497,18 @@
         extends FileHandler
     }
 
+    class JSONFormatter {
+        extends Formatter
+    }
+
+    class SyslogJSONFormatter {
+        extends JSONFormatter
+        +format(record) str
+    }
+
     class ArlogiSyslogHandler {
         extends SysLogHandler
+        +str syslog_format
     }
 
     LoggingConfig ..&gt; HandlerFactory : uses
@@ -2519,7 +2519,10 @@
     HandlerFactory ..&gt; ColoredConsoleHandler : creates
     HandlerFactory ..&gt; JSONHandler : creates
     HandlerFactory ..&gt; JSONFileHandler : creates
-    HandlerFactory ..&gt; ArlogiSyslogHandler : creates</code></pre>
+    HandlerFactory ..&gt; ArlogiSyslogHandler : creates
+    ArlogiSyslogHandler ..&gt; SyslogJSONFormatter : uses</code></pre>
+<h3 id="syslog-formatting-and-transport">Syslog Formatting and Transport</h3>
+<p><code>ArlogiSyslogHandler</code> accepts <code>syslog_format="text"</code> (default: <code>%(name)s[%(process)d]: %(levelname)s: %(message)s</code>) or <code>syslog_format="json"</code>, which attaches <code>SyslogJSONFormatter</code> to emit single-line RFC 3164-prefixed frames (<code>&lt;name&gt;[&lt;pid&gt;]: {...}</code>). For large JSON payloads or multi-line tracebacks, prefer a local Unix domain socket (<code>/dev/log</code>) or TCP (<code>socktype=socket.SOCK_STREAM</code>) over UDP (<code>SOCK_DGRAM</code>) to avoid MTU truncation.</p>
 <hr />
 <h2 id="design-patterns">Design Patterns</h2>
 <h3 id="factory-pattern">Factory Pattern</h3>
@@ -2537,12 +2540,18 @@
 <li>Simplified testing with mock factories</li>
 </ul>
 <h3 id="builder-pattern">Builder Pattern</h3>
-<p><strong>LoggingConfig.from_kwargs()</strong> provides flexible configuration:</p>
-<div class="language-python highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="c1"># Build configuration via public setup</span>
-</span><span id="__span-1-2"><a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a><span class="n">setup_logging</span><span class="p">(</span>
-</span><span id="__span-1-3"><a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a>    <span class="n">level</span><span class="o">=</span><span class="s2">&quot;INFO&quot;</span><span class="p">,</span>
-</span><span id="__span-1-4"><a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a>    <span class="n">module_levels</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;app.db&quot;</span><span class="p">:</span> <span class="s2">&quot;DEBUG&quot;</span><span class="p">}</span>
-</span><span id="__span-1-5"><a id="__codelineno-1-5" name="__codelineno-1-5" href="#__codelineno-1-5"></a><span class="p">)</span>
+<p><strong>LoggingConfigBuilder</strong> provides a fluent API for constructing validated <code>LoggingConfig</code> instances, which are applied via <code>setup_logging(config=...)</code> or <code>LoggerFactory.apply_config(config)</code>:</p>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="kn">from</span><span class="w"> </span><span class="nn">arlogi</span><span class="w"> </span><span class="kn">import</span> <span class="n">LoggerFactory</span><span class="p">,</span> <span class="n">LoggingConfigBuilder</span>
+</span><span id="__span-1-2"><a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a>
+</span><span id="__span-1-3"><a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a><span class="n">config</span> <span class="o">=</span> <span class="p">(</span>
+</span><span id="__span-1-4"><a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a>    <span class="n">LoggingConfigBuilder</span><span class="p">()</span>
+</span><span id="__span-1-5"><a id="__codelineno-1-5" name="__codelineno-1-5" href="#__codelineno-1-5"></a>    <span class="o">.</span><span class="n">with_level</span><span class="p">(</span><span class="s2">&quot;INFO&quot;</span><span class="p">)</span>
+</span><span id="__span-1-6"><a id="__codelineno-1-6" name="__codelineno-1-6" href="#__codelineno-1-6"></a>    <span class="o">.</span><span class="n">with_module_levels</span><span class="p">({</span><span class="s2">&quot;app.db&quot;</span><span class="p">:</span> <span class="s2">&quot;DEBUG&quot;</span><span class="p">})</span>
+</span><span id="__span-1-7"><a id="__codelineno-1-7" name="__codelineno-1-7" href="#__codelineno-1-7"></a>    <span class="o">.</span><span class="n">with_json_file</span><span class="p">(</span><span class="s2">&quot;app.jsonl&quot;</span><span class="p">)</span>
+</span><span id="__span-1-8"><a id="__codelineno-1-8" name="__codelineno-1-8" href="#__codelineno-1-8"></a>    <span class="o">.</span><span class="n">with_json_base_dir</span><span class="p">(</span><span class="s2">&quot;/var/log/myapp&quot;</span><span class="p">)</span>
+</span><span id="__span-1-9"><a id="__codelineno-1-9" name="__codelineno-1-9" href="#__codelineno-1-9"></a>    <span class="o">.</span><span class="n">build</span><span class="p">()</span>
+</span><span id="__span-1-10"><a id="__codelineno-1-10" name="__codelineno-1-10" href="#__codelineno-1-10"></a><span class="p">)</span>
+</span><span id="__span-1-11"><a id="__codelineno-1-11" name="__codelineno-1-11" href="#__codelineno-1-11"></a><span class="n">LoggerFactory</span><span class="o">.</span><span class="n">apply_config</span><span class="p">(</span><span class="n">config</span><span class="p">)</span>
 </span></code></pre></div>
 <h3 id="protocol-pattern">Protocol Pattern</h3>
 <p><strong>LoggerProtocol</strong> defines the logger interface:</p>
@@ -2575,52 +2584,97 @@
 <tr>
 <th>Module</th>
 <th>Responsibility</th>
-<th>Lines of Code</th>
 </tr>
 </thead>
 <tbody>
 <tr>
 <td><code>factory.py</code></td>
-<td>Logger creation and configuration</td>
-<td>~450</td>
+<td>Logger creation, <code>LoggerFactory.apply_config()</code>, <code>TraceLogger</code></td>
 </tr>
 <tr>
 <td><code>handlers.py</code></td>
 <td>Output handler implementations</td>
-<td>~340</td>
 </tr>
 <tr>
 <td><code>config.py</code></td>
-<td>Configuration dataclass</td>
-<td>~195</td>
+<td>Configuration dataclass &amp; validation</td>
+</tr>
+<tr>
+<td><code>config_builder.py</code></td>
+<td>Fluent <code>LoggingConfigBuilder</code></td>
 </tr>
 <tr>
 <td><code>handler_factory.py</code></td>
 <td>Handler factory</td>
-<td>~170</td>
+</tr>
+<tr>
+<td><code>_rotation.py</code></td>
+<td>Stdlib-only shared archive pruning helper</td>
 </tr>
 <tr>
 <td><code>levels.py</code></td>
 <td>TRACE level registration</td>
-<td>~20</td>
 </tr>
 <tr>
 <td><code>types.py</code></td>
 <td>Logger protocol definition</td>
-<td>~25</td>
+</tr>
+</tbody>
+</table>
+<h3 id="optional-opentelemetry-subpackage-arlogiotel">Optional OpenTelemetry Subpackage (<code>arlogi.otel</code>)</h3>
+<p>When the <code>arlogi[otel]</code> extra is installed, <code>src/arlogi/otel/</code> exposes 9 public symbols (<code>setup_tracing</code>, <code>shutdown_tracing</code>, <code>setup_metrics</code>, <code>shutdown_metrics</code>, <code>install_log_correlation</code>, <code>set_trace_modules</code>, <code>traced</code>, <code>RotatingJsonlSpanExporter</code>, <code>RotatingJsonlMetricExporter</code>). <code>src/arlogi/otel/__init__.py</code> uses a <code>__getattr__</code> lazy-loading boundary so bare <code>import arlogi.otel</code> and <code>arlogi.otel.decorator</code> depend only on <code>opentelemetry-api</code> and never eagerly import <code>opentelemetry-sdk</code>.</p>
+<table>
+<thead>
+<tr>
+<th>Module</th>
+<th>Responsibility</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>otel/__init__.py</code></td>
+<td>Public exports &amp; <code>__getattr__</code> SDK-free lazy import boundary</td>
+</tr>
+<tr>
+<td><code>otel/bootstrap.py</code></td>
+<td><code>setup_tracing</code>, <code>shutdown_tracing</code>, <code>setup_metrics</code>, <code>shutdown_metrics</code>, <code>install_log_correlation</code></td>
+</tr>
+<tr>
+<td><code>otel/decorator.py</code></td>
+<td><code>set_trace_modules</code>, <code>@traced</code> (sync/async/generator, API-only)</td>
+</tr>
+<tr>
+<td><code>otel/exporters.py</code></td>
+<td><code>RotatingJsonlSpanExporter</code>, <code>RotatingJsonlMetricExporter</code></td>
+</tr>
+<tr>
+<td><code>otel/_files.py</code></td>
+<td>Exclusive symlink-safe <code>_RotatingJsonlWriter</code></td>
+</tr>
+<tr>
+<td><code>otel/_encode.py</code></td>
+<td>OTLP protobuf-to-JSONL encoding with hex trace/span IDs</td>
 </tr>
 </tbody>
 </table>
 <h3 id="file-structure">File Structure</h3>
 <div class="language-text highlight"><pre><span></span><code><span id="__span-4-1"><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a>src/arlogi/
 </span><span id="__span-4-2"><a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a>├── __init__.py              # Public API exports
-</span><span id="__span-4-3"><a id="__codelineno-4-3" name="__codelineno-4-3" href="#__codelineno-4-3"></a>├── config.py                # LoggingConfig dataclass
-</span><span id="__span-4-4"><a id="__codelineno-4-4" name="__codelineno-4-4" href="#__codelineno-4-4"></a>├── config_builder.py        # Configuration builder utilities (if present)
-</span><span id="__span-4-5"><a id="__codelineno-4-5" name="__codelineno-4-5" href="#__codelineno-4-5"></a>├── factory.py               # LoggerFactory, TraceLogger
-</span><span id="__span-4-6"><a id="__codelineno-4-6" name="__codelineno-4-6" href="#__codelineno-4-6"></a>├── handler_factory.py       # HandlerFactory
-</span><span id="__span-4-7"><a id="__codelineno-4-7" name="__codelineno-4-7" href="#__codelineno-4-7"></a>├── handlers.py              # All handler classes
-</span><span id="__span-4-8"><a id="__codelineno-4-8" name="__codelineno-4-8" href="#__codelineno-4-8"></a>├── levels.py                # TRACE level registration
-</span><span id="__span-4-9"><a id="__codelineno-4-9" name="__codelineno-4-9" href="#__codelineno-4-9"></a>└── types.py                 # LoggerProtocol
+</span><span id="__span-4-3"><a id="__codelineno-4-3" name="__codelineno-4-3" href="#__codelineno-4-3"></a>├── _rotation.py             # Shared stdlib-only archive pruning helper
+</span><span id="__span-4-4"><a id="__codelineno-4-4" name="__codelineno-4-4" href="#__codelineno-4-4"></a>├── config.py                # LoggingConfig dataclass &amp; validation
+</span><span id="__span-4-5"><a id="__codelineno-4-5" name="__codelineno-4-5" href="#__codelineno-4-5"></a>├── config_builder.py        # Fluent LoggingConfigBuilder
+</span><span id="__span-4-6"><a id="__codelineno-4-6" name="__codelineno-4-6" href="#__codelineno-4-6"></a>├── factory.py               # LoggerFactory, TraceLogger
+</span><span id="__span-4-7"><a id="__codelineno-4-7" name="__codelineno-4-7" href="#__codelineno-4-7"></a>├── handler_factory.py       # HandlerFactory
+</span><span id="__span-4-8"><a id="__codelineno-4-8" name="__codelineno-4-8" href="#__codelineno-4-8"></a>├── handlers.py              # All handler classes
+</span><span id="__span-4-9"><a id="__codelineno-4-9" name="__codelineno-4-9" href="#__codelineno-4-9"></a>├── levels.py                # TRACE level registration
+</span><span id="__span-4-10"><a id="__codelineno-4-10" name="__codelineno-4-10" href="#__codelineno-4-10"></a>├── types.py                 # LoggerProtocol
+</span><span id="__span-4-11"><a id="__codelineno-4-11" name="__codelineno-4-11" href="#__codelineno-4-11"></a>└── otel/                    # Optional arlogi[otel] subpackage (lazy SDK boundary)
+</span><span id="__span-4-12"><a id="__codelineno-4-12" name="__codelineno-4-12" href="#__codelineno-4-12"></a>    ├── __init__.py          # Lazy __getattr__ exports (9 public symbols)
+</span><span id="__span-4-13"><a id="__codelineno-4-13" name="__codelineno-4-13" href="#__codelineno-4-13"></a>    ├── _encode.py           # OTLP JSONL encoder
+</span><span id="__span-4-14"><a id="__codelineno-4-14" name="__codelineno-4-14" href="#__codelineno-4-14"></a>    ├── _files.py            # Exclusive, symlink-safe rotating JSONL writer
+</span><span id="__span-4-15"><a id="__codelineno-4-15" name="__codelineno-4-15" href="#__codelineno-4-15"></a>    ├── bootstrap.py         # Tracing/metrics lifecycle &amp; log correlation
+</span><span id="__span-4-16"><a id="__codelineno-4-16" name="__codelineno-4-16" href="#__codelineno-4-16"></a>    ├── decorator.py         # @traced decorator &amp; set_trace_modules
+</span><span id="__span-4-17"><a id="__codelineno-4-17" name="__codelineno-4-17" href="#__codelineno-4-17"></a>    └── exporters.py         # RotatingJsonlSpanExporter &amp; RotatingJsonlMetricExporter
 </span></code></pre></div>
 <hr />
 <h2 id="data-flow">Data Flow</h2>
@@ -2628,7 +2682,7 @@
 <p>The initialization process uses the <code>LoggingConfig</code> pattern for type-safe configuration:</p>
 <pre class="mermaid"><code>graph TD
     A[setup_logging / LoggerFactory.setup] --&gt; B[LoggingConfig.from_kwargs]
-    B --&gt; C["_apply_configuration"]
+    B --&gt; C["LoggerFactory.apply_config (internal _apply_configuration)"]
     C --&gt; D[_initialize_trace_level]
     C --&gt; E[_configure_root_logger]
     C --&gt; F[is_test_mode?]
@@ -2790,7 +2844,7 @@
 </tr>
 <tr>
 <td>LoggerFactory</td>
-<td>Silently falls back on handler errors</td>
+<td>Closes partial handlers, preserves active ones, and re-raises</td>
 </tr>
 <tr>
 <td>ColoredConsoleHandler</td>
@@ -2798,7 +2852,7 @@
 </tr>
 <tr>
 <td>ArlogiSyslogHandler</td>
-<td>Falls back to UDP, then silent</td>
+<td>Falls back to UDP/silent on <code>/dev/log</code>; raises on custom addr</td>
 </tr>
 </tbody>
 </table>

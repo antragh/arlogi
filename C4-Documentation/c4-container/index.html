@@ -1797,62 +1797,6 @@
 
               
             
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../c4-code-docs-scripts/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Code - Docs Scripts
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../c4-code-subdir/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Code - Subdir
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
           </ul>
         </nav>
       
@@ -2565,8 +2509,7 @@
 <li>Logger Factory (LoggerFactory, TraceLogger)</li>
 <li>Handler Implementations (ColoredConsoleHandler, JSONHandler, JSONFileHandler, ArlogiSyslogHandler)</li>
 <li>Type Definitions (LoggerProtocol, custom TRACE level)</li>
-<li>Public API Functions (get_logger, get_json_logger, get_syslog_logger)</li>
-<li>Legacy Helpers (<code>setup_logging</code>)</li>
+<li>Public API Functions (get_logger, get_json_logger, get_syslog_logger, setup_logging)</li>
 </ul>
 <h4 id="interfaces">Interfaces</h4>
 <h5 id="python-module-api">Python Module API</h5>
@@ -2576,29 +2519,33 @@
 <p><strong>Endpoints</strong>:</p>
 <ul>
 <li><code>arlogi.LoggingConfig</code> - Configuration dataclass</li>
+<li><code>arlogi.LoggingConfigBuilder</code> - Fluent configuration builder</li>
 <li><code>arlogi.LoggerFactory</code> - Logger factory class</li>
 <li><code>arlogi.get_logger(name, level=None)</code> - Get standard logger</li>
-<li><code>arlogi.get_json_logger(name, json_file_name=None)</code> - Get JSON-only logger</li>
-<li><code>arlogi.get_syslog_logger(name, address="/dev/log")</code> - Get syslog-only logger</li>
-<li><code>arlogi.setup_logging(**kwargs)</code> - Legacy configuration helper (Deprecated)</li>
+<li><code>arlogi.get_json_logger(name, json_file_name=None, base_dir=None)</code> - Get JSON-only logger</li>
+<li><code>arlogi.get_syslog_logger(name, address="/dev/log", syslog_format="text")</code> - Get syslog-only logger</li>
+<li><code>arlogi.setup_logging(config=None, **kwargs)</code> - Root logging configuration entrypoint</li>
 <li><code>arlogi.HandlerFactory</code> - Handler factory class</li>
 <li><code>arlogi.TRACE</code> - Custom TRACE log level constant</li>
 </ul>
 <h5 id="json-output-interface">JSON Output Interface</h5>
 <p><strong>Protocol</strong>: JSON Lines (JSONL) format
 <strong>Description</strong>: Structured log format for log aggregation systems
-<strong>Specification</strong>: <a href="../../API_REFERENCE/#jsonhandler">API Reference - JSON Output Format</a></p>
+<strong>Specification</strong>: <a href="../../API_REFERENCE/#jsonhandler-and-jsonformatter">API Reference - JSON Output Format</a></p>
 <p><strong>Schema</strong>:</p>
 <div class="language-json highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="p">{</span>
 </span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a><span class="w">  </span><span class="nt">&quot;timestamp&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;string (ISO 8601)&quot;</span><span class="p">,</span>
 </span><span id="__span-0-3"><a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a><span class="w">  </span><span class="nt">&quot;level&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;string (level name)&quot;</span><span class="p">,</span>
-</span><span id="__span-0-4"><a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a><span class="w">  </span><span class="nt">&quot;message&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;string (log message)&quot;</span><span class="p">,</span>
-</span><span id="__span-0-5"><a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a><span class="w">  </span><span class="nt">&quot;file&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;string (file path)&quot;</span><span class="p">,</span>
-</span><span id="__span-0-6"><a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a><span class="w">  </span><span class="nt">&quot;line&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;number (line number)&quot;</span><span class="p">,</span>
+</span><span id="__span-0-4"><a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a><span class="w">  </span><span class="nt">&quot;logger_name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;string (logger name)&quot;</span><span class="p">,</span>
+</span><span id="__span-0-5"><a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a><span class="w">  </span><span class="nt">&quot;message&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;string (log message)&quot;</span><span class="p">,</span>
+</span><span id="__span-0-6"><a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a><span class="w">  </span><span class="nt">&quot;module&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;string (module name)&quot;</span><span class="p">,</span>
 </span><span id="__span-0-7"><a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a><span class="w">  </span><span class="nt">&quot;function&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;string (function name)&quot;</span><span class="p">,</span>
-</span><span id="__span-0-8"><a id="__codelineno-0-8" name="__codelineno-0-8" href="#__codelineno-0-8"></a><span class="w">  </span><span class="nt">&quot;caller&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;string | null (caller function)&quot;</span><span class="p">,</span>
-</span><span id="__span-0-9"><a id="__codelineno-0-9" name="__codelineno-0-9" href="#__codelineno-0-9"></a><span class="w">  </span><span class="nt">&quot;extra&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;object (custom fields)&quot;</span>
-</span><span id="__span-0-10"><a id="__codelineno-0-10" name="__codelineno-0-10" href="#__codelineno-0-10"></a><span class="p">}</span>
+</span><span id="__span-0-8"><a id="__codelineno-0-8" name="__codelineno-0-8" href="#__codelineno-0-8"></a><span class="w">  </span><span class="nt">&quot;line_number&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;number (line number)&quot;</span><span class="p">,</span>
+</span><span id="__span-0-9"><a id="__codelineno-0-9" name="__codelineno-0-9" href="#__codelineno-0-9"></a><span class="w">  </span><span class="nt">&quot;exception&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;string | null (formatted traceback when present)&quot;</span><span class="p">,</span>
+</span><span id="__span-0-10"><a id="__codelineno-0-10" name="__codelineno-0-10" href="#__codelineno-0-10"></a><span class="w">  </span><span class="nt">&quot;trace_id&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;string (optional 32-hex OTEL trace ID)&quot;</span><span class="p">,</span>
+</span><span id="__span-0-11"><a id="__codelineno-0-11" name="__codelineno-0-11" href="#__codelineno-0-11"></a><span class="w">  </span><span class="nt">&quot;span_id&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;string (optional 16-hex OTEL span ID)&quot;</span><span class="p">,</span>
+</span><span id="__span-0-12"><a id="__codelineno-0-12" name="__codelineno-0-12" href="#__codelineno-0-12"></a><span class="w">  </span><span class="nt">&quot;extra&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;object (colliding custom fields only; non-colliding fields sit at top level)&quot;</span>
+</span><span id="__span-0-13"><a id="__codelineno-0-13" name="__codelineno-0-13" href="#__codelineno-0-13"></a><span class="p">}</span>
 </span></code></pre></div>
 <h5 id="syslog-interface">Syslog Interface</h5>
 <p><strong>Protocol</strong>: Unix Domain Socket or UDP
@@ -2811,8 +2758,8 @@
 <li><strong>Name</strong>: Documentation Site</li>
 <li><strong>Description</strong>: Automated documentation generation and static website deployment providing API reference, user guides, and architectural documentation</li>
 <li><strong>Type</strong>: Static Website / Documentation Infrastructure</li>
-<li><strong>Technology</strong>: MkDocs 1.5+, Material Theme 9.7.1+, MkDocstrings 1.0+, Python 3.10+</li>
-<li><strong>Deployment</strong>: nginx web server at <a href="http://192.168.168.5/cpaiops/">http://192.168.168.5/cpaiops/</a></li>
+<li><strong>Technology</strong>: MkDocs 1.6+, Material Theme 9.7+, MkDocstrings 1.0+, Python 3.13+</li>
+<li><strong>Deployment</strong>: GitHub Pages at <a href="https://antragh.github.io/arlogi/">https://antragh.github.io/arlogi/</a> via <code>.github/workflows/deploy-docs.yml</code></li>
 <li><strong>Build Output</strong>: Static HTML/CSS/JS in <code>site/</code> directory</li>
 </ul>
 <h4 id="purpose_2">Purpose</h4>
@@ -2830,33 +2777,26 @@
 <p>This container deploys the following component:</p>
 <p><strong><a href="../c4-component-documentation/">Documentation System</a></strong> - Documentation infrastructure</p>
 <ul>
-<li>Reference Page Generator (<code>docs/scripts/gen_ref_pages.py</code>)</li>
-<li>MkDocs Builder (<code>mkdocs build</code>, <code>mkdocs serve</code>)</li>
+<li>MkDocs Builder (<code>uv run --no-sync mkdocs build --strict</code>)</li>
 <li>API Reference Docs (<code>docs/reference/*.md</code>)</li>
 <li>User Documentation (<code>docs/*.md</code>)</li>
-<li>Deployment Scripts (<code>docs/scripts/build_pub.sh</code>)</li>
+<li>GitHub Actions Pages Workflow (<code>.github/workflows/deploy-docs.yml</code>)</li>
 </ul>
 <h4 id="interfaces_2">Interfaces</h4>
 <h5 id="command-line-interface_1">Command Line Interface</h5>
 <p><strong>Protocol</strong>: Shell commands
-<strong>Description</strong>: Build, serve, and deploy documentation</p>
+<strong>Description</strong>: Build and serve documentation</p>
 <p><strong>Commands</strong>:</p>
-<div class="language-bash highlight"><pre><span></span><code><span id="__span-5-1"><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a><span class="c1"># Generate API reference pages</span>
-</span><span id="__span-5-2"><a id="__codelineno-5-2" name="__codelineno-5-2" href="#__codelineno-5-2"></a>python<span class="w"> </span>docs/scripts/gen_ref_pages.py
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-5-1"><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a><span class="c1"># Build documentation site strictly</span>
+</span><span id="__span-5-2"><a id="__codelineno-5-2" name="__codelineno-5-2" href="#__codelineno-5-2"></a>uv<span class="w"> </span>run<span class="w"> </span>mkdocs<span class="w"> </span>build<span class="w"> </span>--strict
 </span><span id="__span-5-3"><a id="__codelineno-5-3" name="__codelineno-5-3" href="#__codelineno-5-3"></a>
-</span><span id="__span-5-4"><a id="__codelineno-5-4" name="__codelineno-5-4" href="#__codelineno-5-4"></a><span class="c1"># Build documentation site</span>
-</span><span id="__span-5-5"><a id="__codelineno-5-5" name="__codelineno-5-5" href="#__codelineno-5-5"></a>mkdocs<span class="w"> </span>build
-</span><span id="__span-5-6"><a id="__codelineno-5-6" name="__codelineno-5-6" href="#__codelineno-5-6"></a>
-</span><span id="__span-5-7"><a id="__codelineno-5-7" name="__codelineno-5-7" href="#__codelineno-5-7"></a><span class="c1"># Serve locally for development</span>
-</span><span id="__span-5-8"><a id="__codelineno-5-8" name="__codelineno-5-8" href="#__codelineno-5-8"></a>mkdocs<span class="w"> </span>serve
-</span><span id="__span-5-9"><a id="__codelineno-5-9" name="__codelineno-5-9" href="#__codelineno-5-9"></a>
-</span><span id="__span-5-10"><a id="__codelineno-5-10" name="__codelineno-5-10" href="#__codelineno-5-10"></a><span class="c1"># Deploy to remote server</span>
-</span><span id="__span-5-11"><a id="__codelineno-5-11" name="__codelineno-5-11" href="#__codelineno-5-11"></a>./docs/scripts/build_pub.sh
+</span><span id="__span-5-4"><a id="__codelineno-5-4" name="__codelineno-5-4" href="#__codelineno-5-4"></a><span class="c1"># Serve locally for development</span>
+</span><span id="__span-5-5"><a id="__codelineno-5-5" name="__codelineno-5-5" href="#__codelineno-5-5"></a>uv<span class="w"> </span>run<span class="w"> </span>mkdocs<span class="w"> </span>serve
 </span></code></pre></div>
 <h5 id="web-interface">Web Interface</h5>
-<p><strong>Protocol</strong>: HTTP/HTTPS
+<p><strong>Protocol</strong>: HTTPS
 <strong>Description</strong>: User-facing documentation website
-<strong>Access</strong>: <a href="http://192.168.168.5/cpaiops/">http://192.168.168.5/cpaiops/</a> (production) or <a href="http://localhost:8000">http://localhost:8000</a> (development)</p>
+<strong>Access</strong>: <a href="https://antragh.github.io/arlogi/">https://antragh.github.io/arlogi/</a> (production) or <a href="http://localhost:8000">http://localhost:8000</a> (development)</p>
 <p><strong>Features</strong>:</p>
 <ul>
 <li>Browse API reference by module</li>
@@ -2907,11 +2847,9 @@
 <p>SuperFences for custom blocks</p>
 </li>
 <li>
-<p><strong>nginx Web Server</strong>: Production hosting</p>
+<p><strong>GitHub Pages</strong>: Production hosting</p>
 </li>
-<li>Static file serving</li>
-<li>HTTP/HTTPS support</li>
-<li>Document root: <code>/opt/c/nginx/html/arlogi</code></li>
+<li>Static file serving over HTTPS via <code>.github/workflows/deploy-docs.yml</code></li>
 </ul>
 <h4 id="infrastructure_2">Infrastructure</h4>
 <p><strong>Deployment Configuration</strong>:</p>
@@ -2920,20 +2858,18 @@
 <li><strong>Custom CSS</strong>: <code>extra.css</code></li>
 <li><strong>Source Files</strong>: <code>docs/</code> directory with markdown files</li>
 <li><strong>Build Output</strong>: <code>site/</code> directory (static HTML)</li>
-<li><strong>Remote Server</strong>: 192.168.168.5 via SSH/rsync</li>
+<li><strong>Deployment Target</strong>: GitHub Pages (<code>https://antragh.github.io/arlogi/</code>)</li>
 </ul>
 <p><strong>Build Commands</strong>:</p>
-<div class="language-bash highlight"><pre><span></span><code><span id="__span-6-1"><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a><span class="c1"># Generate API reference</span>
-</span><span id="__span-6-2"><a id="__codelineno-6-2" name="__codelineno-6-2" href="#__codelineno-6-2"></a>python<span class="w"> </span>docs/scripts/gen_ref_pages.py
-</span><span id="__span-6-3"><a id="__codelineno-6-3" name="__codelineno-6-3" href="#__codelineno-6-3"></a>
-</span><span id="__span-6-4"><a id="__codelineno-6-4" name="__codelineno-6-4" href="#__codelineno-6-4"></a><span class="c1"># Build site</span>
-</span><span id="__span-6-5"><a id="__codelineno-6-5" name="__codelineno-6-5" href="#__codelineno-6-5"></a>mkdocs<span class="w"> </span>build
-</span><span id="__span-6-6"><a id="__codelineno-6-6" name="__codelineno-6-6" href="#__codelineno-6-6"></a>
-</span><span id="__span-6-7"><a id="__codelineno-6-7" name="__codelineno-6-7" href="#__codelineno-6-7"></a><span class="c1"># Serve locally (development)</span>
-</span><span id="__span-6-8"><a id="__codelineno-6-8" name="__codelineno-6-8" href="#__codelineno-6-8"></a>mkdocs<span class="w"> </span>serve
-</span><span id="__span-6-9"><a id="__codelineno-6-9" name="__codelineno-6-9" href="#__codelineno-6-9"></a>
-</span><span id="__span-6-10"><a id="__codelineno-6-10" name="__codelineno-6-10" href="#__codelineno-6-10"></a><span class="c1"># Deploy to production</span>
-</span><span id="__span-6-11"><a id="__codelineno-6-11" name="__codelineno-6-11" href="#__codelineno-6-11"></a>docs/scripts/build_pub.sh
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-6-1"><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a><span class="c1"># Build site strictly</span>
+</span><span id="__span-6-2"><a id="__codelineno-6-2" name="__codelineno-6-2" href="#__codelineno-6-2"></a>uv<span class="w"> </span>run<span class="w"> </span>mkdocs<span class="w"> </span>build<span class="w"> </span>--strict
+</span><span id="__span-6-3"><a id="__codelineno-6-3" name="__codelineno-6-3" href="#__codelineno-6-3"></a>mkdocs<span class="w"> </span>build
+</span><span id="__span-6-4"><a id="__codelineno-6-4" name="__codelineno-6-4" href="#__codelineno-6-4"></a>
+</span><span id="__span-6-5"><a id="__codelineno-6-5" name="__codelineno-6-5" href="#__codelineno-6-5"></a><span class="c1"># Serve locally (development)</span>
+</span><span id="__span-6-6"><a id="__codelineno-6-6" name="__codelineno-6-6" href="#__codelineno-6-6"></a>mkdocs<span class="w"> </span>serve
+</span><span id="__span-6-7"><a id="__codelineno-6-7" name="__codelineno-6-7" href="#__codelineno-6-7"></a>
+</span><span id="__span-6-8"><a id="__codelineno-6-8" name="__codelineno-6-8" href="#__codelineno-6-8"></a><span class="c1"># Deploy to production</span>
+</span><span id="__span-6-9"><a id="__codelineno-6-9" name="__codelineno-6-9" href="#__codelineno-6-9"></a>docs/scripts/build_pub.sh
 </span></code></pre></div>
 <p><strong>Scaling</strong>:</p>
 <ul>

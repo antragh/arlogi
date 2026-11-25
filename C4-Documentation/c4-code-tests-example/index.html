@@ -1342,62 +1342,6 @@
 
               
             
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../c4-code-docs-scripts/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Code - Docs Scripts
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../c4-code-subdir/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Code - Subdir
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
           </ul>
         </nav>
       
@@ -1601,7 +1545,7 @@
 <ul>
 <li><code>main() -&gt; None</code></li>
 <li>Description: Main entry point demonstrating comprehensive arlogi features including environment-based configuration, module-specific levels, dedicated loggers, and caller attribution</li>
-<li>Location: <code>/opt/Code/2026/_Libs/arlogi/tests/example/example.py:8</code></li>
+<li>Location: <code>tests/example/example.py:8</code></li>
 <li>
 <p>Dependencies: <code>os.environ</code>, <code>LoggingConfig</code>, <code>LoggerFactory</code>, <code>get_logger</code>, <code>get_json_logger</code>, <code>get_syslog_logger</code>, <code>worker.do_work()</code></p>
 </li>
@@ -1609,7 +1553,7 @@
 <p><code>worker_function() -&gt; None</code></p>
 </li>
 <li>Description: Nested function demonstrating caller attribution with different depth levels</li>
-<li>Location: <code>/opt/Code/2026/_Libs/arlogi/tests/example/example.py:74</code></li>
+<li>Location: <code>tests/example/example.py:74</code></li>
 <li>
 <p>Dependencies: <code>logger</code>, <code>worker.do_work()</code></p>
 </li>
@@ -1617,7 +1561,7 @@
 <p><code>do_work(depth: int = 0) -&gt; None</code></p>
 </li>
 <li>Description: Worker function demonstrating logging with cross-module caller attribution</li>
-<li>Location: <code>/opt/Code/2026/_Libs/arlogi/tests/example/worker.py:5</code></li>
+<li>Location: <code>tests/example/worker.py:5</code></li>
 <li>Dependencies: <code>logger</code></li>
 </ul>
 <h3 id="variables">Variables</h3>
@@ -1625,13 +1569,13 @@
 <li><code>env_level: str</code></li>
 <li>Description: Environment variable LOG_LEVEL value, defaults to "INFO"</li>
 <li>
-<p>Location: <code>/opt/Code/2026/_Libs/arlogi/tests/example/example.py:10</code></p>
+<p>Location: <code>tests/example/example.py:10</code></p>
 </li>
 <li>
 <p><code>logger: Logger</code></p>
 </li>
 <li>Description: Logger instance for "app.main" module demonstrating standard logging</li>
-<li>Location: <code>/opt/Code/2026/_Libs/arlogi/tests/example/example.py:27</code></li>
+<li>Location: <code>tests/example/example.py:27</code></li>
 <li>
 <p>Dependencies: <code>get_logger("app.main")</code></p>
 </li>
@@ -1639,7 +1583,7 @@
 <p><code>net_logger: Logger</code></p>
 </li>
 <li>Description: Logger instance for "app.network" module with TRACE-level override</li>
-<li>Location: <code>/opt/Code/2026/_Libs/arlogi/tests/example/example.py:28</code></li>
+<li>Location: <code>tests/example/example.py:28</code></li>
 <li>
 <p>Dependencies: <code>get_logger("app.network")</code></p>
 </li>
@@ -1647,7 +1591,7 @@
 <p><code>db_logger: Logger</code></p>
 </li>
 <li>Description: Logger instance for "app.database" module with DEBUG-level override</li>
-<li>Location: <code>/opt/Code/2026/_Libs/arlogi/tests/example/example.py:29</code></li>
+<li>Location: <code>tests/example/example.py:29</code></li>
 <li>
 <p>Dependencies: <code>get_logger("app.database")</code></p>
 </li>
@@ -1655,7 +1599,7 @@
 <p><code>audit_logger: Logger</code></p>
 </li>
 <li>Description: Dedicated JSON logger for audit logging with file output</li>
-<li>Location: <code>/opt/Code/2026/_Libs/arlogi/tests/example/example.py:64</code></li>
+<li>Location: <code>tests/example/example.py:64</code></li>
 <li>
 <p>Dependencies: <code>get_json_logger("audit")</code></p>
 </li>
@@ -1663,7 +1607,7 @@
 <p><code>syslog_logger: Logger</code></p>
 </li>
 <li>Description: Dedicated syslog logger for security events</li>
-<li>Location: <code>/opt/Code/2026/_Libs/arlogi/tests/example/example.py:68</code></li>
+<li>Location: <code>tests/example/example.py:68</code></li>
 <li>
 <p>Dependencies: <code>get_syslog_logger("security")</code></p>
 </li>
@@ -1671,7 +1615,7 @@
 <p><code>logger: Logger</code></p>
 </li>
 <li>Description: Worker module logger for "app.worker" namespace</li>
-<li>Location: <code>/opt/Code/2026/_Libs/arlogi/tests/example/worker.py:3</code></li>
+<li>Location: <code>tests/example/worker.py:3</code></li>
 <li>Dependencies: <code>get_logger("app.worker")</code></li>
 </ul>
 <h2 id="dependencies">Dependencies</h2>
@@ -1718,7 +1662,7 @@ classDiagram
     namespace arlogi {
         class LoggingSystem {
             +LoggingConfig(level, module_levels, ...)
-            +LoggerFactory._apply_configuration(config)
+            +LoggerFactory.apply_config(config)
             +get_logger() Logger
             +get_json_logger() Logger
             +get_syslog_logger() Logger
@@ -1782,7 +1726,7 @@ flowchart LR
 <li>Environment-based log level configuration</li>
 <li>Module-specific log level overrides</li>
 <li>Multiple logger types (standard, JSON-only, syslog)</li>
-<li>Caller attribution with depth control (<code>from_</code> parameter)</li>
+<li>Caller attribution with depth control (<code>caller_depth</code> parameter)</li>
 <li>Cross-module logging attribution support</li>
 <li>Clean formatting with optional time/path display</li>
 </ul>

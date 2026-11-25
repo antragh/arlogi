@@ -1342,21 +1342,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#nginx-web-server" class="md-nav__link">
+  <a href="#github-pages" class="md-nav__link">
     <span class="md-ellipsis">
       
-        nginx Web Server
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#sshrsync-deployment-tools" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        SSH/rsync (Deployment Tools)
+        GitHub Pages
       
     </span>
   </a>
@@ -1671,62 +1660,6 @@
     
   
     Code - Docs Reference
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../c4-code-docs-scripts/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Code - Docs Scripts
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../c4-code-subdir/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Code - Subdir
   
 
     
@@ -2173,21 +2106,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#nginx-web-server" class="md-nav__link">
+  <a href="#github-pages" class="md-nav__link">
     <span class="md-ellipsis">
       
-        nginx Web Server
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#sshrsync-deployment-tools" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        SSH/rsync (Deployment Tools)
+        GitHub Pages
       
     </span>
   </a>
@@ -2276,7 +2198,7 @@
 <h3 id="short-description">Short Description</h3>
 <p>Arlogi is a robust, type-safe Python logging library that provides enhanced colored console output, structured JSON logging, syslog integration, and advanced caller attribution capabilities for modern application development.</p>
 <h3 id="long-description">Long Description</h3>
-<p>Arlogi extends Python's standard logging module with modern features designed to solve the problem of inadequate logging capabilities in production applications. The system provides a custom TRACE log level (level 5) for ultra-detailed debugging, premium colored console output using the Rich library, structured JSON logging for log aggregation systems, and enterprise-grade syslog integration. The library's unique caller attribution feature allows developers to trace log calls across function boundaries using depth parameters (from_, from_caller, or **{"from": depth}), making it easier to understand the flow of complex applications. Arlogi is designed as a drop-in replacement for the standard logging module while maintaining full backward compatibility, prioritizing modern type-safe configuration objects (LoggingConfig) and provides legacy support for simple helper functions (setup_logging). The system ensures test-mode awareness for seamless pytest integration and follows SOLID principles for maintainability and clear separation of concerns.</p>
+<p>Arlogi extends Python's standard logging module with modern features designed to solve the problem of inadequate logging capabilities in production applications. The system provides a custom TRACE log level (level 5) for ultra-detailed debugging, premium colored console output using the Rich library, structured JSON logging for log aggregation systems, and enterprise-grade syslog integration. The library's unique caller attribution feature allows developers to trace log calls across function boundaries using <code>caller_depth</code>, making it easier to understand the flow of complex applications. Arlogi is designed as a drop-in replacement for the standard logging module while maintaining full backward compatibility, prioritizing modern type-safe configuration objects (<code>LoggingConfig</code> and <code>LoggingConfigBuilder</code>) applied via <code>setup_logging(config=...)</code> or <code>LoggerFactory.apply_config(config)</code> alongside keyword-based <code>setup_logging(...)</code>. The system ensures test-mode awareness for seamless pytest integration and follows SOLID principles for maintainability and clear separation of concerns.</p>
 <hr />
 <h2 id="personas">Personas</h2>
 <h3 id="application-developer">Application Developer</h3>
@@ -2312,7 +2234,7 @@
 <li>Provide lazy initialization patterns for logging</li>
 <li><strong>Key Features Used</strong>:</li>
 <li>get_logger() for library logging</li>
-<li>Caller attribution with from_=1 to show caller context</li>
+<li>Caller attribution with <code>caller_depth=1</code> to show caller context</li>
 <li>TRACE level for detailed debugging</li>
 <li>Lazy logger initialization with LoggerProtocol</li>
 <li>Safe logging patterns that work with or without arlogi setup</li>
@@ -2490,7 +2412,7 @@
 </span><span id="__span-5-4"><a id="__codelineno-5-4" name="__codelineno-5-4" href="#__codelineno-5-4"></a><span class="n">logger</span> <span class="o">=</span> <span class="n">get_logger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
 </span><span id="__span-5-5"><a id="__codelineno-5-5" name="__codelineno-5-5" href="#__codelineno-5-5"></a>
 </span><span id="__span-5-6"><a id="__codelineno-5-6" name="__codelineno-5-6" href="#__codelineno-5-6"></a><span class="k">def</span><span class="w"> </span><span class="nf">fetch_user</span><span class="p">(</span><span class="n">user_id</span><span class="p">):</span>
-</span><span id="__span-5-7"><a id="__codelineno-5-7" name="__codelineno-5-7" href="#__codelineno-5-7"></a>    <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Fetching user&quot;</span><span class="p">,</span> <span class="n">from_</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>  <span class="c1"># Show caller, not this function</span>
+</span><span id="__span-5-7"><a id="__codelineno-5-7" name="__codelineno-5-7" href="#__codelineno-5-7"></a>    <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Fetching user&quot;</span><span class="p">,</span> <span class="n">caller_depth</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>  <span class="c1"># Show caller, not this function</span>
 </span><span id="__span-5-8"><a id="__codelineno-5-8" name="__codelineno-5-8" href="#__codelineno-5-8"></a>    <span class="c1"># ... fetch logic</span>
 </span><span id="__span-5-9"><a id="__codelineno-5-9" name="__codelineno-5-9" href="#__codelineno-5-9"></a>    <span class="k">return</span> <span class="n">user</span>
 </span></code></pre></div>
@@ -2511,7 +2433,7 @@
 <p><strong>Deep Stack Tracing</strong>: Developer uses deeper attribution for complex call stacks</p>
 </li>
 </ol>
-<div class="language-python highlight"><pre><span></span><code><span id="__span-7-1"><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Processing&quot;</span><span class="p">,</span> <span class="n">from_</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>  <span class="c1"># Show caller&#39;s caller</span>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-7-1"><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Processing&quot;</span><span class="p">,</span> <span class="n">caller_depth</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>  <span class="c1"># Show caller&#39;s caller</span>
 </span></code></pre></div>
 <h3 id="application-developer-trace-logging-journey">Application Developer: TRACE Logging Journey</h3>
 <p><strong>Persona</strong>: Application Developer, Library Developer</p>
@@ -2523,9 +2445,9 @@
 <ol>
 <li><strong>Use TRACE Logs</strong>: Developer adds ultra-detailed logging</li>
 </ol>
-<div class="language-python highlight"><pre><span></span><code><span id="__span-9-1"><a id="__codelineno-9-1" name="__codelineno-9-1" href="#__codelineno-9-1"></a><span class="n">logger</span><span class="o">.</span><span class="n">trace</span><span class="p">(</span><span class="s2">&quot;Variable x = </span><span class="si">%s</span><span class="s2">, y = </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">from_</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-9-1"><a id="__codelineno-9-1" name="__codelineno-9-1" href="#__codelineno-9-1"></a><span class="n">logger</span><span class="o">.</span><span class="n">trace</span><span class="p">(</span><span class="s2">&quot;Variable x = </span><span class="si">%s</span><span class="s2">, y = </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">caller_depth</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
 </span><span id="__span-9-2"><a id="__codelineno-9-2" name="__codelineno-9-2" href="#__codelineno-9-2"></a><span class="n">logger</span><span class="o">.</span><span class="n">trace</span><span class="p">(</span><span class="s2">&quot;Entering function complex_calculation&quot;</span><span class="p">)</span>
-</span><span id="__span-9-3"><a id="__codelineno-9-3" name="__codelineno-9-3" href="#__codelineno-9-3"></a><span class="n">logger</span><span class="o">.</span><span class="n">trace</span><span class="p">(</span><span class="s2">&quot;Step 1: Initialize&quot;</span><span class="p">,</span> <span class="n">from_</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+</span><span id="__span-9-3"><a id="__codelineno-9-3" name="__codelineno-9-3" href="#__codelineno-9-3"></a><span class="n">logger</span><span class="o">.</span><span class="n">trace</span><span class="p">(</span><span class="s2">&quot;Step 1: Initialize&quot;</span><span class="p">,</span> <span class="n">caller_depth</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
 </span><span id="__span-9-4"><a id="__codelineno-9-4" name="__codelineno-9-4" href="#__codelineno-9-4"></a><span class="n">logger</span><span class="o">.</span><span class="n">trace</span><span class="p">(</span><span class="s2">&quot;Step 2: Validate inputs&quot;</span><span class="p">)</span>
 </span><span id="__span-9-5"><a id="__codelineno-9-5" name="__codelineno-9-5" href="#__codelineno-9-5"></a><span class="n">logger</span><span class="o">.</span><span class="n">trace</span><span class="p">(</span><span class="s2">&quot;Step 3: Perform calculation&quot;</span><span class="p">)</span>
 </span><span id="__span-9-6"><a id="__codelineno-9-6" name="__codelineno-9-6" href="#__codelineno-9-6"></a><span class="n">logger</span><span class="o">.</span><span class="n">trace</span><span class="p">(</span><span class="s2">&quot;Exiting function complex_calculation&quot;</span><span class="p">)</span>
@@ -2537,7 +2459,7 @@
 </span><span id="__span-10-2"><a id="__codelineno-10-2" name="__codelineno-10-2" href="#__codelineno-10-2"></a>    <span class="n">level</span><span class="o">=</span><span class="s2">&quot;INFO&quot;</span><span class="p">,</span>
 </span><span id="__span-10-3"><a id="__codelineno-10-3" name="__codelineno-10-3" href="#__codelineno-10-3"></a>    <span class="n">module_levels</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;app.complex&quot;</span><span class="p">:</span> <span class="s2">&quot;TRACE&quot;</span><span class="p">}</span>
 </span><span id="__span-10-4"><a id="__codelineno-10-4" name="__codelineno-10-4" href="#__codelineno-10-4"></a><span class="p">)</span>
-</span><span id="__span-10-5"><a id="__codelineno-10-5" name="__codelineno-10-5" href="#__codelineno-10-5"></a><span class="n">LoggerFactory</span><span class="o">.</span><span class="n">_apply_configuration</span><span class="p">(</span><span class="n">config</span><span class="p">)</span>
+</span><span id="__span-10-5"><a id="__codelineno-10-5" name="__codelineno-10-5" href="#__codelineno-10-5"></a><span class="n">LoggerFactory</span><span class="o">.</span><span class="n">apply_config</span><span class="p">(</span><span class="n">config</span><span class="p">)</span>
 </span></code></pre></div>
 <ul>
 <li>
@@ -2548,7 +2470,7 @@
 </li>
 </ul>
 <div class="language-python highlight"><pre><span></span><code><span id="__span-11-1"><a id="__codelineno-11-1" name="__codelineno-11-1" href="#__codelineno-11-1"></a><span class="n">config</span> <span class="o">=</span> <span class="n">LoggingConfig</span><span class="p">(</span><span class="n">level</span><span class="o">=</span><span class="s2">&quot;TRACE&quot;</span><span class="p">)</span>
-</span><span id="__span-11-2"><a id="__codelineno-11-2" name="__codelineno-11-2" href="#__codelineno-11-2"></a><span class="n">LoggerFactory</span><span class="o">.</span><span class="n">_apply_configuration</span><span class="p">(</span><span class="n">config</span><span class="p">)</span>
+</span><span id="__span-11-2"><a id="__codelineno-11-2" name="__codelineno-11-2" href="#__codelineno-11-2"></a><span class="n">LoggerFactory</span><span class="o">.</span><span class="n">apply_config</span><span class="p">(</span><span class="n">config</span><span class="p">)</span>
 </span></code></pre></div>
 <h3 id="application-developer-module-configuration-journey">Application Developer: Module Configuration Journey</h3>
 <p><strong>Persona</strong>: Application Developer, DevOps Engineer</p>
@@ -2572,7 +2494,7 @@
 </span><span id="__span-12-6"><a id="__codelineno-12-6" name="__codelineno-12-6" href="#__codelineno-12-6"></a>        <span class="s2">&quot;app.security&quot;</span><span class="p">:</span> <span class="s2">&quot;WARNING&quot;</span>
 </span><span id="__span-12-7"><a id="__codelineno-12-7" name="__codelineno-12-7" href="#__codelineno-12-7"></a>    <span class="p">}</span>
 </span><span id="__span-12-8"><a id="__codelineno-12-8" name="__codelineno-12-8" href="#__codelineno-12-8"></a><span class="p">)</span>
-</span><span id="__span-12-9"><a id="__codelineno-12-9" name="__codelineno-12-9" href="#__codelineno-12-9"></a><span class="n">LoggerFactory</span><span class="o">.</span><span class="n">_apply_configuration</span><span class="p">(</span><span class="n">config</span><span class="p">)</span>
+</span><span id="__span-12-9"><a id="__codelineno-12-9" name="__codelineno-12-9" href="#__codelineno-12-9"></a><span class="n">LoggerFactory</span><span class="o">.</span><span class="n">apply_config</span><span class="p">(</span><span class="n">config</span><span class="p">)</span>
 </span></code></pre></div>
 <ul>
 <li>
@@ -2659,11 +2581,11 @@
 <p><strong>Apply Configuration</strong>: Developer applies configuration to logging system</p>
 </li>
 </ul>
-<div class="language-python highlight"><pre><span></span><code><span id="__span-18-1"><a id="__codelineno-18-1" name="__codelineno-18-1" href="#__codelineno-18-1"></a><span class="n">LoggerFactory</span><span class="o">.</span><span class="n">_apply_configuration</span><span class="p">(</span><span class="n">config</span><span class="p">)</span>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-18-1"><a id="__codelineno-18-1" name="__codelineno-18-1" href="#__codelineno-18-1"></a><span class="n">LoggerFactory</span><span class="o">.</span><span class="n">apply_config</span><span class="p">(</span><span class="n">config</span><span class="p">)</span>
 </span></code></pre></div>
 <ul>
 <li>
-<p>System: Python Package → LoggerFactory._apply_configuration()</p>
+<p>System: Python Package → LoggerFactory.apply_config()</p>
 </li>
 <li>
 <p><strong>Validate Configuration</strong>: Developer benefits from automatic validation</p>
@@ -2740,7 +2662,7 @@
 </span><span id="__span-22-3"><a id="__codelineno-22-3" name="__codelineno-22-3" href="#__codelineno-22-3"></a>    <span class="n">use_syslog</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
 </span><span id="__span-22-4"><a id="__codelineno-22-4" name="__codelineno-22-4" href="#__codelineno-22-4"></a>    <span class="n">syslog_address</span><span class="o">=</span><span class="s2">&quot;/dev/log&quot;</span>
 </span><span id="__span-22-5"><a id="__codelineno-22-5" name="__codelineno-22-5" href="#__codelineno-22-5"></a><span class="p">)</span>
-</span><span id="__span-22-6"><a id="__codelineno-22-6" name="__codelineno-22-6" href="#__codelineno-22-6"></a><span class="n">LoggerFactory</span><span class="o">.</span><span class="n">_apply_configuration</span><span class="p">(</span><span class="n">config</span><span class="p">)</span>
+</span><span id="__span-22-6"><a id="__codelineno-22-6" name="__codelineno-22-6" href="#__codelineno-22-6"></a><span class="n">LoggerFactory</span><span class="o">.</span><span class="n">apply_config</span><span class="p">(</span><span class="n">config</span><span class="p">)</span>
 </span></code></pre></div>
 <ul>
 <li>
@@ -2760,19 +2682,18 @@
 </span><span id="__span-24-2"><a id="__codelineno-24-2" name="__codelineno-24-2" href="#__codelineno-24-2"></a>    <span class="n">syslog_address</span><span class="o">=</span><span class="p">(</span><span class="s2">&quot;syslog.example.com&quot;</span><span class="p">,</span> <span class="mi">514</span><span class="p">),</span>
 </span><span id="__span-24-3"><a id="__codelineno-24-3" name="__codelineno-24-3" href="#__codelineno-24-3"></a>    <span class="n">use_syslog</span><span class="o">=</span><span class="kc">True</span>
 </span><span id="__span-24-4"><a id="__codelineno-24-4" name="__codelineno-24-4" href="#__codelineno-24-4"></a><span class="p">)</span>
-</span><span id="__span-24-5"><a id="__codelineno-24-5" name="__codelineno-24-5" href="#__codelineno-24-5"></a><span class="n">LoggerFactory</span><span class="o">.</span><span class="n">_apply_configuration</span><span class="p">(</span><span class="n">config</span><span class="p">)</span>
+</span><span id="__span-24-5"><a id="__codelineno-24-5" name="__codelineno-24-5" href="#__codelineno-24-5"></a><span class="n">LoggerFactory</span><span class="o">.</span><span class="n">apply_config</span><span class="p">(</span><span class="n">config</span><span class="p">)</span>
 </span></code></pre></div>
 <ul>
 <li>
 <p>System: ArlogiSyslogHandler → UDP → Remote Syslog Server</p>
 </li>
 <li>
-<p><strong>Automatic Fallback</strong>: System gracefully handles syslog unavailability</p>
+<p><strong>Address-Specific Fallback</strong>: Default <code>/dev/log</code> degrades gracefully; custom addresses fail fast</p>
 </li>
-<li>Try: Unix socket (/dev/log)</li>
-<li>Fallback 1: UDP on localhost:514</li>
+<li>Default <code>/dev/log</code>: Try Unix socket <code>/dev/log</code>, then UDP <code>localhost:514</code>, then degrade cleanly without raising</li>
 <li>
-<p>Fallback 2: Silent (no errors, application continues)</p>
+<p>Custom address (such as <code>("syslog.example.com", 514)</code>): Raises connection/initialization errors directly to the caller</p>
 </li>
 <li>
 <p><strong>Monitor Logs</strong>: DevOps engineer views logs in syslog dashboard or SIEM tool</p>
@@ -2784,7 +2705,7 @@
 <li><strong>Access Documentation</strong>: User navigates to documentation website</li>
 <li>System: Documentation Site (MkDocs) → Web Browser</li>
 <li>
-<p>URL: <a href="http://192.168.168.5/cpaiops/">http://192.168.168.5/cpaiops/</a> (production) or <a href="http://localhost:8000">http://localhost:8000</a> (development)</p>
+<p>URL: <a href="https://antragh.github.io/arlogi/">https://antragh.github.io/arlogi/</a> (production) or <a href="http://localhost:8000">http://localhost:8000</a> (development)</p>
 </li>
 <li>
 <p><strong>Browse API Reference</strong>: User clicks "API Reference" in navigation menu</p>
@@ -2849,20 +2770,10 @@
 <p>System: Python Package Source Code</p>
 </li>
 <li>
-<p><strong>Generate API Reference</strong>: Contributor runs documentation generation script</p>
-</li>
-</ul>
-<div class="language-bash highlight"><pre><span></span><code><span id="__span-26-1"><a id="__codelineno-26-1" name="__codelineno-26-1" href="#__codelineno-26-1"></a>python<span class="w"> </span>docs/scripts/gen_ref_pages.py
-</span></code></pre></div>
-<ul>
-<li>
-<p>System: gen_ref_pages.py → Scans src/arlogi/ → Extracts classes/functions/docstrings → Creates markdown files</p>
-</li>
-<li>
 <p><strong>Build Documentation Site</strong>: Contributor builds static HTML documentation</p>
 </li>
 </ul>
-<div class="language-bash highlight"><pre><span></span><code><span id="__span-27-1"><a id="__codelineno-27-1" name="__codelineno-27-1" href="#__codelineno-27-1"></a>mkdocs<span class="w"> </span>build
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-26-1"><a id="__codelineno-26-1" name="__codelineno-26-1" href="#__codelineno-26-1"></a>uv<span class="w"> </span>run<span class="w"> </span>mkdocs<span class="w"> </span>build<span class="w"> </span>--strict
 </span></code></pre></div>
 <ul>
 <li>
@@ -2872,21 +2783,17 @@
 <p><strong>Serve Locally</strong>: Contributor previews documentation locally</p>
 </li>
 </ul>
-<div class="language-bash highlight"><pre><span></span><code><span id="__span-28-1"><a id="__codelineno-28-1" name="__codelineno-28-1" href="#__codelineno-28-1"></a>mkdocs<span class="w"> </span>serve
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-27-1"><a id="__codelineno-27-1" name="__codelineno-27-1" href="#__codelineno-27-1"></a>uv<span class="w"> </span>run<span class="w"> </span>mkdocs<span class="w"> </span>serve
 </span></code></pre></div>
 <ul>
 <li>
 <p>System: MkDocs dev server → <a href="http://localhost:8000">http://localhost:8000</a></p>
 </li>
 <li>
-<p><strong>Deploy to Production</strong>: Contributor deploys documentation to web server</p>
+<p><strong>Deploy to Production</strong>: GitHub Actions deploys documentation on push to <code>master</code></p>
 </li>
-</ul>
-<div class="language-bash highlight"><pre><span></span><code><span id="__span-29-1"><a id="__codelineno-29-1" name="__codelineno-29-1" href="#__codelineno-29-1"></a>docs/scripts/build_pub.sh
-</span></code></pre></div>
-<ul>
 <li>
-<p>System: build_pub.sh → rsync → nginx Web Server (192.168.168.5)</p>
+<p>Workflow: <code>.github/workflows/deploy-docs.yml</code> → <code>uv run --no-sync mkdocs build --strict</code> → GitHub Pages (<code>https://antragh.github.io/arlogi/</code>)</p>
 </li>
 <li>
 <p><strong>Verify Deployment</strong>: Contributor verifies documentation is accessible at production URL</p>
@@ -2957,19 +2864,12 @@
 <li><strong>Integration Type</strong>: Documentation generation plugin</li>
 <li><strong>Purpose</strong>: Automatically extracts API documentation from Python source code (docstrings, type hints, function signatures) and generates markdown reference pages. Keeps documentation synchronized with code changes.</li>
 </ul>
-<h3 id="nginx-web-server">nginx Web Server</h3>
+<h3 id="github-pages">GitHub Pages</h3>
 <ul>
-<li><strong>Type</strong>: Web Server (External System)</li>
-<li><strong>Description</strong>: High-performance HTTP server and reverse proxy</li>
-<li><strong>Integration Type</strong>: Static file hosting</li>
-<li><strong>Purpose</strong>: Documentation Site container deploys static HTML documentation to nginx web server at <a href="http://192.168.168.5/cpaiops/">http://192.168.168.5/cpaiops/</a>. Serves documentation files to users via HTTP/HTTPS. Enables public or internal access to documentation.</li>
-</ul>
-<h3 id="sshrsync-deployment-tools">SSH/rsync (Deployment Tools)</h3>
-<ul>
-<li><strong>Type</strong>: Network Protocol/File Transfer (External System)</li>
-<li><strong>Description</strong>: Secure Shell protocol and rsync file synchronization utility</li>
-<li><strong>Integration Type</strong>: Remote file transfer</li>
-<li><strong>Purpose</strong>: build_pub.sh script uses SSH/rsync to deploy documentation site to remote nginx server. Securely transfers files from development machine to production web server. Enables automated documentation deployment.</li>
+<li><strong>Type</strong>: Web Hosting (External System)</li>
+<li><strong>Description</strong>: Static site hosting for published project documentation</li>
+<li><strong>Integration Type</strong>: Static file hosting via <code>.github/workflows/deploy-docs.yml</code></li>
+<li><strong>Purpose</strong>: Documentation Site container deploys static HTML documentation to GitHub Pages at <a href="https://antragh.github.io/arlogi/">https://antragh.github.io/arlogi/</a>. Serves documentation files to users via HTTPS.</li>
 </ul>
 <h3 id="json-log-files">JSON Log Files</h3>
 <ul>

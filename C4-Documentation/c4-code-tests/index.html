@@ -1503,62 +1503,6 @@
 
               
             
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../c4-code-docs-scripts/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Code - Docs Scripts
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../c4-code-subdir/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Code - Subdir
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
           </ul>
         </nav>
       
@@ -1914,7 +1858,7 @@
 <ul>
 <li><strong>Name</strong>: Arlogi Test Suite</li>
 <li><strong>Description</strong>: Comprehensive test suite for the arlogi logging library, covering core functionality, features, and integration examples</li>
-<li><strong>Location</strong>: <code>/opt/Code/2026/_Libs/arlogi/tests</code></li>
+<li><strong>Location</strong>: <code>tests</code></li>
 <li><strong>Language</strong>: Python</li>
 <li><strong>Purpose</strong>: Validate the correctness, reliability, and feature completeness of the arlogi logging library through unit tests and integration examples</li>
 </ul>
@@ -1924,28 +1868,28 @@
 <ul>
 <li><strong>Signature</strong>: <code>test_trace_level_registered() -&gt; None</code></li>
 <li><strong>Description</strong>: Validates that the TRACE log level is properly registered in the logging system</li>
-<li><strong>Location</strong>: <code>/opt/Code/2026/_Libs/arlogi/tests/test_core.py:6</code></li>
+<li><strong>Location</strong>: <code>tests/test_core.py:6</code></li>
 <li><strong>Dependencies</strong>: <code>arlogi.TRACE</code>, <code>arlogi.get_logger</code>, <code>logging.getLevelName</code></li>
 </ul>
 <h4 id="test_protocol_compliance"><code>test_protocol_compliance()</code></h4>
 <ul>
 <li><strong>Signature</strong>: <code>test_protocol_compliance() -&gt; None</code></li>
 <li><strong>Description</strong>: Ensures that logger instances properly implement the LoggerProtocol interface</li>
-<li><strong>Location</strong>: <code>/opt/Code/2026/_Libs/arlogi/tests/test_core.py:11</code></li>
+<li><strong>Location</strong>: <code>tests/test_core.py:11</code></li>
 <li><strong>Dependencies</strong>: <code>arlogi.LoggerProtocol</code>, <code>arlogi.get_logger</code>, <code>isinstance()</code></li>
 </ul>
 <h4 id="test_test_mode_detection"><code>test_test_mode_detection()</code></h4>
 <ul>
 <li><strong>Signature</strong>: <code>test_test_mode_detection() -&gt; None</code></li>
 <li><strong>Description</strong>: Verifies that the LoggerFactory correctly detects test mode and returns appropriate behavior</li>
-<li><strong>Location</strong>: <code>/opt/Code/2026/_Libs/arlogi/tests/test_core.py:15</code></li>
+<li><strong>Location</strong>: <code>tests/test_core.py:15</code></li>
 <li><strong>Dependencies</strong>: <code>arlogi.factory.LoggerFactory.is_test_mode()</code></li>
 </ul>
 <h4 id="test_logging_callscaplog"><code>test_logging_calls(caplog)</code></h4>
 <ul>
 <li><strong>Signature</strong>: <code>test_logging_calls(caplog: Any) -&gt; None</code></li>
 <li><strong>Description</strong>: Tests that all logging levels (TRACE, DEBUG, INFO) work correctly when called on a logger instance</li>
-<li><strong>Location</strong>: <code>/opt/Code/2026/_Libs/arlogi/tests/test_core.py:19</code></li>
+<li><strong>Location</strong>: <code>tests/test_core.py:19</code></li>
 <li><strong>Dependencies</strong>: <code>caplog</code> (pytest fixture), <code>arlogi.TRACE</code>, <code>arlogi.get_logger</code></li>
 </ul>
 <h3 id="test-functions-in-test_featurespy">Test Functions in test_features.py</h3>
@@ -1953,28 +1897,28 @@
 <ul>
 <li><strong>Signature</strong>: <code>test_module_specific_levels() -&gt; None</code></li>
 <li><strong>Description</strong>: Validates module-specific log level configuration works as expected</li>
-<li><strong>Location</strong>: <code>/opt/Code/2026/_Libs/arlogi/tests/test_features.py:7</code></li>
+<li><strong>Location</strong>: <code>tests/test_features.py:7</code></li>
 <li><strong>Dependencies</strong>: <code>arlogi.setup_logging()</code>, <code>arlogi.get_logger</code>, <code>logging.INFO</code>, <code>logging.DEBUG</code></li>
 </ul>
 <h4 id="test_json_loggercapsys"><code>test_json_logger(capsys)</code></h4>
 <ul>
 <li><strong>Signature</strong>: <code>test_json_logger(capsys: Any) -&gt; None</code></li>
 <li><strong>Description</strong>: Tests the dedicated JSON logger functionality and its output format</li>
-<li><strong>Location</strong>: <code>/opt/Code/2026/_Libs/arlogi/tests/test_features.py:27</code></li>
+<li><strong>Location</strong>: <code>tests/test_features.py:27</code></li>
 <li><strong>Dependencies</strong>: <code>capsys</code> (pytest fixture), <code>arlogi.get_json_logger()</code>, <code>json.loads</code></li>
 </ul>
 <h4 id="test_trace_stacklevelcaplog"><code>test_trace_stacklevel(caplog)</code></h4>
 <ul>
 <li><strong>Signature</strong>: <code>test_trace_stacklevel(caplog: Any) -&gt; None</code></li>
 <li><strong>Description</strong>: Validates that stacklevel functionality works correctly for the TRACE level</li>
-<li><strong>Location</strong>: <code>/opt/Code/2026/_Libs/arlogi/tests/test_features.py:46</code></li>
+<li><strong>Location</strong>: <code>tests/test_features.py:46</code></li>
 <li><strong>Dependencies</strong>: <code>caplog</code> (pytest fixture), <code>arlogi.TRACE</code>, <code>arlogi.get_logger</code></li>
 </ul>
 <h4 id="test_caller_attributioncaplog"><code>test_caller_attribution(caplog)</code></h4>
 <ul>
 <li><strong>Signature</strong>: <code>test_caller_attribution(caplog: Any) -&gt; None</code></li>
 <li><strong>Description</strong>: Tests the caller attribution feature that shows the calling function name in log messages</li>
-<li><strong>Location</strong>: <code>/opt/Code/2026/_Libs/arlogi/tests/test_features.py:55</code></li>
+<li><strong>Location</strong>: <code>tests/test_features.py:55</code></li>
 <li><strong>Dependencies</strong>: <code>caplog</code> (pytest fixture), <code>arlogi.get_logger</code></li>
 </ul>
 <h3 id="integration-examples">Integration Examples</h3>
@@ -1982,14 +1926,14 @@
 <ul>
 <li><strong>Signature</strong>: <code>main() -&gt; None</code></li>
 <li><strong>Description</strong>: Comprehensive integration example demonstrating all major arlogi features including module-specific levels, dedicated loggers, caller attribution, and cross-module logging</li>
-<li><strong>Location</strong>: <code>/opt/Code/2026/_Libs/arlogi/tests/example/example.py:8</code></li>
+<li><strong>Location</strong>: <code>tests/example/example.py:8</code></li>
 <li><strong>Dependencies</strong>: <code>os.environ</code>, <code>tests.example.worker</code>, <code>arlogi.get_json_logger()</code>, <code>arlogi.get_logger()</code>, <code>arlogi.get_syslog_logger()</code>, <code>arlogi.setup_logging()</code></li>
 </ul>
 <h4 id="do_work-function-in-testsexampleworkerpy"><code>do_work()</code> function in tests/example/worker.py</h4>
 <ul>
 <li><strong>Signature</strong>: <code>do_work(depth: int = 0) -&gt; None</code></li>
 <li><strong>Description</strong>: Example worker function demonstrating cross-module caller attribution functionality</li>
-<li><strong>Location</strong>: <code>/opt/Code/2026/_Libs/arlogi/tests/example/worker.py:5</code></li>
+<li><strong>Location</strong>: <code>tests/example/worker.py:5</code></li>
 <li><strong>Dependencies</strong>: <code>arlogi.get_logger()</code>, global logger instance</li>
 </ul>
 <h2 id="dependencies">Dependencies</h2>
