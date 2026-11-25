@@ -83,12 +83,16 @@ def test_install_log_correlation_stamps_active_span_ids(tmp_path, reset_otel_glo
             captured.append(record)
 
     log = logging.getLogger("corr-test")
-    log.addHandler(Grab())
+    grab = Grab()
+    log.addHandler(grab)
     log.setLevel(logging.INFO)
 
-    with trace.get_tracer("t").start_as_current_span("op"):
-        log.info("inside")
-    log.info("outside")
+    try:
+        with trace.get_tracer("t").start_as_current_span("op"):
+            log.info("inside")
+        log.info("outside")
+    finally:
+        log.removeHandler(grab)
     provider.shutdown()
 
     inside, outside = captured
@@ -101,6 +105,69 @@ def test_install_log_correlation_is_idempotent(reset_otel_globals):
     before = logging.getLogRecordFactory()
     install_log_correlation()
     once = logging.getLogRecordFactory()
+    assert once is not before
     install_log_correlation()
     assert logging.getLogRecordFactory() is once
-    logging.setLogRecordFactory(before)
+
+    # Chained third-party closure wrapper must still be detected as already installed
+    def third_party(*args: object, **kwargs: object) -> logging.LogRecord:
+        return once(*args, **kwargs)  # type: ignore[arg-type]
+
+    logging.setLogRecordFactory(third_party)
+    install_log_correlation()
+    assert logging.getLogRecordFactory() is third_party
+
+    # Proxy object whose __getattr__ raises must not break correlation detection
+    class RaisingProxy:
+        def __getattr__(self, name: str) -> object:
+            raise RuntimeError("proxy getattr failure")
+
+        def __call__(self, *args: object, **kwargs: object) -> logging.LogRecord:
+            return before(*args, **kwargs)  # type: ignore[arg-type]
+
+    proxy = RaisingProxy()
+    logging.setLogRecordFactory(proxy)
+    install_log_correlation()
+    assert logging.getLogRecordFactory() is not proxy
+
+
+@pytest.mark.parametrize(
+    "bad_endpoint",
+    [
+        "ftp://localhost:4318",
+        "http://:4318",
+        "http://user@",
+        "http://   ",
+        "http://localhost:99999",
+        "http://localhost:abc",
+        "http://localhost:4318\r\nfoo",
+        "http://collector:4318?token=abc",
+        "http://collector:4318#frag",
+    ],
+)
+def test_setup_tracing_and_metrics_reject_bad_endpoints_without_leaking_threads(
+    tmp_path, reset_otel_globals, bad_endpoint
+):
+    import threading
+
+    from arlogi.otel import setup_metrics
+
+    threads_before = {t.ident for t in threading.enumerate()}
+    with pytest.raises(ValueError, match="Invalid OTLP endpoint"):
+        setup_tracing("svc", file_dir=tmp_path, otlp_endpoint=bad_endpoint)
+    with pytest.raises(ValueError, match="Invalid OTLP endpoint"):
+        setup_metrics("svc", file_dir=tmp_path, otlp_endpoint=bad_endpoint)
+    threads_after = {t.ident for t in threading.enumerate()}
+    assert threads_after - threads_before == set()
+
+
+def test_setup_tracing_preserves_external_global_provider(tmp_path, reset_otel_globals):
+    from opentelemetry.sdk.trace import TracerProvider
+
+    ext = TracerProvider()
+    trace.set_tracer_provider(ext)
+
+    returned = setup_tracing("svc", file_dir=tmp_path)
+    assert returned is ext
+    shutdown_tracing()
+    assert trace.get_tracer_provider() is ext

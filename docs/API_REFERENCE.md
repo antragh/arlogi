@@ -39,6 +39,7 @@ setup_logging(
 | `level`          | `int \| str`                    | `logging.INFO` | Global root log level |
 | `module_levels`  | `Dict[str, str \| int] \| None` | `None`         | Per-module overrides  |
 | `json_file_name` | `str \| None`                   | `None`         | JSON log file path    |
+| `json_file_base_dir` | `str \| None`               | `None`         | Optional base directory containment for `json_file_name` |
 | `json_file_only` | `bool`                          | `False`        | Only JSON output      |
 | `use_syslog`     | `bool`                          | `False`        | Enable syslog         |
 | `syslog_address` | `str \| tuple[str, int]`        | `"/dev/log"`   | Syslog address        |
@@ -477,7 +478,7 @@ if is_test_mode():
     logger.debug("Test mode detected")
 ```
 
-**Returns:** `bool` - True if pytest, unittest, or PYTEST_CURRENT_TEST is detected
+**Returns:** `bool` - True if `pytest` or `unittest` is loaded in `sys.modules` (`PYTEST_CURRENT_TEST` is intentionally ignored)
 
 ---
 
@@ -492,6 +493,23 @@ level = get_default_level()  # DEBUG in tests, INFO otherwise
 ```
 
 **Returns:** `int` - `logging.DEBUG` if in test mode, `logging.INFO` otherwise
+
+---
+
+## Optional OpenTelemetry API (`arlogi.otel`)
+
+When installed with `arlogi[otel]`, `arlogi.otel` exports:
+
+- `setup_tracing(service_name, service_version=None, *, file_dir, file_prefix="traces", rotate_hours=24, retention_count=20, otlp_endpoint=None, otlp_timeout=5) -> TracerProvider`
+- `shutdown_tracing() -> None`
+- `setup_metrics(service_name, service_version=None, *, file_dir, file_prefix="metrics", rotate_hours=24, retention_count=20, otlp_endpoint=None, otlp_timeout=5, export_interval_millis=60_000) -> MeterProvider`
+- `shutdown_metrics() -> None`
+- `install_log_correlation() -> None`
+- `set_trace_modules(rules: dict[str, bool] | None) -> None`
+- `traced` (sync, async, sync generator, and async generator decorator; `opentelemetry-api`-only)
+- `RotatingJsonlSpanExporter` / `RotatingJsonlMetricExporter`
+
+Bare `import arlogi.otel` and `import arlogi.otel.decorator` never eagerly import `opentelemetry.sdk`.
 
 ---
 

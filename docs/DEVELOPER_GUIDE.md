@@ -152,7 +152,7 @@ def test_logging_config_validation():
 def test_direct_config_apply():
     """Test that direct LoggingConfig application works."""
     config = LoggingConfig(level="DEBUG")
-    LoggerFactory._apply_configuration(config)
+    LoggerFactory.apply_config(config)
     assert logging.getLogger().level == logging.DEBUG
 ```
 
@@ -720,21 +720,25 @@ def public_function(arg1: str) -> bool:
 ```yaml
 name: CI
 
-on: [push, pull_request]
+on:
+  push:
+    branches:
+      - master
+  pull_request:
 
 jobs:
-  test:
+  lint-and-test:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Install uv
-        run: curl -LsSf https://astral.sh/uv/install.sh | sh
-      - name: Install dependencies
-        run: uv sync
-      - name: Run linting
-        run: uv run ruff check src/arlogi tests
-      - name: Run tests
-        run: uv run pytest --cov=src/arlogi
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+      - uses: astral-sh/setup-uv@v5
+      - run: uv sync --frozen --group test --extra otel
+      - run: uv run ruff check src/ tests/
+      - run: uv run ruff format --check src/ tests/
+      - run: uv run pytest
 ```
 
 ---

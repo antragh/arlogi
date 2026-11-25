@@ -93,7 +93,6 @@ class TestConcurrentInitialization:
         finally:
             LoggerFactory._initialized = True
 
-
     def test_concurrent_get_global_logger(self):
         """Test that concurrent get_global_logger() calls are thread-safe."""
         loggers = []
@@ -167,6 +166,32 @@ class TestConcurrentLoggerCreation:
             # All log files should exist
             for log_file in log_files:
                 assert os.path.exists(log_file), f"Log file not created: {log_file}"
+
+    def test_concurrent_same_name_json_logger_reconfiguration_and_emission(self):
+        from arlogi import cleanup_json_logger, rotate_json_logger
+
+        with tempfile.TemporaryDirectory() as tmpdir:
+            errors = []
+
+            def worker(idx: int) -> None:
+                try:
+                    path = os.path.join(tmpdir, f"shared_{idx % 3}.jsonl")
+                    logger = get_json_logger("same_name_race", path)
+                    logger.info("concurrent event", worker=idx)
+                    rotate_json_logger("same_name_race")
+                except Exception as exc:
+                    errors.append(exc)
+
+            with ThreadPoolExecutor(max_workers=8) as executor:
+                futures = [executor.submit(worker, i) for i in range(60)]
+                for f in as_completed(futures):
+                    f.result()
+
+            assert not errors
+            raw_logger = logging.getLogger("arlogi.json.same_name_race")
+            assert len(raw_logger.handlers) == 1
+            cleanup_json_logger("same_name_race")
+            assert len(raw_logger.handlers) == 0
 
     def test_concurrent_logger_with_levels(self):
         """Test concurrent logger creation with different levels."""

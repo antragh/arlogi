@@ -78,6 +78,7 @@ class HandlerFactory:
             config.json_file_name,
             rotate_schedule=config.rotate_schedule,
             rotate_retention_count=config.rotate_retention_count,
+            base_dir=config.json_file_base_dir,
         )
 
     @staticmethod
@@ -142,20 +143,27 @@ class HandlerFactory:
             ...     logger.addHandler(handler)
         """
         handlers: list[logging.Handler] = []
+        try:
+            # JSON file handler
+            if config.json_file_name:
+                handlers.append(cls.create_json_file(config))
 
-        # JSON file handler
-        if config.json_file_name:
-            handlers.append(cls.create_json_file(config))
+            # Console handler (show unless json_file_only)
+            if config.show_console:
+                handlers.append(cls.create_console(config))
+            elif config.json_file_only and not config.json_file_name:
+                # JSON on console when json_file_only=True but no file specified
+                handlers.append(cls.create_json_stream())
 
-        # Console handler (show unless json_file_only)
-        if config.show_console:
-            handlers.append(cls.create_console(config))
-        elif config.json_file_only and not config.json_file_name:
-            # JSON on console when json_file_only=True but no file specified
-            handlers.append(cls.create_json_stream())
-
-        # Syslog handler
-        if config.use_syslog:
-            handlers.append(cls.create_syslog(config))
+            # Syslog handler
+            if config.use_syslog:
+                handlers.append(cls.create_syslog(config))
+        except Exception:
+            for handler in handlers:
+                try:
+                    handler.close()
+                except Exception:
+                    pass
+            raise
 
         return handlers

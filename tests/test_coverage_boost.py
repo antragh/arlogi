@@ -153,7 +153,7 @@ class TestLevelsCoverage:
                 with patch.object(raw_logger, "isEnabledFor", return_value=True):
                     with patch.object(raw_logger, "_log") as mock_log:
                         logging.Logger.trace(raw_logger, "enabled trace message", "arg1", kw="kw1")  # type: ignore
-                        mock_log.assert_called_once_with(5, "enabled trace message", ("arg1",), kw="kw1")
+                        mock_log.assert_called_once_with(5, "enabled trace message", ("arg1",), kw="kw1", stacklevel=2)
 
             finally:
                 if had_trace and old_trace_val is not None:
@@ -206,8 +206,6 @@ class TestSyslogLoggerAndCleanupCoverage:
             with patch("logging.handlers.SysLogHandler.__init__", side_effect=[OSError("Connection refused"), None]):
                 handler = ArlogiSyslogHandler(address="/dev/log")
                 assert handler._failed is False
-
-
 
 
 class TestHandlersCoverageEdgeCases:
@@ -267,13 +265,15 @@ class TestHandlersCoverageEdgeCases:
                     if os.path.exists(p):
                         os.remove(p)
 
-    def test_json_file_handler_prune_os_error(self):
-        with tempfile.NamedTemporaryFile(suffix=".jsonl") as f:
-            handler = JSONFileHandler(f.name, rotate_schedule="day", rotate_retention_count=1)
-            with patch("glob.glob", return_value=["dummy-1.jsonl", "dummy-2.jsonl"]):
-                with patch("os.remove", side_effect=OSError("Permission denied")):
-                    # Should not raise exception
-                    handler._prune_rotated_files()
+    def test_json_file_handler_prune_os_error(self, tmp_path):
+        log_file = tmp_path / "app.jsonl"
+        (tmp_path / "app-2026-06-01.jsonl").write_text("old1\n", encoding="utf-8")
+        (tmp_path / "app-2026-06-02.jsonl").write_text("old2\n", encoding="utf-8")
+        handler = JSONFileHandler(str(log_file), rotate_schedule="day", rotate_retention_count=1)
+        with patch("os.remove", side_effect=OSError("Permission denied")):
+            # Should not raise exception
+            handler._prune_rotated_files()
+        handler.close()
 
     def test_json_file_handler_emit_error_handling(self):
         with tempfile.NamedTemporaryFile(suffix=".jsonl") as f:

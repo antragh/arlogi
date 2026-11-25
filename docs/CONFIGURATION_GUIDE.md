@@ -56,6 +56,7 @@ logger.info("Production logging configured")
 | `level`                  | `int \| str`                                   | `"INFO"`     | Global log level for all modules      |
 | `module_levels`          | `dict[str, str \| int] \| None`                | `None`       | Per-module log level overrides        |
 | `json_file_name`         | `str \| None`                                  | `None`       | JSON log file path                    |
+| `json_file_base_dir`     | `str \| None`                                  | `None`       | Optional base directory containment for `json_file_name` |
 | `json_file_only`         | `bool`                                         | `False`      | Output only to JSON file (no console) |
 | `use_syslog`             | `bool`                                         | `False`      | Enable syslog output                  |
 | `syslog_address`         | `str \| tuple[str, int]`                       | `"/dev/log"` | Syslog server address                 |
@@ -90,10 +91,9 @@ config = LoggingConfig(level=TRACE)      # Custom level
 ### Module-Level Overrides
 
 ```python
-from arlogi import LoggingConfig, LoggerFactory
+from arlogi import LoggingConfig, setup_logging
 
 config = LoggingConfig(
-setup_logging(
     level="INFO",  # Global level
     module_levels={
         # Ultra-detailed logging for network operations
@@ -103,9 +103,10 @@ setup_logging(
         "app.database": "DEBUG",
 
         # Quiet security logging (warnings only)
-        "app.security": "WARNING"
-    }
+        "app.security": "WARNING",
+    },
 )
+setup_logging(config=config)
 ```
 
 ### Module Hierarchy Matching
@@ -181,14 +182,13 @@ setup_logging(
 
 ```json
 {
-  "timestamp": "2025-12-20T22:45:30.123456Z",
+  "timestamp": "2025-12-20T22:45:30.123456",
   "level": "INFO",
-  "name": "app.main",
-  "message": "User logged in successfully",
+  "logger_name": "app.main",
+  "message": "User logged in successfully\n[handle_login()]",
   "module": "main",
   "function": "handle_login",
-  "line": 42,
-  "caller": "auth.authenticate",
+  "line_number": 42,
   "user_id": 12345,
   "session_id": "sess_abc123"
 }
@@ -247,6 +247,8 @@ syslog_logger.error("Security event detected")
 #### Syslog Handler Details
 
 ```python
+import socket
+
 from arlogi.handlers import ArlogiSyslogHandler
 
 # Local Unix domain socket
@@ -256,14 +258,14 @@ handler = ArlogiSyslogHandler(address="/dev/log")
 handler = ArlogiSyslogHandler(
     address=("logs.example.com", 514),
     facility="user",
-    socktype="UDP"
+    socktype=socket.SOCK_DGRAM,
 )
 
 # Remote TCP syslog
 handler = ArlogiSyslogHandler(
     address=("logs.example.com", 514),
     facility="daemon",
-    socktype="TCP"
+    socktype=socket.SOCK_STREAM,
 )
 
 # Custom facility
@@ -451,7 +453,7 @@ def configure_development():
     """Development: maximum verbosity for debugging"""
     setup_logging(
         level="DEBUG",
-        module_levels={"app.*": "TRACE"},
+        module_levels={"app": "TRACE"},
         show_time=True
     )
 ```
@@ -663,12 +665,12 @@ handler = ColoredConsoleHandler(
     show_level=True,
     show_path=True,
     level_styles={
-        "TRACE": "dim blue",
-        "DEBUG": "dim cyan",
-        "INFO": "green",
-        "WARNING": "yellow",
-        "ERROR": "red",
-        "CRITICAL": "bold red"
+        "trace": "dim blue",
+        "debug": "dim cyan",
+        "info": "green",
+        "warning": "yellow",
+        "error": "red",
+        "critical": "bold red",
     }
 )
 

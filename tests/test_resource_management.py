@@ -60,6 +60,61 @@ class TestHandlerCleanup:
         # Handler1 should be closed and removed
         assert handler1 not in logger2.handlers
 
+    def test_clear_and_add_handlers_rolls_back_and_preserves_existing_on_failure(self, tmp_path):
+        import socket
+
+        good_cfg = LoggingConfig(json_file_name=str(tmp_path / "good.jsonl"))
+        LoggerFactory._clear_and_add_handlers(good_cfg)
+        root = logging.getLogger()
+        working_handlers = root.handlers[:]
+        assert len(working_handlers) == 2
+
+        bad_cfg = LoggingConfig(
+            json_file_name=str(tmp_path / "partial.jsonl"),
+            use_syslog=True,
+            syslog_address=("invalid_host_that_does_not_exist_9999.invalid", 99999),
+        )
+        with pytest.raises((OSError, socket.gaierror)):
+            LoggerFactory._clear_and_add_handlers(bad_cfg)
+
+        assert root.handlers == working_handlers
+        for h in working_handlers:
+            assert not getattr(getattr(h, "stream", None), "closed", False)
+
+        # Clean up root handlers added in test
+        for h in root.handlers[:]:
+            root.removeHandler(h)
+            h.close()
+
+    def test_fresh_subprocess_dedicated_loggers_and_uncreated_cleanup_noop(self, tmp_path):
+        import subprocess
+        import sys
+
+        log_path = tmp_path / "audit.jsonl"
+        code = (
+            "import logging; "
+            "from arlogi import get_json_logger, get_syslog_logger, cleanup_json_logger, "
+            "cleanup_syslog_logger, rotate_json_logger, LoggerProtocol; "
+            "cleanup_json_logger('unused'); "
+            "cleanup_syslog_logger('unused'); "
+            "assert rotate_json_logger('unused') == 0; "
+            "assert 'arlogi.json.unused' not in logging.Logger.manager.loggerDict; "
+            "assert 'arlogi.syslog.unused' not in logging.Logger.manager.loggerDict; "
+            f"jl = get_json_logger('audit', {str(log_path)!r}); "
+            "assert isinstance(jl, LoggerProtocol); "
+            "jl.info('login', user_id=123, caller_depth=0); "
+            "jl.trace('detail'); "
+            "sl = get_syslog_logger('sec'); "
+            "assert isinstance(sl, LoggerProtocol); "
+            "sl.info('sec event', actor='root', caller_depth=0); "
+            "cleanup_json_logger('audit'); "
+            "cleanup_syslog_logger('sec')"
+        )
+        proc = subprocess.run(
+            [sys.executable, "-W", "error::ResourceWarning", "-c", code], capture_output=True, text=True, check=False
+        )
+        assert proc.returncode == 0, proc.stderr
+
     def test_get_syslog_logger_closes_previous_handlers(self):
         """Test that get_syslog_logger closes previous handlers before adding new ones."""
         logger = get_syslog_logger("test_close")
@@ -116,6 +171,27 @@ class TestJSONHandlerResourceManagement:
 
         # System stream should NOT be closed
         assert not sys.stderr.closed
+
+    def test_json_handler_close_is_idempotent_on_owned_file_and_bytesio(self):
+        from io import BytesIO
+
+        from arlogi.handlers import JSONHandler
+
+        with tempfile.TemporaryDirectory() as tmpdir:
+            file_path = os.path.join(tmpdir, "stream.jsonl")
+            file_stream = open(file_path, "w", encoding="utf-8")
+            file_handler = JSONHandler(stream=file_stream)
+            file_handler.close()
+            file_handler.close()
+            assert file_stream.closed
+            assert file_handler.stream is None
+
+        bytes_stream = BytesIO()
+        bytes_handler = JSONHandler(stream=bytes_stream)
+        bytes_handler.close()
+        bytes_handler.close()
+        assert bytes_stream.closed
+        assert bytes_handler.stream is None
 
 
 class TestJSONFileHandlerResourceManagement:
@@ -273,6 +349,51 @@ class TestJSONFormatterErrorHandling:
         assert parsed["level"] == "INFO"
         assert parsed["message"] == "test message"
         assert "error" not in parsed
+
+    def test_json_formatter_protects_envelope_keys_and_preserves_extra(self):
+        import json
+
+        from arlogi.handlers import JSONFormatter
+
+        formatter = JSONFormatter()
+        record = logging.LogRecord("audit", logging.INFO, "app.py", 42, "hello", (), None)
+        record.timestamp = "SPOOFED"
+        record.level = "FAKE"
+        record.logger_name = "evil"
+        record.user_id = 123
+        record.extra = {"k": 1}
+
+        parsed = json.loads(formatter.format(record))
+        assert parsed["level"] == "INFO"
+        assert parsed["logger_name"] == "audit"
+        assert parsed["timestamp"] != "SPOOFED"
+        assert parsed["user_id"] == 123
+        assert parsed["extra"] == {
+            "timestamp": "SPOOFED",
+            "level": "FAKE",
+            "logger_name": "evil",
+            "extra": {"k": 1},
+        }
+
+    def test_json_formatter_fallback_handles_runtime_error_and_overwritten_keys(self):
+        import json
+
+        from arlogi.handlers import JSONFormatter
+
+        formatter = JSONFormatter()
+        record = logging.LogRecord("audit", logging.WARNING, "app.py", 10, "msg", (), None)
+
+        class RuntimeBadStr:
+            def __str__(self):
+                raise RuntimeError("boom in __str__")
+
+        record.level = RuntimeBadStr()
+        record.bad_obj = RuntimeBadStr()
+
+        parsed = json.loads(formatter.format(record))
+        assert parsed["level"] == "WARNING"
+        assert parsed["logger_name"] == "audit"
+        assert "JSON serialization failed" in parsed["error"]
 
 
 class TestMultipleConfigurationChanges:

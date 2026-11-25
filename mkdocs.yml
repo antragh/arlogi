@@ -2,6 +2,7 @@ site_name: arlogi docs
 exclude_docs: |
   .Notes/*
   _Notes_/*
+  _audit_/*
   scripts/*
   superpowers/*
   NotebookLM/*
@@ -69,6 +70,11 @@ nav:
       - Handlers: reference/arlogi/handlers.md
       - Levels: reference/arlogi/levels.md
       - Types: reference/arlogi/types.md
+      - OpenTelemetry:
+          - Overview: reference/arlogi/otel/index.md
+          - Bootstrap: reference/arlogi/otel/bootstrap.md
+          - Decorator: reference/arlogi/otel/decorator.md
+          - Exporters: reference/arlogi/otel/exporters.md
   - C4 Documentation:
       - Overview: C4-Documentation/README.md
       - Context: C4-Documentation/c4-context.md

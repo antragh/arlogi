@@ -5,7 +5,9 @@ configurations, making complex configurations more readable and
 less error-prone than direct constructor calls.
 """
 
-from .config import LoggingConfig
+import logging
+
+from .config import LoggingConfig, RotateSchedule
 
 
 class LoggingConfigBuilder:
@@ -22,13 +24,14 @@ class LoggingConfigBuilder:
 
     def __init__(self) -> None:
         """Initialize builder with sensible defaults."""
-        self._level = "INFO"
+        self._level: int | str = logging.INFO
         self._module_levels: dict[str, str | int] | None = None
         self._json_file_name: str | None = None
+        self._json_file_base_dir: str | None = None
         self._json_file_only = False
         self._use_syslog = False
         self._syslog_address: str | tuple[str, int] = "/dev/log"
-        self._rotate_schedule: str | None = None
+        self._rotate_schedule: RotateSchedule | None = None
         self._rotate_retention_count: int | None = None
         self._show_time = False
         self._show_level = True
@@ -89,6 +92,22 @@ class LoggingConfigBuilder:
         self._json_file_only = not console_also
         return self
 
+    def with_json_base_dir(self, base_dir: str | None) -> "LoggingConfigBuilder":
+        """Set the base directory that the JSON log file must stay within.
+
+        Args:
+            base_dir: Base directory the JSON log file must stay within
+                (None to disable containment checks)
+
+        Returns:
+            Self for method chaining
+
+        Example:
+            >>> builder.with_json_base_dir("/var/log/myapp")
+        """
+        self._json_file_base_dir = base_dir
+        return self
+
     def with_json_console_only(self) -> "LoggingConfigBuilder":
         """Configure JSON output to console only (stderr, no file).
 
@@ -98,6 +117,7 @@ class LoggingConfigBuilder:
         Example:
             >>> builder.with_json_console_only()
         """
+        self._json_file_name = None
         self._json_file_only = True
         return self
 
@@ -142,7 +162,7 @@ class LoggingConfigBuilder:
         self._show_path = show_path
         return self
 
-    def with_rotation(self, schedule: str, retention_count: int | None = None) -> "LoggingConfigBuilder":
+    def with_rotation(self, schedule: RotateSchedule, retention_count: int | None = None) -> "LoggingConfigBuilder":
         """Configure optional time-window file rotation.
 
         Args:
@@ -175,6 +195,7 @@ class LoggingConfigBuilder:
             level=self._level,
             module_levels=self._module_levels,
             json_file_name=self._json_file_name,
+            json_file_base_dir=self._json_file_base_dir,
             json_file_only=self._json_file_only,
             use_syslog=self._use_syslog,
             syslog_address=self._syslog_address,

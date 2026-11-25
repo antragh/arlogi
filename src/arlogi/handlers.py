@@ -10,9 +10,10 @@ import json
 import logging
 import logging.handlers
 import os
+import re
 import sys
 from datetime import datetime
-from glob import glob
+from pathlib import Path
 from typing import Any
 
 from rich.console import Console
@@ -71,7 +72,10 @@ class ColoredConsoleHandler(RichHandler):
 
         # Enable rich tracebacks by default for enhanced error display
         kwargs.setdefault("rich_tracebacks", True)
-        kwargs.setdefault("markup", True)
+        # Render log messages literally by default: message text may carry
+        # attacker-influenced content, so Rich markup must not be enabled
+        # unless the application explicitly opts in.
+        kwargs.setdefault("markup", False)
 
         super().__init__(
             *args,
@@ -203,6 +207,15 @@ class ColoredConsoleHandler(RichHandler):
         Returns:
             A Rich Text object with the styled message
         """
+        use_markup = getattr(record, "markup", self.markup)
+        attribution = record.__dict__.get("_arlogi_attribution")
+        if use_markup and isinstance(attribution, str):
+            from rich.markup import escape
+
+            raw_suffix = f"[{attribution}]"
+            if message.endswith(raw_suffix):
+                message = message[: -len(raw_suffix)] + escape(raw_suffix)
+
         message_text = super().render_message(record, message)
 
         # Apply style to the entire message text
@@ -222,35 +235,21 @@ class JSONFormatter(logging.Formatter):
     Includes robust error handling for JSON serialization failures.
     """
 
-    def format(self, record: logging.LogRecord) -> str:
-        """Format log record as JSON.
-
-        Args:
-            record: The log record to format
-
-        Returns:
-            JSON string representation of the log record
-
-        Note:
-            If JSON serialization fails, falls back to a basic format
-            with error information to prevent logging crashes.
-        """
-        log_data = {
-            "timestamp": datetime.fromtimestamp(record.created).isoformat(),
-            "level": record.levelname,
-            "logger_name": record.name,
-            "message": record.getMessage(),
-            "module": record.module,
-            "function": record.funcName,
-            "line_number": record.lineno,
+    _PROTECTED_ENVELOPE_KEYS = frozenset(
+        {
+            "timestamp",
+            "level",
+            "logger_name",
+            "message",
+            "module",
+            "function",
+            "line_number",
+            "exception",
         }
+    )
 
-        # Add exception info if present
-        if record.exc_info:
-            log_data["exception"] = self.formatException(record.exc_info)
-
-        # Add extra fields from the record (excluding standard logging attributes)
-        standard_attrs = {
+    _STANDARD_RECORD_ATTRS = frozenset(
+        {
             "name",
             "msg",
             "args",
@@ -272,28 +271,91 @@ class JSONFormatter(logging.Formatter):
             "processName",
             "process",
             "message",
+            "taskName",
         }
+    )
+
+    @staticmethod
+    def _safe_str(value: Any) -> str:
+        """Convert value to string without raising."""
+        try:
+            return str(value)
+        except Exception:
+            return f"<unrepresentable {type(value).__name__}>"
+
+    def _merge_extra_fields(self, record: logging.LogRecord, log_data: dict[str, Any]) -> None:
+        """Merge non-standard record attributes into log_data without clobbering envelope keys."""
+        collisions: dict[str, Any] = {}
+        has_user_extra = False
+        user_extra: Any = None
 
         for key, value in record.__dict__.items():
-            if key not in standard_attrs and not key.startswith("_"):
+            if key in self._STANDARD_RECORD_ATTRS or key.startswith("_"):
+                continue
+            if key == "extra":
+                has_user_extra = True
+                user_extra = value
+            elif key in self._PROTECTED_ENVELOPE_KEYS:
+                collisions[key] = value
+            else:
                 log_data[key] = value
 
-        # Try to serialize with error handling
+        if collisions:
+            if has_user_extra:
+                collisions["extra"] = user_extra
+            log_data["extra"] = collisions
+        elif has_user_extra:
+            log_data["extra"] = user_extra
+
+    def format(self, record: logging.LogRecord) -> str:
+        """Format log record as JSON.
+
+        Args:
+            record: The log record to format
+
+        Returns:
+            JSON string representation of the log record
+
+        Note:
+            If JSON serialization fails, falls back to a basic format
+            with error information to prevent logging crashes.
+        """
+        timestamp = datetime.fromtimestamp(record.created).isoformat()
+        try:
+            message = record.getMessage()
+        except Exception:
+            message = self._safe_str(record.msg)
+
+        log_data: dict[str, Any] = {
+            "timestamp": timestamp,
+            "level": record.levelname,
+            "logger_name": record.name,
+            "message": message,
+            "module": record.module,
+            "function": record.funcName,
+            "line_number": record.lineno,
+        }
+
+        if record.exc_info:
+            log_data["exception"] = self.formatException(record.exc_info)
+
+        self._merge_extra_fields(record, log_data)
+
         try:
             return json.dumps(log_data, default=str)
-        except (TypeError, ValueError) as e:
-            # Fallback to basic format on serialization failure
+        except Exception as e:
             return json.dumps(
                 {
-                    "timestamp": log_data.get("timestamp"),
-                    "level": log_data.get("level"),
-                    "logger_name": log_data.get("logger_name"),
-                    "message": str(log_data.get("message", "")),
-                    "module": log_data.get("module"),
-                    "function": log_data.get("function"),
-                    "line_number": log_data.get("line_number"),
-                    "error": f"JSON serialization failed: {e}",
-                }
+                    "timestamp": timestamp,
+                    "level": record.levelname,
+                    "logger_name": record.name,
+                    "message": self._safe_str(message),
+                    "module": record.module,
+                    "function": record.funcName,
+                    "line_number": record.lineno,
+                    "error": f"JSON serialization failed: {self._safe_str(e)}",
+                },
+                default=str,
             )
 
 
@@ -317,6 +379,7 @@ class JSONHandler(logging.StreamHandler):
         """
         # Track whether we own the stream for cleanup purposes
         self._owns_stream = stream is not None
+        self._closed = False
         super().__init__(stream)
         self.setFormatter(JSONFormatter())
 
@@ -325,18 +388,25 @@ class JSONHandler(logging.StreamHandler):
 
         Only closes custom streams, not system streams like sys.stderr.
         """
+        self.acquire()
         try:
-            # Flush before closing
-            self.flush()
+            if self._closed:
+                return
+            self._closed = True
+            try:
+                stream = self.stream
+                if stream is not None and not getattr(stream, "closed", False):
+                    self.flush()
 
-            # Close custom stream if we own it
-            if self._owns_stream and self.stream and hasattr(self.stream, "close"):
-                # Don't close system streams
-                if self.stream not in (sys.stderr, sys.stdout):
-                    self.stream.close()
+                if self._owns_stream and stream is not None and hasattr(stream, "close"):
+                    if stream not in (sys.stderr, sys.stdout):
+                        if not getattr(stream, "closed", False):
+                            stream.close()
+                        self.stream = None
+            finally:
+                super().close()
         finally:
-            # Always call parent close
-            super().close()
+            self.release()
 
 
 class JSONFileHandler(logging.FileHandler):
@@ -353,6 +423,7 @@ class JSONFileHandler(logging.FileHandler):
         delay: bool = False,
         rotate_schedule: str | None = None,
         rotate_retention_count: int | None = None,
+        base_dir: str | Path | None = None,
     ):
         """Initialize the JSON file handler.
 
@@ -363,19 +434,32 @@ class JSONFileHandler(logging.FileHandler):
             delay: Whether to delay file opening until first emit
             rotate_schedule: Optional rotation schedule (hour/day/week/month)
             rotate_retention_count: Optional retention count for rotated files
+            base_dir: Optional base directory the log file must stay within.
+                When provided, the resolved log path must remain inside
+                ``base_dir``; traversal (``..``) outside of it is rejected.
 
         Note:
             Thread-safe: Uses exist_ok=True to safely handle concurrent
             directory creation from multiple threads.
+
+        Raises:
+            ValueError: If ``base_dir`` is set and the resolved log path
+                escapes it (directory traversal attempt).
         """
+        if base_dir is not None:
+            resolved = self._resolve_within_base(filename, base_dir)
+        else:
+            resolved = os.path.abspath(filename)
+
         # Ensure parent directory exists
         # Thread-safe: exist_ok=True handles race conditions where multiple
         # threads might try to create the same directory
-        parent_dir = os.path.dirname(os.path.abspath(filename))
+        parent_dir = os.path.dirname(resolved)
         if parent_dir:
             os.makedirs(parent_dir, exist_ok=True)
 
-        super().__init__(filename, mode, encoding, delay)
+        super().__init__(resolved, mode, encoding, delay)
+        self._closed = False
         self.rotate_schedule = rotate_schedule
         # Retention default is only applied when schedule is enabled.
         self.rotate_retention_count = (
@@ -383,6 +467,39 @@ class JSONFileHandler(logging.FileHandler):
         )
         self._active_period_key = self._compute_period_key(self._now_local()) if self.rotate_schedule else None
         self.setFormatter(JSONFormatter())
+
+    def close(self) -> None:
+        """Close the handler and mark it closed so it will not reopen."""
+        self.acquire()
+        try:
+            self._closed = True
+            super().close()
+        finally:
+            self.release()
+
+    @staticmethod
+    def _resolve_within_base(filename: str, base_dir: str | Path) -> str:
+        """Resolve ``filename`` against ``base_dir``, rejecting escapes.
+
+        Args:
+            filename: Log file path as supplied by the caller
+            base_dir: Base directory the resolved path must stay within
+
+        Returns:
+            The resolved absolute path inside ``base_dir``
+
+        Raises:
+            ValueError: If ``filename`` is empty, equals ``base_dir``, or
+                escapes ``base_dir``
+        """
+        if not filename or not filename.strip():
+            raise ValueError("JSONFileHandler: filename must be a non-empty path")
+        base = os.path.realpath(os.path.abspath(str(base_dir)))
+        candidate = os.path.normpath(filename) if os.path.isabs(filename) else os.path.join(base, filename)
+        resolved = os.path.realpath(candidate)
+        if resolved == base or os.path.commonpath([base, resolved]) != base:
+            raise ValueError(f"JSONFileHandler: log path {filename!r} escapes base directory {str(base_dir)!r}")
+        return resolved
 
     def _now_local(self) -> datetime:
         """Get current local datetime.
@@ -427,24 +544,42 @@ class JSONFileHandler(logging.FileHandler):
         if self.rotate_retention_count is None:
             return
 
-        root, ext = os.path.splitext(self.baseFilename)
-        rotated_files = [
-            path for path in glob(f"{root}-*{ext}") if os.path.abspath(path) != os.path.abspath(self.baseFilename)
-        ]
+        parent_dir = os.path.dirname(self.baseFilename) or "."
+        stem, ext = os.path.splitext(os.path.basename(self.baseFilename))
+        archive_pattern = re.compile(
+            rf"^{re.escape(stem)}-(?:\d{{4}}-\d{{2}}(?:-\d{{2}}(?:-\d{{2}})?)?|\d{{4}}-W\d{{2}})"
+            rf"(?:\.\d+)?{re.escape(ext)}$"
+        )
+        base_abs = os.path.abspath(self.baseFilename)
 
-        if len(rotated_files) <= self.rotate_retention_count:
+        try:
+            candidates: list[tuple[float, str]] = []
+            with os.scandir(parent_dir) as entries:
+                for entry in entries:
+                    if not archive_pattern.match(entry.name):
+                        continue
+                    if os.path.abspath(entry.path) == base_abs:
+                        continue
+                    try:
+                        candidates.append((entry.stat().st_mtime, entry.path))
+                    except OSError:
+                        continue
+
+            if len(candidates) <= self.rotate_retention_count:
+                return
+
+            candidates.sort(key=lambda item: item[0], reverse=True)
+            for _, old_path in candidates[self.rotate_retention_count :]:
+                try:
+                    os.remove(old_path)
+                except OSError:
+                    # Pruning failures should never fail application logging.
+                    continue
+        except OSError:
             return
 
-        rotated_files.sort(key=os.path.getmtime, reverse=True)
-        for old_path in rotated_files[self.rotate_retention_count :]:
-            try:
-                os.remove(old_path)
-            except OSError:
-                # Pruning failures should never fail application logging.
-                continue
-
-    def _rotation_key_for_emit(self) -> str | None:
-        """Return the new period key when an emit should trigger rotation."""
+    def _rotation_key_for_emit(self) -> tuple[str, str] | None:
+        """Return (archive_period_key, next_active_period_key) when emit should rotate."""
         if not self.rotate_schedule:
             return None
 
@@ -453,7 +588,7 @@ class JSONFileHandler(logging.FileHandler):
             self._active_period_key = current_key
             return None
         if current_key != self._active_period_key:
-            return current_key
+            return self._active_period_key, current_key
         return None
 
     def _ensure_stream_open(self) -> None:
@@ -461,11 +596,40 @@ class JSONFileHandler(logging.FileHandler):
         if self.stream is None:
             self.stream = self._open()
 
+    def _try_ensure_stream_open(self) -> None:
+        """Best-effort stream reopen that never raises out of rotation recovery."""
+        try:
+            self._ensure_stream_open()
+        except OSError:
+            self._report_rotation_error()
+
+    def _report_rotation_error(self) -> None:
+        """Report an internal rotation error via handleError."""
+        self.handleError(
+            logging.LogRecord(
+                name=__name__,
+                level=logging.ERROR,
+                pathname=__file__,
+                lineno=0,
+                msg="JSONFileHandler rotation failed",
+                args=(),
+                exc_info=sys.exc_info(),
+            )
+        )
+
     def _has_rotatable_content(self) -> bool:
         """Return True when base file has content that can be rotated."""
-        return os.path.exists(self.baseFilename) and os.path.getsize(self.baseFilename) > 0
+        try:
+            return os.path.getsize(self.baseFilename) > 0
+        except OSError:
+            return False
 
-    def _rotate_now_locked(self, period_key: str | None = None) -> bool:
+    def _rotate_now_locked(
+        self,
+        period_key: str | None = None,
+        *,
+        next_active_period_key: str | None = None,
+    ) -> bool:
         """Rotate current file under lock. Returns True on successful rotation."""
         if period_key is None:
             if self.rotate_schedule:
@@ -475,9 +639,11 @@ class JSONFileHandler(logging.FileHandler):
             else:
                 period_key = self._now_local().strftime("%Y-%m-%d-%H")
 
+        next_key = next_active_period_key if next_active_period_key is not None else period_key
+
         if not self._has_rotatable_content():
-            self._active_period_key = period_key
-            self._ensure_stream_open()
+            self._active_period_key = next_key
+            self._try_ensure_stream_open()
             return False
 
         target = self._build_collision_safe_path(self._build_rotated_path(period_key))
@@ -490,28 +656,18 @@ class JSONFileHandler(logging.FileHandler):
 
             os.replace(self.baseFilename, target)
             self.stream = self._open()
-            self._active_period_key = period_key
+            self._active_period_key = next_key
             self._prune_rotated_files()
             return True
         except PermissionError:
             # Windows: OS briefly holds the file after close (antivirus, open reader).
             # Rotation skipped this cycle; will retry on the next emit boundary.
-            self._ensure_stream_open()
+            self._try_ensure_stream_open()
             return False
         except Exception:
             # Keep logging alive by restoring stream best-effort.
-            self._ensure_stream_open()
-            self.handleError(
-                logging.LogRecord(
-                    name=__name__,
-                    level=logging.ERROR,
-                    pathname=__file__,
-                    lineno=0,
-                    msg="JSONFileHandler rotation failed",
-                    args=(),
-                    exc_info=sys.exc_info(),
-                )
-            )
+            self._try_ensure_stream_open()
+            self._report_rotation_error()
             return False
 
     def rotate_now(self) -> bool:
@@ -522,16 +678,21 @@ class JSONFileHandler(logging.FileHandler):
         """
         self.acquire()
         try:
+            if getattr(self, "_closed", False):
+                return False
             return self._rotate_now_locked()
         finally:
             self.release()
 
     def emit(self, record: logging.LogRecord) -> None:
         """Emit a log record, rotating first when schedule boundary changed."""
+        if getattr(self, "_closed", False):
+            return
         try:
-            rotation_key = self._rotation_key_for_emit()
-            if rotation_key is not None:
-                self._rotate_now_locked(period_key=rotation_key)
+            rotation_keys = self._rotation_key_for_emit()
+            if rotation_keys is not None:
+                archive_key, next_key = rotation_keys
+                self._rotate_now_locked(period_key=archive_key, next_active_period_key=next_key)
             super().emit(record)
         except Exception:
             self.handleError(record)
@@ -597,4 +758,3 @@ class ArlogiSyslogHandler(logging.handlers.SysLogHandler):
             logging.Handler.close(self)
             return
         super().close()
-

@@ -255,7 +255,7 @@ setup_logging(
 
 ### Understanding Depth Values
 
-The `from_` parameter controls which function is shown in the log:
+The `caller_depth` parameter controls which function is shown in the log:
 
 ```python
 from arlogi import get_logger
@@ -584,7 +584,7 @@ logger.propagate = False  # Disable if needed
 
 **Solutions:**
 
-1. Adjust the `from_` depth
+1. Adjust the `caller_depth` value
 
 ```python
 logger.info("Message", caller_depth=0)  # Current function

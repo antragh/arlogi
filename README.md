@@ -219,17 +219,28 @@ LoggerFactory.setup(
 
 `arlogi` comes with a refined default color scheme:
 
-- **TRACE / DEBUG**: Grey / Cyan
-- **INFO**: Green
-- **WARNING**: Yellow
-- **ERROR / CRITICAL**: Red
+- **TRACE / DEBUG**: `grey37`
+- **INFO**: `grey75`
+- **WARNING**: `yellow`
+- **ERROR**: `red`
+- **CRITICAL**: `bold red`
 
 ## OpenTelemetry helpers (`arlogi[otel]`)
 
 ```python
-from arlogi.otel import setup_tracing, set_trace_modules, traced
+from arlogi.otel import (
+    install_log_correlation,
+    set_trace_modules,
+    setup_metrics,
+    setup_tracing,
+    shutdown_metrics,
+    shutdown_tracing,
+    traced,
+)
 
-setup_tracing("my-service", file_dir="logs")  # owns the TracerProvider
+setup_tracing("my-service", file_dir="logs")   # owns the TracerProvider
+setup_metrics("my-service", file_dir="logs")   # owns the MeterProvider
+install_log_correlation()                      # stamps trace_id / span_id onto logs
 
 @traced                                        # span per call
 def work(): ...
@@ -237,17 +248,19 @@ def work(): ...
 @traced(name="custom.op", attrs={"component": "billing"})
 async def handle(): ...
 
-@traced                                        # async generators: one span
+@traced                                        # async & sync generators: one span
 async def stream():                            # covering the full iteration
     yield ...
 
 # Gate spans per module subtree (longest dotted prefix wins; default: on).
 set_trace_modules({"myapp": True, "myapp.noisy": False})
+
+# Clean in-process teardown (supports subsequent setup_tracing() / setup_metrics() restart)
+shutdown_tracing()
+shutdown_metrics()
 ```
 
-Library code that must stay off the OTEL SDK (provider owned by the host
-application) can import the decorator directly — it depends only on
-`opentelemetry-api`:
+`arlogi.otel` also exports `RotatingJsonlSpanExporter` and `RotatingJsonlMetricExporter` for custom SDK pipelines, and lazily loads all SDK-backed helpers via `__getattr__` so bare `import arlogi.otel` and `from arlogi.otel.decorator import set_trace_modules, traced` depend only on `opentelemetry-api`:
 
 ```python
 from arlogi.otel.decorator import set_trace_modules, traced

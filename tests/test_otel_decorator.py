@@ -391,3 +391,96 @@ def test_decorator_module_never_imports_otel_sdk():
         "assert not sdk, f'decorator imported the OTEL SDK: {sdk}'\n"
     )
     subprocess.run([sys.executable, "-c", code], check=True)
+
+
+def test_traced_survives_shutdown_and_restart(tmp_path, reset_otel_globals):
+    from arlogi.otel import setup_tracing, shutdown_tracing
+
+    @traced
+    def work():
+        return 42
+
+    dir1 = tmp_path / "run1"
+    dir2 = tmp_path / "run2"
+    setup_tracing("svc", file_dir=dir1)
+    assert work() == 42
+    shutdown_tracing()
+
+    setup_tracing("svc", file_dir=dir2)
+    assert work() == 42
+    shutdown_tracing()
+
+    assert list(dir1.glob("traces-*.jsonl"))
+    assert list(dir2.glob("traces-*.jsonl"))
+
+
+def test_traced_sync_gen_forwards_send_throw_return_and_closes_inner(memory_spans):
+    closed = {"flag": False}
+
+    @traced
+    def echo(required_arg: int):
+        try:
+            received = yield required_arg
+            try:
+                yield received + 1
+            except RuntimeError as exc:
+                yield f"caught:{exc}"
+            return "done"
+        finally:
+            closed["flag"] = True
+
+    gen = echo(10)
+    assert next(gen) == 10
+    assert gen.send(20) == 21
+    assert gen.throw(RuntimeError("oops")) == "caught:oops"
+    with pytest.raises(StopIteration) as stop_info:
+        next(gen)
+    assert stop_info.value.value == "done"
+    assert closed["flag"] is True
+
+    # Early close triggers inner generator finally block
+    closed["flag"] = False
+    gen2 = echo(1)
+    assert next(gen2) == 1
+    gen2.close()
+    assert closed["flag"] is True
+
+    # Argument binding TypeError must not leak an open span
+    with pytest.raises(TypeError):
+        list(echo())  # type: ignore[call-arg]
+    assert len(memory_spans.get_finished_spans()) == 2
+
+
+def test_traced_async_gen_closes_inner_and_forwards_asend_athrow(memory_spans):
+    closed = {"flag": False}
+
+    @traced
+    async def astream(required_arg: int):
+        try:
+            val = yield required_arg
+            try:
+                yield val * 2
+            except RuntimeError as exc:
+                yield f"caught:{exc}"
+        finally:
+            closed["flag"] = True
+
+    async def drive():
+        agen = astream(5)
+        assert await agen.__anext__() == 5
+        assert await agen.asend(7) == 14
+        assert await agen.athrow(RuntimeError("boom")) == "caught:boom"
+        await agen.aclose()
+        assert closed["flag"] is True
+
+        closed["flag"] = False
+        agen2 = astream(3)
+        assert await agen2.__anext__() == 3
+        await agen2.aclose()
+        assert closed["flag"] is True
+
+        with pytest.raises(TypeError):
+            [x async for x in astream()]  # type: ignore[call-arg]
+
+    asyncio.run(drive())
+    assert len(memory_spans.get_finished_spans()) == 2

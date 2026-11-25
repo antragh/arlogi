@@ -118,3 +118,72 @@ def test_rotate_json_logger_helper(tmp_path):
     rotated_count = rotate_json_logger("rotation-helper")
 
     assert rotated_count == 1
+
+
+def test_emit_boundary_rotation_uses_elapsed_period_key(tmp_path):
+    log_file = tmp_path / "app.jsonl"
+    handler = JSONFileHandler(str(log_file), rotate_schedule="day")
+
+    times = [
+        datetime(2026, 6, 10, 23, 59, 59),
+        datetime(2026, 6, 10, 23, 59, 59),
+        datetime(2026, 6, 11, 0, 0, 1),
+        datetime(2026, 6, 11, 12, 0, 0),
+    ]
+    handler._now_local = lambda: times.pop(0)  # type: ignore[attr-defined]
+    handler._active_period_key = handler._compute_period_key(handler._now_local())
+
+    _emit(handler, "june-10-event")
+    _emit(handler, "june-11-event")
+
+    assert (tmp_path / "app-2026-06-10.jsonl").exists()
+    assert "june-10-event" in (tmp_path / "app-2026-06-10.jsonl").read_text(encoding="utf-8")
+
+    assert handler.rotate_now() is True
+    assert (tmp_path / "app-2026-06-11.jsonl").exists()
+    assert not (tmp_path / "app-2026-06-11.1.jsonl").exists()
+    handler.close()
+
+
+def test_pruning_preserves_sibling_files_and_works_in_bracketed_dirs(tmp_path):
+    bracket_dir = tmp_path / "svc[v2]"
+    bracket_dir.mkdir()
+    log_file = bracket_dir / "app.jsonl"
+    sibling_file = bracket_dir / "app-audit.jsonl"
+    sibling_file.write_text('{"msg": "keep"}\n', encoding="utf-8")
+
+    handler = JSONFileHandler(str(log_file), rotate_schedule="hour", rotate_retention_count=1)
+    for hour in [10, 11, 12]:
+        handler._now_local = lambda h=hour: datetime(2026, 6, 10, h, 0, 0)  # type: ignore[attr-defined]
+        _emit(handler, f"hour-{hour}")
+        handler.rotate_now()
+
+    assert sibling_file.exists()
+    archives = [p.name for p in bracket_dir.iterdir() if p.name.startswith("app-2026-")]
+    assert len(archives) == 1
+    handler.close()
+
+
+def test_base_dir_containment_rejects_traversal_and_directory_equal(tmp_path):
+    import pytest
+
+    with pytest.raises(ValueError, match="escapes base directory"):
+        JSONFileHandler("../escape.jsonl", base_dir=tmp_path)
+
+    with pytest.raises(ValueError, match="escapes base directory"):
+        JSONFileHandler(".", base_dir=tmp_path)
+
+    with pytest.raises(ValueError, match="escapes base directory"):
+        JSONFileHandler(str(tmp_path), base_dir=tmp_path)
+
+
+def test_rotate_now_non_fatal_when_reopen_fails(tmp_path):
+    from unittest.mock import patch
+
+    log_file = tmp_path / "app.jsonl"
+    handler = JSONFileHandler(str(log_file), rotate_schedule="day")
+    _emit(handler, "entry")
+
+    with patch.object(handler, "_open", side_effect=OSError("ENOSPC")):
+        assert handler.rotate_now() is False
+    handler.close()

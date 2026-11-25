@@ -22,6 +22,7 @@ wheels/
 .claude/
 docs/.Notes/
 docs/_Notes_/
+docs/_audit_/
 docs/C4-Documentation-Old/
 docs/scripts/
 docs/superpowers/

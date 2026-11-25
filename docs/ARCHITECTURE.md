@@ -170,9 +170,12 @@ classDiagram
         +int|str level
         +dict module_levels
         +str json_file_name
+        +str json_file_base_dir
         +bool json_file_only
         +bool use_syslog
         +str|tuple syslog_address
+        +str rotate_schedule
+        +int rotate_retention_count
         +bool show_time
         +bool show_level
         +bool show_path
@@ -395,7 +398,7 @@ graph TD
 ```mermaid
 graph TD
     A[logger.info] --> B[_process_params]
-    B --> C{from_ set?}
+    B --> C{caller_depth set?}
     C -->|Yes| D[_get_caller_info]
     C -->|No| E[Skip attribution]
     D --> F[Build attribution string]
@@ -483,7 +486,7 @@ config = config_from_yaml("logging_config.yaml")
 | Log with `caller_depth=`    | ~1.5μs | Stack frame inspection |
 | Deep stack (depth=5) | ~3μs   | Multiple frame walks   |
 
-**Optimization Tip:** Use `from_` only in development/debug builds.
+**Optimization Tip:** Use `caller_depth` only in development/debug builds.
 
 ### Memory Usage
 
@@ -528,12 +531,10 @@ graph TD
 
 ```python
 def is_test_mode() -> bool:
-    return (
-        "pytest" in sys.modules
-        or "unittest" in sys.modules
-        or os.environ.get("PYTEST_CURRENT_TEST") is not None
-    )
+    return "pytest" in sys.modules or "unittest" in sys.modules
 ```
+
+`PYTEST_CURRENT_TEST` is intentionally ignored so externally controlled environment variables cannot suppress handlers in production processes.
 
 In test mode:
 
@@ -556,13 +557,13 @@ In test mode:
 
 ## Future Enhancements
 
-### Planned Features
+### Implemented & Planned Extensions
 
-1. **Async Handlers** - AsyncIO-compatible log handlers
-2. **Log Rotation** - Built-in rotation for JSON files
-3. **Filter Support** - Per-handler log filtering
-4. **Context Injection** - Automatic request/context IDs
-5. **Metrics Integration** - OpenTelemetry integration
+1. **Async Handlers** - AsyncIO-compatible log handlers (planned)
+2. **Log Rotation** - Built-in schedule-based rotation and retention pruning in `JSONFileHandler` (implemented)
+3. **Filter Support** - Per-handler log filtering (planned)
+4. **Context Injection** - Automatic OpenTelemetry `trace_id`/`span_id` log correlation via `install_log_correlation()` (implemented)
+5. **OpenTelemetry Integration** - Optional `arlogi[otel]` (`arlogi.otel`) with lazy SDK loading, `@traced`, tracing/metrics bootstrap, and rotating JSONL exporters (implemented)
 
 ### Extension Points
 

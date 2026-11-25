@@ -1,0 +1,25 @@
+schema: spec-driven
+
+context: |
+  Language: English
+  All artifacts, code, comments, tests, and documentation persisted to disk MUST be written strictly in English.
+  Keep OpenSpec structural headings and SHALL/MUST keywords in English.
+
+  Project: arlogi — Python >=3.13 structured & colored logging library with Rich console output, JSON/JSONL file rotation, Syslog fallback, and optional OpenTelemetry tracing/metrics/log-correlation (`arlogi[otel]`).
+  Package layout: `src/arlogi/` (core: `config.py`, `config_builder.py`, `levels.py`, `types.py`, `handlers.py`, `handler_factory.py`, `factory.py`; optional OTEL subpackage: `src/arlogi/otel/` with lazy `__getattr__` boundary).
+  Toolchain: `uv`, Hatchling build backend, `ruff` (`check` + `format`, max-complexity=10), `ty` static type checker, `pytest` (`tests/`), MkDocs Material (`docs/`), Commitizen (`cz`).
+
+  Core Architectural & Security Invariants:
+  - Minimal core runtime dependencies (`rich` only); OpenTelemetry SDK/exporters stay strictly in optional `[project.optional-dependencies].otel`, and `arlogi.otel` / `arlogi.otel.decorator` MUST NOT eagerly import `opentelemetry-sdk`.
+  - `is_test_mode()` MUST inspect loaded `pytest`/`unittest` modules in `sys.modules` only and MUST NOT trust `PYTEST_CURRENT_TEST` or other environment variables.
+  - `ColoredConsoleHandler` MUST default `markup=False` and escape caller attribution suffixes (`rich.markup.escape`).
+  - File writers MUST protect against path traversal (`JSONFileHandler` MUST enforce directory containment when `base_dir`/`json_file_base_dir` is configured; `_RotatingJsonlWriter` MUST validate safe `prefix` values) and MUST degrade non-fatally on rotation/pruning I/O errors without crashing host application callers.
+  - `TRACE` level (`5`) registration and `LoggerFactory` lifecycle operations MUST be thread-safe and idempotent.
+
+rules:
+  proposal:
+    - Clearly state non-goals / out-of-scope boundaries and any public API or behavioral compatibility impact.
+  design:
+    - Explicitly resolve concurrency/locking, error-recovery (fail-open vs fail-fast), and optional-dependency (`no-otel`) boundary impacts.
+  tasks:
+    - Include verification steps for `uv run pytest`, `uv run ruff check src/ tests/`, and `uv run ruff format --check src/ tests/`.

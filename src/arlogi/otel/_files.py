@@ -1,6 +1,8 @@
 """Rotating JSONL file writer shared by the span and metric exporters."""
 
 import logging
+import os
+import re
 import threading
 import time
 from datetime import datetime
@@ -8,6 +10,24 @@ from pathlib import Path
 from typing import IO
 
 logger = logging.getLogger(__name__)
+
+_FORBIDDEN_PREFIX_CHARS = frozenset({"\x00", "/", "\\", "*", "?", "[", "]"})
+
+
+def _validate_prefix(prefix: str) -> str:
+    """Validate that prefix is a safe single filename component."""
+    if not isinstance(prefix, str) or not prefix or prefix in (".", ".."):
+        raise ValueError(f"Invalid telemetry file prefix: {prefix!r}")
+    if ".." in prefix or any(ch in _FORBIDDEN_PREFIX_CHARS for ch in prefix) or Path(prefix).name != prefix:
+        raise ValueError(f"Invalid telemetry file prefix: {prefix!r}")
+    return prefix
+
+
+def _validate_positive_int(value: int, name: str) -> int:
+    """Validate that value is a non-boolean integer >= 1."""
+    if isinstance(value, bool) or not isinstance(value, int) or value < 1:
+        raise ValueError(f"{name} must be an integer >= 1, got {value!r}")
+    return value
 
 
 class _RotatingJsonlWriter:
@@ -21,10 +41,13 @@ class _RotatingJsonlWriter:
 
     def __init__(self, directory: str | Path, prefix: str, rotate_hours: int, retention_count: int) -> None:
         self._directory = Path(directory)
-        self._prefix = prefix
-        self._rotate_seconds = rotate_hours * 3600
-        self._retention_count = retention_count
+        self._prefix = _validate_prefix(prefix)
+        validated_hours = _validate_positive_int(rotate_hours, "rotate_hours")
+        self._rotate_seconds = validated_hours * 3600
+        self._retention_count = _validate_positive_int(retention_count, "retention_count")
+        self._archive_pattern = re.compile(rf"^{re.escape(self._prefix)}-\d{{8}}-\d{{6}}(?:\.\d+)?\.jsonl$")
         self._stream: IO[str] | None = None
+        self._active_path: Path | None = None
         self._opened_at = 0.0
         self._broken = False
         self._lock = threading.Lock()
@@ -65,20 +88,40 @@ class _RotatingJsonlWriter:
             target = self._directory / f"{self._prefix}-{stamp}.{suffix}.jsonl"
             suffix += 1
         self._stream = target.open("a", encoding="utf-8")
+        self._active_path = target.resolve()
         self._opened_at = self._now()
         self._prune()
 
     def _prune(self) -> None:
-        files = sorted(
-            self._directory.glob(f"{self._prefix}-*.jsonl"),
-            key=lambda p: p.stat().st_mtime,
-            reverse=True,
-        )
-        for old in files[self._retention_count :]:
-            try:
-                old.unlink()
-            except OSError:
-                continue  # pruning failures must never break telemetry
+        try:
+            candidates: list[tuple[float, Path]] = []
+            with os.scandir(self._directory) as entries:
+                for entry in entries:
+                    if not self._archive_pattern.match(entry.name):
+                        continue
+                    entry_path = Path(entry.path)
+                    if self._active_path is not None:
+                        try:
+                            if entry_path.resolve() == self._active_path:
+                                continue
+                        except OSError:
+                            pass
+                    try:
+                        candidates.append((entry.stat().st_mtime, entry_path))
+                    except OSError:
+                        continue
+
+            candidates.sort(key=lambda item: item[0], reverse=True)
+            archived_keep = (
+                max(0, self._retention_count - 1) if self._active_path is not None else self._retention_count
+            )
+            for _, old in candidates[archived_keep:]:
+                try:
+                    old.unlink()
+                except OSError:
+                    continue  # pruning failures must never break telemetry
+        except OSError:
+            return
 
     def close(self) -> None:
         with self._lock:

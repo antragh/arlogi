@@ -33,10 +33,10 @@ class RotatingJsonlSpanExporter(SpanExporter):
     def export(self, spans: Sequence[ReadableSpan]) -> SpanExportResult:
         try:
             payload = MessageToDict(encode_spans(spans))
+            b64_ids_to_hex(payload)
         except Exception as exc:
             logger.warning("Failed to encode telemetry spans: %s", exc, exc_info=True)
             return SpanExportResult.FAILURE
-        b64_ids_to_hex(payload)
         ok = self._writer.write_line(json.dumps(payload, separators=(",", ":")))
         return SpanExportResult.SUCCESS if ok else SpanExportResult.FAILURE
 
@@ -66,10 +66,10 @@ class RotatingJsonlMetricExporter(MetricExporter):
     def export(self, metrics_data: MetricsData, timeout_millis: float = 10_000, **kwargs: object) -> MetricExportResult:
         try:
             payload = MessageToDict(encode_metrics(metrics_data))
+            b64_ids_to_hex(payload)
         except Exception as exc:
             logger.warning("Failed to encode telemetry metrics: %s", exc, exc_info=True)
             return MetricExportResult.FAILURE
-        b64_ids_to_hex(payload)
         ok = self._writer.write_line(json.dumps(payload, separators=(",", ":")))
         return MetricExportResult.SUCCESS if ok else MetricExportResult.FAILURE
 

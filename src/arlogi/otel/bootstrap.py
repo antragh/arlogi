@@ -1,9 +1,14 @@
 """Provider bootstrap and log correlation for host applications."""
 
+import functools
+import inspect
 import logging
 import socket
 import threading
+import types
 from pathlib import Path
+from typing import Any
+from urllib.parse import urlparse
 
 from opentelemetry import metrics, trace
 from opentelemetry.sdk.metrics import MeterProvider
@@ -21,6 +26,35 @@ _tracer_provider: TracerProvider | None = None
 _meter_provider: MeterProvider | None = None
 
 
+def _validate_otlp_endpoint(endpoint: str) -> str:
+    """Validate an OTLP HTTP endpoint before it is handed to an exporter.
+
+    Args:
+        endpoint: OTLP endpoint base URL (without scheme prefix handling assumed)
+
+    Returns:
+        The endpoint with trailing slash stripped
+
+    Raises:
+        ValueError: If the endpoint does not use http/https or has no host
+    """
+    if not isinstance(endpoint, str) or not endpoint:
+        raise ValueError(f"Invalid OTLP endpoint: {endpoint!r}")
+    if any(ch.isspace() or ord(ch) < 32 or ord(ch) == 127 for ch in endpoint):
+        raise ValueError(f"Invalid OTLP endpoint: {endpoint!r}")
+
+    parsed = urlparse(endpoint)
+    if parsed.scheme not in ("http", "https") or not parsed.hostname:
+        raise ValueError(f"Invalid OTLP endpoint: {endpoint!r}")
+    if parsed.params or parsed.query or parsed.fragment:
+        raise ValueError(f"Invalid OTLP endpoint: {endpoint!r}")
+    try:
+        _ = parsed.port
+    except ValueError as exc:
+        raise ValueError(f"Invalid OTLP endpoint: {endpoint!r}") from exc
+    return endpoint.rstrip("/")
+
+
 def _clear_global_tracer_provider() -> None:
     """Release OpenTelemetry's process-global TracerProvider slot.
 
@@ -31,6 +65,9 @@ def _clear_global_tracer_provider() -> None:
     try:
         from opentelemetry.util._once import Once
 
+        if not (hasattr(trace, "_TRACER_PROVIDER_SET_ONCE") and hasattr(trace, "_TRACER_PROVIDER")):
+            logger.warning("could not release the global TracerProvider; re-initialisation may be ignored")
+            return
         trace._TRACER_PROVIDER_SET_ONCE = Once()
         trace._TRACER_PROVIDER = None
     except Exception:  # pragma: no cover - upstream internals moved
@@ -42,8 +79,14 @@ def _clear_global_meter_provider() -> None:
     try:
         from opentelemetry.util._once import Once
 
-        metrics._internal._METER_PROVIDER_SET_ONCE = Once()
-        metrics._internal._METER_PROVIDER = None
+        internal = getattr(metrics, "_internal", None)
+        if internal is None or not (
+            hasattr(internal, "_METER_PROVIDER_SET_ONCE") and hasattr(internal, "_METER_PROVIDER")
+        ):
+            logger.warning("could not release the global MeterProvider; re-initialisation may be ignored")
+            return
+        internal._METER_PROVIDER_SET_ONCE = Once()
+        internal._METER_PROVIDER = None
     except Exception:  # pragma: no cover - upstream internals moved
         logger.warning("could not release the global MeterProvider; re-initialisation may be ignored")
 
@@ -81,23 +124,31 @@ def setup_tracing(
             logger.warning("setup_tracing() called more than once; keeping existing provider")
             return _tracer_provider
 
-        provider = TracerProvider(resource=_build_resource(service_name, service_version))
-        provider.add_span_processor(
-            BatchSpanProcessor(
-                RotatingJsonlSpanExporter(
-                    file_dir, prefix=file_prefix, rotate_hours=rotate_hours, retention_count=retention_count
-                )
-            )
+        validated_otlp = _validate_otlp_endpoint(otlp_endpoint) if otlp_endpoint else None
+        file_exporter = RotatingJsonlSpanExporter(
+            file_dir, prefix=file_prefix, rotate_hours=rotate_hours, retention_count=retention_count
         )
-        if otlp_endpoint:
+        otlp_exporter: Any = None
+        if validated_otlp is not None:
             from opentelemetry.exporter.otlp.proto.http.trace_exporter import OTLPSpanExporter
 
-            provider.add_span_processor(
-                BatchSpanProcessor(
-                    OTLPSpanExporter(endpoint=f"{otlp_endpoint.rstrip('/')}/v1/traces", timeout=otlp_timeout)
-                )
-            )
-        trace.set_tracer_provider(provider)
+            otlp_exporter = OTLPSpanExporter(endpoint=f"{validated_otlp}/v1/traces", timeout=otlp_timeout)
+
+        provider = TracerProvider(resource=_build_resource(service_name, service_version))
+        try:
+            provider.add_span_processor(BatchSpanProcessor(file_exporter))
+            if otlp_exporter is not None:
+                provider.add_span_processor(BatchSpanProcessor(otlp_exporter))
+            trace.set_tracer_provider(provider)
+        except Exception:
+            provider.shutdown()
+            raise
+
+        if trace.get_tracer_provider() is not provider:
+            provider.shutdown()
+            logger.warning("An external global TracerProvider is already registered; not replacing it")
+            return trace.get_tracer_provider()  # type: ignore[return-value]
+
         _tracer_provider = provider
         return provider
 
@@ -118,6 +169,44 @@ def shutdown_tracing() -> None:
         _clear_global_tracer_provider()
 
 
+def _child_factories(node: Any) -> list[Any]:
+    """Collect wrapped callables reachable from a LogRecordFactory node."""
+    children: list[Any] = []
+    for attr in ("_arlogi_prev_factory", "__wrapped__"):
+        child = inspect.getattr_static(node, attr, None)
+        if child is not None:
+            children.append(child)
+    if isinstance(node, functools.partial):
+        children.append(node.func)
+    if isinstance(node, types.FunctionType):
+        for cell in node.__closure__ or ():
+            try:
+                val = cell.cell_contents
+            except ValueError:
+                continue
+            if callable(val):
+                children.append(val)
+    return children
+
+
+def _has_arlogi_correlation(factory: Any) -> bool:
+    """Traverse chained LogRecordFactory wrappers to detect prior correlation."""
+    stack: list[Any] = [factory]
+    visited: set[int] = set()
+    while stack:
+        node = stack.pop()
+        if node is None or id(node) in visited:
+            continue
+        visited.add(id(node))
+        try:
+            if inspect.getattr_static(node, "_arlogi_otel_correlation", False) is True:
+                return True
+            stack.extend(_child_factories(node))
+        except Exception:
+            continue
+    return False
+
+
 def install_log_correlation() -> None:
     """Stamp trace_id/span_id (hex) onto LogRecords while a span is active.
 
@@ -126,7 +215,7 @@ def install_log_correlation() -> None:
     """
     with _lock:
         current = logging.getLogRecordFactory()
-        if getattr(current, "_arlogi_otel_correlation", False):
+        if _has_arlogi_correlation(current):
             return
 
         def factory(*args: object, **kwargs: object) -> logging.LogRecord:
@@ -138,6 +227,7 @@ def install_log_correlation() -> None:
             return record
 
         factory._arlogi_otel_correlation = True  # type: ignore[attr-defined]
+        factory._arlogi_prev_factory = current  # type: ignore[attr-defined]
         logging.setLogRecordFactory(factory)
 
 
@@ -168,25 +258,39 @@ def setup_metrics(
             logger.warning("setup_metrics() called more than once; keeping existing provider")
             return _meter_provider
 
-        readers = [
-            PeriodicExportingMetricReader(
-                RotatingJsonlMetricExporter(
-                    file_dir, prefix=file_prefix, rotate_hours=rotate_hours, retention_count=retention_count
-                ),
-                export_interval_millis=export_interval_millis,
-            )
-        ]
-        if otlp_endpoint:
+        validated_otlp = _validate_otlp_endpoint(otlp_endpoint) if otlp_endpoint else None
+        file_exporter = RotatingJsonlMetricExporter(
+            file_dir, prefix=file_prefix, rotate_hours=rotate_hours, retention_count=retention_count
+        )
+        otlp_exporter: Any = None
+        if validated_otlp is not None:
             from opentelemetry.exporter.otlp.proto.http.metric_exporter import OTLPMetricExporter
 
-            readers.append(
-                PeriodicExportingMetricReader(
-                    OTLPMetricExporter(endpoint=f"{otlp_endpoint.rstrip('/')}/v1/metrics", timeout=otlp_timeout),
-                    export_interval_millis=export_interval_millis,
+            otlp_exporter = OTLPMetricExporter(endpoint=f"{validated_otlp}/v1/metrics", timeout=otlp_timeout)
+
+        readers: list[Any] = []
+        provider: MeterProvider | None = None
+        try:
+            readers.append(PeriodicExportingMetricReader(file_exporter, export_interval_millis=export_interval_millis))
+            if otlp_exporter is not None:
+                readers.append(
+                    PeriodicExportingMetricReader(otlp_exporter, export_interval_millis=export_interval_millis)
                 )
-            )
-        provider = MeterProvider(resource=_build_resource(service_name, service_version), metric_readers=readers)
-        metrics.set_meter_provider(provider)
+            provider = MeterProvider(resource=_build_resource(service_name, service_version), metric_readers=readers)
+            metrics.set_meter_provider(provider)
+        except Exception:
+            if provider is not None:
+                provider.shutdown()
+            else:
+                for reader in readers:
+                    reader.shutdown()
+            raise
+
+        if metrics.get_meter_provider() is not provider:
+            provider.shutdown()
+            logger.warning("An external global MeterProvider is already registered; not replacing it")
+            return metrics.get_meter_provider()  # type: ignore[return-value]
+
         _meter_provider = provider
         return provider
 

@@ -43,6 +43,8 @@ def register_trace_level() -> None:
         def trace(self: logging.Logger, message: str, *args: Any, **kws: Any) -> None:
             """Log a message with TRACE level."""
             if self.isEnabledFor(TRACE_LEVEL_NUM):
+                raw_sl = kws.get("stacklevel", 1)
+                kws["stacklevel"] = (raw_sl + 1) if isinstance(raw_sl, int) and not isinstance(raw_sl, bool) else 2
                 self._log(TRACE_LEVEL_NUM, message, args, **kws)
 
         logging.Logger.trace = trace  # type: ignore

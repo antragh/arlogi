@@ -23,7 +23,7 @@ def main():
     )
 
     # Apply configuration via factory
-    LoggerFactory._apply_configuration(config)
+    LoggerFactory.apply_config(config)
 
     # 2. Get loggers
     logger = get_logger("app.main")

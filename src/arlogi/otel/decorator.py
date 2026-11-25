@@ -35,6 +35,172 @@ def _module_enabled(module: str) -> bool:
     return True
 
 
+def _make_tracer_getter(module: str) -> Callable[[], trace.Tracer]:
+    """Return a provider-keyed tracer lookup that tracks global provider restarts."""
+    cached_provider: Any = None
+    cached_tracer: trace.Tracer | None = None
+
+    def get_tracer() -> trace.Tracer:
+        nonlocal cached_provider, cached_tracer
+        current_provider = trace.get_tracer_provider()
+        if current_provider is not cached_provider or cached_tracer is None:
+            cached_provider = current_provider
+            cached_tracer = trace.get_tracer(module)
+        return cached_tracer
+
+    return get_tracer
+
+
+def _record_span_error(span: trace.Span, exc: BaseException) -> None:
+    """Record an exception and ERROR status on an active span."""
+    span.record_exception(exc)
+    span.set_status(trace.StatusCode.ERROR, str(exc))
+
+
+async def _step_async_gen(
+    gen: Any,
+    span: trace.Span,
+    pending_exc: BaseException | None,
+    send_val: Any,
+) -> Any:
+    with trace.use_span(span, end_on_exit=False, record_exception=False, set_status_on_exception=False):
+        if pending_exc is not None:
+            return await gen.athrow(pending_exc)
+        return await gen.asend(send_val)
+
+
+def _step_sync_gen(
+    gen: Any,
+    span: trace.Span,
+    pending_exc: BaseException | None,
+    send_val: Any,
+) -> Any:
+    with trace.use_span(span, end_on_exit=False, record_exception=False, set_status_on_exception=False):
+        if pending_exc is not None:
+            return gen.throw(pending_exc)
+        return gen.send(send_val)
+
+
+def _wrap_async_gen(
+    fn: Callable[..., Any],
+    span_name: str,
+    attrs: dict[str, Any] | None,
+    module: str,
+    get_tracer: Callable[[], trace.Tracer],
+) -> Callable[..., Any]:
+    @functools.wraps(fn)
+    async def agen_wrapper(*args: Any, **kwargs: Any) -> Any:
+        if not _module_enabled(module):
+            async for item in fn(*args, **kwargs):
+                yield item
+            return
+        gen = fn(*args, **kwargs)
+        span = get_tracer().start_span(span_name, attributes=attrs)
+        pending_exc: BaseException | None = None
+        send_val: Any = None
+        try:
+            while True:
+                try:
+                    item = await _step_async_gen(gen, span, pending_exc, send_val)
+                    pending_exc = None
+                except StopAsyncIteration:
+                    break
+                try:
+                    send_val = yield item
+                except GeneratorExit:
+                    raise
+                except BaseException as exc:
+                    pending_exc = exc
+        except (GeneratorExit, asyncio.CancelledError):
+            raise
+        except Exception as exc:
+            _record_span_error(span, exc)
+            raise
+        finally:
+            try:
+                await gen.aclose()
+            finally:
+                span.end()
+
+    return agen_wrapper
+
+
+def _wrap_sync_gen(
+    fn: Callable[..., Any],
+    span_name: str,
+    attrs: dict[str, Any] | None,
+    module: str,
+    get_tracer: Callable[[], trace.Tracer],
+) -> Callable[..., Any]:
+    @functools.wraps(fn)
+    def gen_wrapper(*args: Any, **kwargs: Any) -> Any:
+        if not _module_enabled(module):
+            return (yield from fn(*args, **kwargs))
+        gen = fn(*args, **kwargs)
+        span = get_tracer().start_span(span_name, attributes=attrs)
+        pending_exc: BaseException | None = None
+        send_val: Any = None
+        try:
+            while True:
+                try:
+                    item = _step_sync_gen(gen, span, pending_exc, send_val)
+                    pending_exc = None
+                except StopIteration as stop:
+                    return stop.value
+                try:
+                    send_val = yield item
+                except GeneratorExit:
+                    raise
+                except BaseException as exc:
+                    pending_exc = exc
+        except GeneratorExit:
+            raise
+        except Exception as exc:
+            _record_span_error(span, exc)
+            raise
+        finally:
+            try:
+                gen.close()
+            finally:
+                span.end()
+
+    return gen_wrapper
+
+
+def _wrap_async[**P, R](
+    fn: Callable[P, R],
+    span_name: str,
+    attrs: dict[str, Any] | None,
+    module: str,
+    get_tracer: Callable[[], trace.Tracer],
+) -> Callable[P, R]:
+    @functools.wraps(fn)
+    async def async_wrapper(*args: P.args, **kwargs: P.kwargs) -> R:
+        if not _module_enabled(module):
+            return await fn(*args, **kwargs)  # type: ignore[misc, no-any-return]
+        with get_tracer().start_as_current_span(span_name, attributes=attrs):
+            return await fn(*args, **kwargs)  # type: ignore[misc, no-any-return]
+
+    return async_wrapper  # type: ignore[return-value]
+
+
+def _wrap_sync[**P, R](
+    fn: Callable[P, R],
+    span_name: str,
+    attrs: dict[str, Any] | None,
+    module: str,
+    get_tracer: Callable[[], trace.Tracer],
+) -> Callable[P, R]:
+    @functools.wraps(fn)
+    def sync_wrapper(*args: P.args, **kwargs: P.kwargs) -> R:
+        if not _module_enabled(module):
+            return fn(*args, **kwargs)
+        with get_tracer().start_as_current_span(span_name, attributes=attrs):
+            return fn(*args, **kwargs)
+
+    return sync_wrapper
+
+
 @overload
 def traced[**P, R](func: Callable[P, R]) -> Callable[P, R]: ...
 @overload
@@ -60,96 +226,15 @@ def traced[**P, R](
 
     def decorate(fn: Callable[P, R]) -> Callable[P, R]:
         span_name = name or f"{fn.__module__}.{fn.__qualname__}"
-        tracer = trace.get_tracer(fn.__module__)
         module = fn.__module__
+        get_tracer = _make_tracer_getter(module)
 
         if inspect.isasyncgenfunction(fn):
-
-            @functools.wraps(fn)
-            async def agen_wrapper(*args: Any, **kwargs: Any) -> Any:
-                if not _module_enabled(module):
-                    async for item in fn(*args, **kwargs):
-                        yield item
-                    return
-                span = tracer.start_span(span_name, attributes=attrs)
-                gen = fn(*args, **kwargs)
-                try:
-                    while True:
-                        with trace.use_span(
-                            span,
-                            end_on_exit=False,
-                            record_exception=False,
-                            set_status_on_exception=False,
-                        ):
-                            try:
-                                item = await gen.__anext__()
-                            except StopAsyncIteration:
-                                break
-                        yield item
-                except (GeneratorExit, asyncio.CancelledError):
-                    # Consumer abandonment / task cancellation: end the span
-                    # below without marking it as a generator failure.
-                    raise
-                except Exception as exc:
-                    span.record_exception(exc)
-                    span.set_status(trace.StatusCode.ERROR, str(exc))
-                    raise
-                finally:
-                    span.end()
-
-            return agen_wrapper
-
+            return _wrap_async_gen(fn, span_name, attrs, module, get_tracer)
         if inspect.isgeneratorfunction(fn):
-
-            @functools.wraps(fn)
-            def gen_wrapper(*args: Any, **kwargs: Any) -> Any:
-                if not _module_enabled(module):
-                    yield from fn(*args, **kwargs)
-                    return
-                span = tracer.start_span(span_name, attributes=attrs)
-                gen = fn(*args, **kwargs)
-                try:
-                    while True:
-                        with trace.use_span(
-                            span,
-                            end_on_exit=False,
-                            record_exception=False,
-                            set_status_on_exception=False,
-                        ):
-                            try:
-                                item = next(gen)
-                            except StopIteration:
-                                break
-                        yield item
-                except GeneratorExit:
-                    raise  # consumer close(): end span without ERROR status
-                except Exception as exc:
-                    span.record_exception(exc)
-                    span.set_status(trace.StatusCode.ERROR, str(exc))
-                    raise
-                finally:
-                    span.end()
-
-            return gen_wrapper
-
+            return _wrap_sync_gen(fn, span_name, attrs, module, get_tracer)
         if inspect.iscoroutinefunction(fn):
-
-            @functools.wraps(fn)
-            async def async_wrapper(*args: P.args, **kwargs: P.kwargs) -> R:
-                if not _module_enabled(module):
-                    return await fn(*args, **kwargs)  # type: ignore[no-any-return]
-                with tracer.start_as_current_span(span_name, attributes=attrs):
-                    return await fn(*args, **kwargs)  # type: ignore[no-any-return]
-
-            return async_wrapper  # type: ignore[return-value]
-
-        @functools.wraps(fn)
-        def sync_wrapper(*args: P.args, **kwargs: P.kwargs) -> R:
-            if not _module_enabled(module):
-                return fn(*args, **kwargs)
-            with tracer.start_as_current_span(span_name, attributes=attrs):
-                return fn(*args, **kwargs)
-
-        return sync_wrapper
+            return _wrap_async(fn, span_name, attrs, module, get_tracer)
+        return _wrap_sync(fn, span_name, attrs, module, get_tracer)
 
     return decorate(func) if func is not None else decorate

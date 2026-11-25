@@ -194,3 +194,34 @@ def test_metric_exporter_logs_warning_on_encode_failure(tmp_path, caplog):
             assert result == MetricExportResult.FAILURE
             assert any("Failed to encode telemetry metrics" in record.message for record in caplog.records)
 
+
+@pytest.mark.parametrize("bad_prefix", ["", ".", "..", "../escape", "/tmp/abs", "sub/dir", "*", "svc[1]", "a\x00b"])
+def test_writer_rejects_unsafe_prefix(tmp_path, bad_prefix):
+    with pytest.raises(ValueError, match="Invalid telemetry file prefix"):
+        _RotatingJsonlWriter(tmp_path, prefix=bad_prefix, rotate_hours=24, retention_count=5)
+
+
+@pytest.mark.parametrize("bad_hours", [0, -1, True, "1"])
+def test_writer_rejects_invalid_rotate_hours(tmp_path, bad_hours):
+    with pytest.raises(ValueError, match="rotate_hours"):
+        _RotatingJsonlWriter(tmp_path, prefix="traces", rotate_hours=bad_hours, retention_count=5)  # type: ignore[arg-type]
+
+
+@pytest.mark.parametrize("bad_retention", [0, -1, True, "5"])
+def test_writer_rejects_invalid_retention_count(tmp_path, bad_retention):
+    with pytest.raises(ValueError, match="retention_count"):
+        _RotatingJsonlWriter(tmp_path, prefix="traces", rotate_hours=24, retention_count=bad_retention)  # type: ignore[arg-type]
+
+
+def test_writer_prune_skips_dangling_symlink_and_preserves_sibling_files(tmp_path):
+    sibling = tmp_path / "traces-audit.jsonl"
+    sibling.write_text('{"keep": true}\n', encoding="utf-8")
+    dangling = tmp_path / "traces-20200101-000000.jsonl"
+    dangling.symlink_to(tmp_path / "missing-target.jsonl")
+
+    writer = _RotatingJsonlWriter(tmp_path, prefix="traces", rotate_hours=1, retention_count=1)
+    assert writer.write_line('{"ok": 1}') is True
+    assert writer.write_line('{"ok": 2}') is True
+    assert writer._broken is False
+    assert sibling.exists()
+    writer.close()

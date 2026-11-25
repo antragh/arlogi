@@ -5,10 +5,11 @@ following the Builder pattern for flexible construction.
 """
 
 import logging
-import os
 import sys
-from dataclasses import dataclass
+from dataclasses import dataclass, fields
 from typing import Any, Literal
+
+from .levels import TRACE_LEVEL_NUM
 
 RotateSchedule = Literal["hour", "day", "week", "month"]
 
@@ -21,6 +22,7 @@ class LoggingConfig:
         level: Global root log level (int or string like "INFO")
         module_levels: Per-module level overrides (e.g., {"app.db": "DEBUG"})
         json_file_name: Path to JSON log file (None for no JSON file logging)
+        json_file_base_dir: Optional base directory that the JSON log file must stay within (None = no containment)
         json_file_only: If True, only output to JSON (no console)
         use_syslog: Enable syslog output
         syslog_address: Syslog server address (default: "/dev/log")
@@ -34,6 +36,7 @@ class LoggingConfig:
     level: int | str = logging.INFO
     module_levels: dict[str, str | int] | None = None
     json_file_name: str | None = None
+    json_file_base_dir: str | None = None
     json_file_only: bool = False
     use_syslog: bool = False
     syslog_address: str | tuple[str, int] = "/dev/log"
@@ -65,8 +68,44 @@ class LoggingConfig:
                 )
 
         # Validate rotation retention count
-        if self.rotate_retention_count is not None and self.rotate_retention_count < 1:
+        if self.rotate_retention_count is not None and (
+            isinstance(self.rotate_retention_count, bool)
+            or not isinstance(self.rotate_retention_count, int)
+            or self.rotate_retention_count < 1
+        ):
             raise ValueError("rotate_retention_count must be >= 1 when provided")
+
+    @staticmethod
+    def _parse_level(level: int | str) -> int:
+        """Parse and validate a log level value into an integer.
+
+        Args:
+            level: Log level as int (excluding bool) or str
+
+        Returns:
+            The resolved log level as an integer
+
+        Raises:
+            ValueError: If level is invalid
+        """
+        if isinstance(level, bool):
+            raise ValueError(f"Log level must be int or str, got {type(level).__name__}")
+        if isinstance(level, int):
+            return level
+        if isinstance(level, str):
+            upper_level = level.upper()
+            if upper_level == "TRACE":
+                return TRACE_LEVEL_NUM
+            level_map = {
+                name: val
+                for name, val in logging.getLevelNamesMapping().items()
+                if name != "NOTSET" and isinstance(val, int) and not isinstance(val, bool)
+            }
+            if upper_level in level_map:
+                return level_map[upper_level]
+            valid = ", ".join(sorted(level_map))
+            raise ValueError(f"Invalid log level: {level!r}. Valid levels: TRACE, {valid}")
+        raise ValueError(f"Log level must be int or str, got {type(level).__name__}")
 
     @staticmethod
     def _validate_level(level: int | str) -> None:
@@ -78,18 +117,7 @@ class LoggingConfig:
         Raises:
             ValueError: If level is invalid
         """
-        if isinstance(level, str):
-            # Check for custom TRACE level (valid but not in logging module)
-            if level.upper() == "TRACE":
-                return
-
-            try:
-                getattr(logging, level.upper())
-            except AttributeError as e:
-                valid = ", ".join(name for name in dir(logging) if name.isupper() and name not in ("NOTSET",))
-                raise ValueError(f"Invalid log level: {level!r}. Valid levels: TRACE, {valid}") from e
-        elif not isinstance(level, int):
-            raise ValueError(f"Log level must be int or str, got {type(level).__name__}")
+        LoggingConfig._parse_level(level)
 
     @property
     def resolved_level(self) -> int:
@@ -98,9 +126,7 @@ class LoggingConfig:
         Returns:
             The resolved log level as an integer
         """
-        if isinstance(self.level, str):
-            return getattr(logging, self.level.upper())
-        return self.level
+        return self._parse_level(self.level)
 
     @property
     def show_console(self) -> bool:
@@ -130,16 +156,7 @@ class LoggingConfig:
         Returns:
             The level as an integer
         """
-        if isinstance(level, str):
-            upper_level = level.upper()
-            # Handle custom TRACE level
-            if upper_level == "TRACE":
-                from .levels import TRACE_LEVEL_NUM
-
-                return TRACE_LEVEL_NUM
-            return getattr(logging, upper_level)
-        # level is already an int
-        return level
+        return self._parse_level(level)
 
     def to_dict(self) -> dict[str, Any]:
         """Convert configuration to a dictionary.
@@ -147,19 +164,7 @@ class LoggingConfig:
         Returns:
             Dictionary representation of the configuration
         """
-        return {
-            "level": self.level,
-            "module_levels": self.module_levels,
-            "json_file_name": self.json_file_name,
-            "json_file_only": self.json_file_only,
-            "use_syslog": self.use_syslog,
-            "syslog_address": self.syslog_address,
-            "rotate_schedule": self.rotate_schedule,
-            "rotate_retention_count": self.rotate_retention_count,
-            "show_time": self.show_time,
-            "show_level": self.show_level,
-            "show_path": self.show_path,
-        }
+        return {f.name: getattr(self, f.name) for f in fields(self)}
 
     @classmethod
     def from_kwargs(cls, **kwargs: Any) -> "LoggingConfig":
@@ -182,19 +187,7 @@ class LoggingConfig:
             ...     level="INFO", module_levels={"app.db": "DEBUG"}, json_file_name="logs/app.jsonl"
             ... )
         """
-        valid_keys = {
-            "level",
-            "module_levels",
-            "json_file_name",
-            "json_file_only",
-            "use_syslog",
-            "syslog_address",
-            "rotate_schedule",
-            "rotate_retention_count",
-            "show_time",
-            "show_level",
-            "show_path",
-        }
+        valid_keys = {f.name for f in fields(cls)}
 
         # Check for unknown keys to catch typos early
         unknown = set(kwargs.keys()) - valid_keys
@@ -210,13 +203,15 @@ class LoggingConfig:
 def is_test_mode() -> bool:
     """Detect if running under a test runner.
 
-    Checks for pytest, unittest, or the PYTEST_CURRENT_TEST environment
-    variable to determine if the code is running in a test context.
+    Checks solely whether ``pytest`` or ``unittest`` is loaded in
+    ``sys.modules``. Environment variables such as ``PYTEST_CURRENT_TEST``
+    are intentionally ignored because they are externally controllable and
+    spoofable in production processes.
 
     Returns:
         True if running in a test environment
     """
-    return "pytest" in sys.modules or "unittest" in sys.modules or os.environ.get("PYTEST_CURRENT_TEST") is not None
+    return "pytest" in sys.modules or "unittest" in sys.modules
 
 
 def get_default_level() -> int:

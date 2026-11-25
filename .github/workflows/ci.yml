@@ -1,0 +1,47 @@
+name: CI
+
+on:
+  push:
+    branches:
+      - master
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  lint-and-test:
+    name: ${{ matrix.name }}
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - name: Core Only (no-otel)
+            sync-args: "--frozen --group test"
+            run-lint: "false"
+          - name: Full Suite + Lint (otel)
+            sync-args: "--frozen --group test --extra otel"
+            run-lint: "true"
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+
+      - name: Set up uv
+        uses: astral-sh/setup-uv@v5
+
+      - name: Install dependencies
+        run: uv sync ${{ matrix.sync-args }}
+
+      - name: Run ruff check and format check
+        if: matrix.run-lint == 'true'
+        run: |
+          uv run ruff check src/ tests/
+          uv run ruff format --check src/ tests/
+
+      - name: Run pytest
+        run: uv run pytest

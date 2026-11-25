@@ -1,4 +1,5 @@
 from .config import LoggingConfig, get_default_level, is_test_mode
+from .config_builder import LoggingConfigBuilder
 from .factory import (
     LoggerFactory,
     cleanup_json_logger,
@@ -27,6 +28,7 @@ __all__ = [
     "LoggerFactory",
     "LoggerProtocol",
     "LoggingConfig",
+    "LoggingConfigBuilder",
     "HandlerFactory",
     "is_test_mode",
     "get_default_level",
